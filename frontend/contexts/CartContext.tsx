@@ -23,7 +23,19 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [selectedPlans, setSelectedPlans] = useState<PlanData[]>([]);
+  const [selectedPlans, setSelectedPlans] = useState<PlanData[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedPlans = localStorage.getItem('selectedPlans');
+      if (savedPlans) {
+        try {
+          return JSON.parse(savedPlans);
+        } catch (error) {
+          console.error('Error loading saved plans:', error);
+        }
+      }
+    }
+    return [];
+  });
 
   // Load selected plans from localStorage on component mount
   useEffect(() => {

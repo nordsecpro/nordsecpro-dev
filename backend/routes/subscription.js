@@ -7,10 +7,10 @@ const { validatePlanData } = require('../middlewares/validation');
 // Create payment intent for subscription
 router.post('/create-payment-intent', validatePlanData, subscriptionController.createPaymentIntent);
 
+// Get user's subscription status
+router.get('/status/:email', subscriptionController.getSubscriptionStatus);
 
-// Health check
-router.get('/health', (req, res) => {
-    res.json({ status: 'OK', message: 'Subscription service is running' });
-});
+// Cancel ongoing subscription
+router.post('/cancel', subscriptionController.cancelSubscription);
 
 module.exports = router;

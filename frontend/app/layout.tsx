@@ -3,9 +3,12 @@ import './globals.css'
 import { CartProvider } from '@/contexts/CartContext'
 
 export const metadata: Metadata = {
-  title: 'NordSecPro - Cybersecurity Excellence',
-  description: 'Your trusted partner in cybersecurity excellence. From startup security to SOC 2 compliance.',
+  title: 'NordSecPro',
+  description: 'NordSecPro',
   generator: 'Next.js',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({

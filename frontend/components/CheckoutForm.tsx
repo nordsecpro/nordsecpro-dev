@@ -400,7 +400,7 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
   );
 }
 
-// Enhanced Payment Form Component
+// Enhanced Payment Form Component with SEPARATED PAYMENTS
 function PaymentForm() {
   const stripe = useStripe();
   const elements = useElements();
@@ -409,67 +409,158 @@ function PaymentForm() {
   const [success, setSuccess] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [paymentProgress, setPaymentProgress] = useState<string>('');
   const { selectedPlans, totalPrice, clearCart } = useCart();
+
+  // Helper function to determine plan type
+  const getPlanType = (planTitle: string) => {
+    // Add your plan type logic here
+    return planTitle === 'vCISO On-Demand' ? 'ongoing' : 'one-time';
+  };
+
+  // Separate plans by type
+  const oneTimePlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'one-time');
+  const ongoingPlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'ongoing');
 
   const handlePayment = async (customerData: any) => {
     if (!stripe || !elements) {
       setError('Stripe has not loaded yet.');
       return;
     }
-
+  
     if (selectedPlans.length === 0) {
       setError('No plans selected for checkout.');
       return;
     }
 
+    if (!customerData.firstName || !customerData.lastName || !customerData.email) {
+      setError('First name, last name, and email are required.');
+      return;
+    }
+  
     setIsLoading(true);
     setError(null);
-
+    
     try {
-      // Step 1: Call your backend API for multiple plans
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plans: selectedPlans,
-          totalPrice: totalPrice,
-          customerData
-        }),
-      });
+      console.log('customerData', customerData);
+      console.log('oneTimePlans', oneTimePlans);
+      console.log('ongoingPlans', ongoingPlans);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create payment intent');
-      }
+      let oneTimeResult = null;
+      let ongoingResult = null;
 
-      const result = await response.json();
-      const { clientSecret } = result.data;
-      // Step 2: Confirm payment
-      const { error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-          billing_details: {
-            name: `${customerData.firstName} ${customerData.lastName}`,
-            email: customerData.email,
-            phone: customerData.phone,
+      // Step 1: Process one-time plans if any exist
+      if (oneTimePlans.length > 0) {
+        setPaymentProgress('Processing one-time plans...');
+        
+        const oneTimeTotal = oneTimePlans.reduce((sum, plan) => sum + plan.price, 0);
+        
+        const oneTimeResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        }
-      });
+          body: JSON.stringify({
+            plans: oneTimePlans,
+            totalPrice: oneTimeTotal,
+            customerData
+          }),
+        });
 
-      if (stripeError) {
-        setError(stripeError.message || 'Payment failed');
-      } else {
-        setSuccess(true);
-        // Clear the cart after successful payment
-        clearCart();
+        if (!oneTimeResponse.ok) {
+          const errorData = await oneTimeResponse.json();
+          throw new Error(errorData.message || 'Failed to create one-time payment intent');
+        }
+
+        oneTimeResult = await oneTimeResponse.json();
+        
+        // Confirm one-time payment
+        if (oneTimeResult.data.oneTime?.clientSecret) {
+          const { error: oneTimeError } = await stripe.confirmCardPayment(oneTimeResult.data.oneTime.clientSecret, {
+            payment_method: {
+              card: elements.getElement(CardElement)!,
+              billing_details: {
+                name: `${customerData.firstName} ${customerData.lastName}`,
+                email: customerData.email,
+                phone: customerData.phone,
+              },
+            }
+          });
+
+          if (oneTimeError) {
+            throw new Error(oneTimeError.message || 'One-time payment failed');
+          }
+        }
       }
+
+      // Step 2: Process ongoing plans if any exist
+      if (ongoingPlans.length > 0) {
+        setPaymentProgress('Processing ongoing subscription...');
+        
+        const ongoingTotal = ongoingPlans.reduce((sum, plan) => sum + plan.price, 0);
+        
+        const ongoingResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            plans: ongoingPlans,
+            totalPrice: ongoingTotal,
+            customerData
+          }),
+        });
+
+        if (!ongoingResponse.ok) {
+          const errorData = await ongoingResponse.json();
+          
+          // Handle the "already subscribed" case gracefully
+          if (ongoingResponse.status === 400 && errorData.message?.includes('already have an active ongoing subscription')) {
+            setError(`You already have an active ongoing subscription. ${oneTimePlans.length > 0 ? 'Your one-time plans were processed successfully.' : 'Please check your email for details about your existing subscription.'}`);
+            
+            // If one-time plans were successful, show partial success
+            if (oneTimePlans.length > 0) {
+              setSuccess(true);
+              clearCart();
+            }
+            setIsLoading(false);
+            return;
+          }
+          
+          throw new Error(errorData.message || 'Failed to create ongoing payment intent');
+        }
+
+        ongoingResult = await ongoingResponse.json();
+        
+        // Confirm ongoing payment
+        if (ongoingResult.data.ongoing?.clientSecret) {
+          const { error: ongoingError } = await stripe.confirmCardPayment(ongoingResult.data.ongoing.clientSecret, {
+            payment_method: {
+              card: elements.getElement(CardElement)!,
+              billing_details: {
+                name: `${customerData.firstName} ${customerData.lastName}`,
+                email: customerData.email,
+                phone: customerData.phone,
+              },
+            }
+          });
+
+          if (ongoingError) {
+            throw new Error(ongoingError.message || 'Subscription payment failed');
+          }
+        }
+      }
+
+      setPaymentProgress('Payment completed successfully!');
+      setSuccess(true);
+      clearCart();
+      
     } catch (err: any) {
       console.error('Payment error:', err);
       setError(err.message || 'Something went wrong');
     } finally {
       setIsLoading(false);
+      setPaymentProgress('');
     }
   };
 
@@ -483,8 +574,16 @@ function PaymentForm() {
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h3>
             <p className="text-gray-600 mb-6">
-              Thank you for your purchase. You will receive a confirmation email shortly with your receipt and next steps.
+              Thank you for your purchase. You will receive confirmation emails shortly with your receipt and next steps.
             </p>
+            {oneTimePlans.length > 0 && ongoingPlans.length > 0 && (
+              <div className="bg-blue-50 p-4 rounded-lg mb-6 text-sm">
+                <p className="text-blue-800">
+                  ✅ One-time plans: Processed immediately<br/>
+                  ✅ Ongoing subscription: Activated with monthly billing
+                </p>
+              </div>
+            )}
             <Button
               onClick={() => window.location.href = '/'}
               className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
@@ -516,31 +615,64 @@ function PaymentForm() {
         </CardHeader>
         <CardContent className="p-6">
           <div className="space-y-4">
-            {selectedPlans.map((plan, index) => (
-              <div key={index} className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="font-semibold text-lg text-gray-900">{plan.planTitle}</div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      Coverage for {plan.numberOfEmployees} employees
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      Comprehensive security solution
-                    </div>
-
-                    {/* Cancellation notice for all plans */}
-                    <div className="text-xs text-blue-600 mt-2 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      Cancel anytime with 30 days' notice
+            {/* Show one-time plans section */}
+            {oneTimePlans.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  One-Time Plans ({oneTimePlans.length})
+                </h4>
+                {oneTimePlans.map((plan, index) => (
+                  <div key={`onetime-${index}`} className="bg-green-50 p-4 rounded-lg mb-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="font-semibold text-lg text-gray-900">{plan.planTitle}</div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          Coverage for {plan.numberOfEmployees} employees
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Comprehensive security solution
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <div className="text-xl font-bold text-gray-900">${plan.price.toLocaleString()}</div>
+                        <div className="text-sm text-green-600">one-time</div>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right ml-4">
-                    <div className="text-xl font-bold text-gray-900">${plan.price.toLocaleString()}</div>
-                    <div className="text-sm text-gray-500">one-time</div>
-                  </div>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* Show ongoing plans section */}
+            {ongoingPlans.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-blue-600" />
+                  Ongoing Subscription ({ongoingPlans.length})
+                </h4>
+                {ongoingPlans.map((plan, index) => (
+                  <div key={`ongoing-${index}`} className="bg-blue-50 p-4 rounded-lg mb-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="font-semibold text-lg text-gray-900">{plan.planTitle}</div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          Coverage for {plan.numberOfEmployees} employees
+                        </div>
+                        <div className="text-xs text-blue-600 mt-2 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          Cancel anytime with 30 days' notice
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <div className="text-xl font-bold text-gray-900">${plan.price.toLocaleString()}</div>
+                        <div className="text-sm text-blue-600">monthly</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <Separator className="my-4" />
 
@@ -550,10 +682,10 @@ function PaymentForm() {
                 <span className="text-2xl font-bold text-blue-600">${totalPrice.toLocaleString()}</span>
               </div>
 
-              {selectedPlans.length > 1 && (
+              {oneTimePlans.length > 0 && ongoingPlans.length > 0 && (
                 <div className="text-sm text-blue-600 mt-2 flex items-center gap-1">
                   <Shield className="w-4 h-4" />
-                  Multiple plans bundled into a single secure payment
+                  Secure payment will process both one-time and subscription charges
                 </div>
               )}
             </div>
@@ -576,6 +708,16 @@ function PaymentForm() {
             </Alert>
           )}
 
+          {/* Show payment progress */}
+          {isLoading && paymentProgress && (
+            <Alert className="mb-6 border-blue-200 bg-blue-50">
+              <Loader2 className="h-4 w-4 text-blue-600 animate-spin" />
+              <AlertDescription className="text-blue-800 font-medium">
+                {paymentProgress}
+              </AlertDescription>
+            </Alert>
+          )}
+
           <CustomerForm
             onSubmit={handlePayment}
             isLoading={isLoading}
@@ -584,7 +726,6 @@ function PaymentForm() {
           />
         </CardContent>
       </Card>
-
       {/* Terms and Privacy Modals */}
       <TermsModal
         isOpen={showTermsModal}
