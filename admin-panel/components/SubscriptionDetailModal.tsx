@@ -1,7 +1,10 @@
-import {
-  CustomerDetails,
-  Subscription,
-} from '@/app/(admin panel)/subscription-management/page';
+import { Subscription } from '@/app/(admin panel)/subscription-management/page';
+import { formatCurrency } from '@/helper/formatCurrency';
+import { formatDate } from '@/helper/formatDate';
+import { getStatusBadge } from './StatusBadge';
+import { getPaymentStatusBadge } from './PaymentStatusBadge';
+import { getPlanTypeBadge } from './PlanTypeBadge';
+import { getAutoRenewBadge } from './AutoRenewBadge';
 
 // Subscription Detail Modal Component
 interface SubscriptionDetailModalProps {
@@ -13,92 +16,6 @@ interface SubscriptionDetailModalProps {
 export const SubscriptionDetailModal: React.FC<
   SubscriptionDetailModalProps
 > = ({ subscription, isOpen, onClose }) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const getStatusBadge = (status: string = 'active') => {
-    const statusConfig = {
-      active: {
-        color:
-          'bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-800 border-emerald-200',
-        dot: 'bg-emerald-500',
-        icon: '✓',
-      },
-      inactive: {
-        color:
-          'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-800 border-gray-200',
-        dot: 'bg-gray-500',
-        icon: '◯',
-      },
-    };
-
-    const config =
-      statusConfig[status as keyof typeof statusConfig] || statusConfig.active;
-
-    return (
-      <span
-        className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold border backdrop-blur-sm ${config.color} transition-all duration-200`}>
-        <div
-          className={`w-2.5 h-2.5 ${config.dot} rounded-full mr-2 animate-pulse`}></div>
-        <span className="mr-1">{config.icon}</span>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  };
-
-  const getPaymentStatusBadge = (paymentStatus: string) => {
-    const statusConfig = {
-      succeeded: {
-        color:
-          'bg-gradient-to-r from-green-50 to-green-100 text-green-800 border-green-200',
-        dot: 'bg-green-500',
-        icon: '💳',
-      },
-      failed: {
-        color:
-          'bg-gradient-to-r from-red-50 to-red-100 text-red-800 border-red-200',
-        dot: 'bg-red-500',
-        icon: '❌',
-      },
-      pending: {
-        color:
-          'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-800 border-yellow-200',
-        dot: 'bg-yellow-500',
-        icon: '⏳',
-      },
-    };
-
-    const config =
-      statusConfig[paymentStatus as keyof typeof statusConfig] ||
-      statusConfig.pending;
-
-    return (
-      <span
-        className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold border backdrop-blur-sm ${config.color} transition-all duration-200`}>
-        <div
-          className={`w-2.5 h-2.5 ${config.dot} rounded-full mr-2 animate-pulse`}></div>
-        <span className="mr-1">{config.icon}</span>
-        {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
-      </span>
-    );
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -110,7 +27,7 @@ export const SubscriptionDetailModal: React.FC<
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 w-full max-w-4xl transform transition-all duration-300 scale-100">
+        <div className="relative bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 w-full max-w-5xl transform transition-all duration-300 scale-100">
           {/* Header */}
           <div className="relative overflow-hidden rounded-t-3xl">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20"></div>
@@ -146,8 +63,8 @@ export const SubscriptionDetailModal: React.FC<
 
           {/* Content */}
           <div className="px-8 py-6 space-y-8 max-h-96 overflow-y-auto">
-            {/* Status and ID Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* IDs Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <p className="text-sm font-medium text-gray-500">
                   Subscription ID
@@ -156,6 +73,20 @@ export const SubscriptionDetailModal: React.FC<
                   {subscription._id}
                 </p>
               </div>
+              {subscription.stripeSubscriptionId && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-500">
+                    Stripe Subscription ID
+                  </p>
+                  <p className="text-sm font-mono text-gray-900 bg-blue-50 px-3 py-1 rounded-lg break-all">
+                    {subscription.stripeSubscriptionId}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Status Badges Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="text-center">
                 <p className="text-sm font-medium text-gray-500 mb-2">Status</p>
                 {getStatusBadge(subscription.status)}
@@ -165,6 +96,18 @@ export const SubscriptionDetailModal: React.FC<
                   Payment Status
                 </p>
                 {getPaymentStatusBadge(subscription.paymentStatus)}
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-500 mb-2">
+                  Plan Type
+                </p>
+                {getPlanTypeBadge(subscription.planType || 'ongoing')}
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-medium text-gray-500 mb-2">
+                  Auto Renew
+                </p>
+                {getAutoRenewBadge(subscription.autoRenew ?? false)}
               </div>
             </div>
 
@@ -271,8 +214,8 @@ export const SubscriptionDetailModal: React.FC<
                       </p>
                     </div>
 
-                    {subscription.customerDetails.firstName &&
-                      subscription.customerDetails.lastName && (
+                    {subscription.customerDetails?.firstName &&
+                      subscription.customerDetails?.lastName && (
                         <div>
                           <p className="text-sm font-medium text-gray-500">
                             Full Name
@@ -285,7 +228,7 @@ export const SubscriptionDetailModal: React.FC<
                         </div>
                       )}
 
-                    {subscription.customerDetails.email && (
+                    {subscription.customerDetails?.email && (
                       <div>
                         <p className="text-sm font-medium text-gray-500">
                           Email Address
@@ -297,7 +240,7 @@ export const SubscriptionDetailModal: React.FC<
                       </div>
                     )}
 
-                    {subscription.customerDetails.phone && (
+                    {subscription.customerDetails?.phone && (
                       <div>
                         <p className="text-sm font-medium text-gray-500">
                           Phone Number
@@ -362,7 +305,7 @@ export const SubscriptionDetailModal: React.FC<
                 Timeline Information
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {subscription.createdAt && (
                   <div>
                     <p className="text-sm font-medium text-gray-500">
@@ -383,6 +326,18 @@ export const SubscriptionDetailModal: React.FC<
                     <p className="text-gray-900 flex items-center gap-2">
                       <span className="text-purple-500">🔄</span>
                       {formatDate(subscription.updatedAt)}
+                    </p>
+                  </div>
+                )}
+
+                {subscription.nextBillingDate && (
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">
+                      Next Billing Date
+                    </p>
+                    <p className="text-gray-900 flex items-center gap-2">
+                      <span className="text-purple-500">💰</span>
+                      {formatDate(subscription.nextBillingDate)}
                     </p>
                   </div>
                 )}
