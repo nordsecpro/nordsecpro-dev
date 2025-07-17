@@ -1,10 +1,10 @@
 'use client';
 
 import {
+  Contact,
   getContacts,
-  type Contact,
-  type Pagination,
   isContactApiError,
+  Pagination,
 } from '@/lib/api/contact';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 
@@ -117,7 +117,7 @@ const InquiryPage: React.FC = () => {
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [filters.search, fetchContacts, itemsPerPage]);
+  }, [filters.search, fetchContacts, itemsPerPage, currentPage, searchTimeout]);
 
   // Filtered and sorted contacts
   const filteredContacts = useMemo(() => {
@@ -186,51 +186,6 @@ const InquiryPage: React.FC = () => {
     return types;
   }, [state.contacts]);
 
-  const exportToExcel = useCallback(() => {
-    // Create Excel data
-    const excelData = filteredContacts.map((contact) => ({
-      'Contact Name': contact.name || '',
-      'Email Address': contact.email || '',
-      Company: contact.company || '',
-      Subject: contact.subject || '',
-      Message: contact.message || '',
-      'Contact Type': formatContactType(contact.type || ''),
-      Status: formatContactStatus(contact.status || ''),
-      'Date Created': new Date(contact.createdAt).toLocaleString(),
-    }));
-
-    // Convert to Excel format (simplified CSV that Excel can read)
-    const headers = Object.keys(excelData[0]);
-    const csvContent = [
-      headers.join(','),
-      ...excelData.map((row) =>
-        headers
-          .map((header) => {
-            const value = row[header as keyof typeof row];
-            // Escape quotes and wrap in quotes if contains comma
-            return typeof value === 'string' &&
-              (value.includes(',') || value.includes('"'))
-              ? `"${value.replace(/"/g, '""')}"`
-              : value;
-          })
-          .join(',')
-      ),
-    ].join('\n');
-
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `contacts_export_${
-      new Date().toISOString().split('T')[0]
-    }.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, [filteredContacts]);
-
   const getStatusBadge = useCallback((status: Contact['status']): string => {
     const baseClasses =
       'inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border backdrop-blur-sm transition-all duration-200 hover:scale-105';
@@ -295,6 +250,51 @@ const InquiryPage: React.FC = () => {
   const formatContactStatus = useCallback((status: string): string => {
     return status.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   }, []);
+
+  const exportToExcel = useCallback(() => {
+    // Create Excel data
+    const excelData = filteredContacts.map((contact) => ({
+      'Contact Name': contact.name || '',
+      'Email Address': contact.email || '',
+      Company: contact.company || '',
+      Subject: contact.subject || '',
+      Message: contact.message || '',
+      'Contact Type': formatContactType(contact.type || ''),
+      Status: formatContactStatus(contact.status || ''),
+      'Date Created': new Date(contact.createdAt).toLocaleString(),
+    }));
+
+    // Convert to Excel format (simplified CSV that Excel can read)
+    const headers = Object.keys(excelData[0]);
+    const csvContent = [
+      headers.join(','),
+      ...excelData.map((row) =>
+        headers
+          .map((header) => {
+            const value = row[header as keyof typeof row];
+            // Escape quotes and wrap in quotes if contains comma
+            return typeof value === 'string' &&
+              (value.includes(',') || value.includes('"'))
+              ? `"${value.replace(/"/g, '""')}"`
+              : value;
+          })
+          .join(',')
+      ),
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `contacts_export_${
+      new Date().toISOString().split('T')[0]
+    }.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [filteredContacts, formatContactStatus, formatContactType]);
 
   // Enhanced Loading Component
   const LoadingSpinner: React.FC = () => (

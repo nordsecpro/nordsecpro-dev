@@ -182,13 +182,16 @@ const SubscriptionsPage = () => {
     planTypeFilter,
     autoRenewFilter,
     pageSize,
+    currentPage,
+    debugFilters,
+    fetchSubscriptions,
   ]);
 
   // Handle page changes separately
   useEffect(() => {
     debugFilters();
     fetchSubscriptions();
-  }, [currentPage]);
+  }, [currentPage, debugFilters, fetchSubscriptions]);
 
   // Debounced search effect
   useEffect(() => {
@@ -201,7 +204,7 @@ const SubscriptionsPage = () => {
       }
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, currentPage, debugFilters, fetchSubscriptions]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -715,7 +718,7 @@ const SubscriptionsPage = () => {
                   <div className="flex flex-wrap gap-2">
                     {searchTerm && (
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        Search: "{searchTerm}"
+                        Search: &quot;{searchTerm}&quot;
                       </span>
                     )}
                     {statusFilter !== 'all' && (
