@@ -22,6 +22,14 @@ async function seedDatabase() {
     const admin = await createAdmin();
     console.log('Admin user created');
 
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Production environment detected. Only admin user seeded.');
+      console.log(`\n      Admin credentials:\n      Email: ${admin.email}\n      Password: ${config.admin.password}\n      `);
+      await mongoose.disconnect();
+      console.log('MongoDB disconnected');
+      return;
+    }
+
     // Create test scenarios first
     console.log('Creating test scenarios...');
     await createTestScenarios();
@@ -34,13 +42,7 @@ async function seedDatabase() {
     const summary = await generateSummary();
 
     console.log('Database seeding completed successfully!');
-    console.log(`
-      Admin credentials:
-      Email: ${admin.email}
-      Password: ${config.admin.password}
-      
-      ${summary}
-    `);
+    console.log(`\n      Admin credentials:\n      Email: ${admin.email}\n      Password: ${config.admin.password}\n      \n      ${summary}\n    `);
 
     // Disconnect from MongoDB
     await mongoose.disconnect();
@@ -54,12 +56,13 @@ async function seedDatabase() {
 
 // Clear existing data
 async function clearDatabase() {
-  const { Admin, Subscription } = require('../models');
-  
+  const { Admin, Subscription, Contact } = require('../models');
+
   console.log('Clearing existing data...');
   await Promise.all([
     Admin.deleteMany({}),
-    Subscription.deleteMany({})
+    Subscription.deleteMany({}),
+    Contact.deleteMany({})
   ]);
   console.log('Database cleared');
 }
@@ -111,7 +114,7 @@ async function createTestScenarios() {
     totalPrice: 80000,
     customerDetails: {
       firstName: 'Sarah',
-      lastName: 'Johnson', 
+      lastName: 'Johnson',
       email: 'sarah.johnson@enterprise-corp.com',
       phone: '+1-555-0123'
     },
@@ -246,7 +249,7 @@ async function createSubscriptions(count) {
 
     // Generate unique plans for this subscription
     const selectedPlans = faker.helpers.arrayElements(availablePlans, planCount);
-    
+
     const plans = [];
     let totalPrice = 0;
 
@@ -254,13 +257,13 @@ async function createSubscriptions(count) {
     selectedPlans.forEach(planTemplate => {
       const numberOfEmployees = faker.number.int({ min: 5, max: 250 });
       const planPrice = planTemplate.basePrice + (numberOfEmployees * planTemplate.pricePerEmployee);
-      
+
       plans.push({
         planTitle: planTemplate.title,
         numberOfEmployees,
         price: planPrice
       });
-      
+
       totalPrice += planPrice;
     });
 
@@ -302,7 +305,7 @@ async function createSubscriptions(count) {
     });
 
     subscriptions.push(subscription);
-    
+
     // Log progress every 50 subscriptions
     if ((i + 1) % 50 === 0) {
       console.log(`Created ${i + 1}/${count} subscriptions...`);
@@ -322,7 +325,7 @@ async function generateSummary() {
     { $match: { paymentStatus: 'succeeded' } },
     { $group: { _id: null, total: { $sum: '$totalPrice' } } }
   ]);
-  
+
   const planStats = await Subscription.aggregate([
     { $unwind: '$plans' },
     { $group: { _id: '$plans.planTitle', count: { $sum: 1 } } },
