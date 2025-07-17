@@ -39,6 +39,9 @@ export interface SubscriptionFilters {
   minPrice?: number; // Filter by price range
   maxPrice?: number;
   planTitle?: string; // Filter by specific plan
+  paymentStatus?: 'succeeded' | 'failed' | 'pending'; // Filter by payment status
+  planType?: 'ongoing' | 'one-time'; // Filter by plan type
+  autoRenew?: boolean; // Filter by auto-renewal status
 }
 
 export interface PaginationMeta {
@@ -85,7 +88,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const getAuthHeaders = (): Record<string, string> => {
   try {
     const token = localStorage.getItem('adminToken');
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    return token ? { Authorization: `Bearer ${token}` } : {};
   } catch (error) {
     console.error('Error getting auth token:', error);
     return {};
@@ -95,7 +98,9 @@ const getAuthHeaders = (): Record<string, string> => {
 /**
  * Create headers object for API requests
  */
-const createHeaders = (additionalHeaders: Record<string, string> = {}): HeadersInit => {
+const createHeaders = (
+  additionalHeaders: Record<string, string> = {}
+): HeadersInit => {
   const authHeaders = getAuthHeaders();
   return {
     'Content-Type': 'application/json',
@@ -109,24 +114,28 @@ const createHeaders = (additionalHeaders: Record<string, string> = {}): HeadersI
  */
 const buildQueryString = (filters: SubscriptionFilters): string => {
   const params = new URLSearchParams();
-  
+
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       params.append(key, value.toString());
     }
   });
-  
+
   return params.toString();
 };
 
 /**
  * Get all subscriptions with filtering, pagination, and search
  */
-export const getAllSubscriptions = async (filters: SubscriptionFilters = {}): Promise<SubscriptionsResponse> => {
+export const getAllSubscriptions = async (
+  filters: SubscriptionFilters = {}
+): Promise<SubscriptionsResponse> => {
   try {
     const queryString = buildQueryString(filters);
-    const url = `${API_BASE_URL}/api/admin/subscriptions${queryString ? `?${queryString}` : ''}`;
-    
+    const url = `${API_BASE_URL}/api/admin/subscriptions${
+      queryString ? `?${queryString}` : ''
+    }`;
+
     const response = await fetch(url, {
       method: 'GET',
       headers: createHeaders(),
@@ -145,7 +154,6 @@ export const getAllSubscriptions = async (filters: SubscriptionFilters = {}): Pr
   }
 };
 
-
 export const getSubscriptionStats = async (): Promise<{
   success: boolean;
   data: {
@@ -160,14 +168,19 @@ export const getSubscriptionStats = async (): Promise<{
   };
 }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/subscriptions/stats`, {
-      method: 'GET',
-      headers: createHeaders(),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/subscriptions/stats`,
+      {
+        method: 'GET',
+        headers: createHeaders(),
+      }
+    );
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to fetch subscription statistics');
+      throw new Error(
+        data.message || 'Failed to fetch subscription statistics'
+      );
     }
 
     return data;
@@ -178,13 +191,15 @@ export const getSubscriptionStats = async (): Promise<{
 };
 
 export const formatSubscription = (subscription: Subscription) => {
-  const customerName = subscription.customerDetails?.firstName && subscription.customerDetails?.lastName
-    ? `${subscription.customerDetails.firstName} ${subscription.customerDetails.lastName}`
-    : subscription.customerDetails?.firstName || 
-      subscription.customerDetails?.lastName ||
-      subscription.customerDetails?.email || 
-      subscription.customerDetails?.company || 
-      'Unknown Customer';
+  const customerName =
+    subscription.customerDetails?.firstName &&
+    subscription.customerDetails?.lastName
+      ? `${subscription.customerDetails.firstName} ${subscription.customerDetails.lastName}`
+      : subscription.customerDetails?.firstName ||
+        subscription.customerDetails?.lastName ||
+        subscription.customerDetails?.email ||
+        subscription.customerDetails?.company ||
+        'Unknown Customer';
 
   return {
     ...subscription,
@@ -205,60 +220,78 @@ export const formatSubscription = (subscription: Subscription) => {
   };
 };
 
-export const validateFilters = (filters: SubscriptionFilters): SubscriptionFilters => {
+export const validateFilters = (
+  filters: SubscriptionFilters
+): SubscriptionFilters => {
   const validatedFilters: SubscriptionFilters = {};
-  
+
   // Validate and set page
   if (filters.page && filters.page > 0) {
     validatedFilters.page = filters.page;
   }
-  
+
   // Validate and set limit
   if (filters.limit && filters.limit > 0 && filters.limit <= 100) {
     validatedFilters.limit = filters.limit;
   }
-  
+
   // Validate and set status
-  if (filters.status && ['active', 'pending', 'inactive', 'cancelled', 'all'].includes(filters.status)) {
+  if (
+    filters.status &&
+    ['active', 'pending', 'inactive', 'cancelled', 'all'].includes(
+      filters.status
+    )
+  ) {
     validatedFilters.status = filters.status;
   }
-  
+
   // Validate and set search
   if (filters.search && filters.search.trim().length > 0) {
     validatedFilters.search = filters.search.trim();
   }
-  
+
   // Validate and set sort
   if (filters.sort) {
-    const validSortFields = ['createdAt', '-createdAt', 'price', '-price', 'planTitle', '-planTitle', 'status', '-status'];
+    const validSortFields = [
+      'createdAt',
+      '-createdAt',
+      'price',
+      '-price',
+      'planTitle',
+      '-planTitle',
+      'status',
+      '-status',
+    ];
     if (validSortFields.includes(filters.sort)) {
       validatedFilters.sort = filters.sort;
     }
   }
-  
+
   // Validate price range
   if (filters.minPrice && filters.minPrice >= 0) {
     validatedFilters.minPrice = filters.minPrice;
   }
-  
+
   if (filters.maxPrice && filters.maxPrice >= 0) {
     validatedFilters.maxPrice = filters.maxPrice;
   }
-  
+
   return validatedFilters;
 };
 
 // Helper function to extract subscriptions from the response
-export const extractSubscriptions = (response: SubscriptionsResponse): Subscription[] => {
+export const extractSubscriptions = (
+  response: SubscriptionsResponse
+): Subscription[] => {
   return response.data.data;
 };
 
 // Helper function to extract pagination from the response
-export const extractPagination = (response: SubscriptionsResponse): PaginationMeta => {
+export const extractPagination = (
+  response: SubscriptionsResponse
+): PaginationMeta => {
   return response.data.pagination;
 };
-
-
 
 /**
  * Handle unauthorized responses
@@ -269,16 +302,20 @@ const handleUnauthorized = () => {
   window.location.href = '/login';
 };
 
-
 /**
  * Delete subscription by ID
  */
-export const deleteSubscription = async (subscriptionId: string): Promise<{ success: boolean; message: string }> => {
+export const deleteSubscription = async (
+  subscriptionId: string
+): Promise<{ success: boolean; message: string }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/admin/subscriptions/${subscriptionId}`, {
-      method: 'DELETE',
-      headers: createHeaders(),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/subscriptions/${subscriptionId}`,
+      {
+        method: 'DELETE',
+        headers: createHeaders(),
+      }
+    );
 
     const data = await response.json();
 
@@ -299,25 +336,26 @@ export const deleteSubscription = async (subscriptionId: string): Promise<{ succ
   }
 };
 
-
-
 /**
  * Update subscription by ID
  */
 export const updateSubscription = async (
-  subscriptionId: string, 
+  subscriptionId: string,
   status: string
 ): Promise<UpdateSubscriptionResponse> => {
   try {
     const metadata = {
-        notes: "admin request",
-        reason: "Customer request"
-    }
-    const response = await fetch(`${API_BASE_URL}/api/admin/subscriptions/${subscriptionId}`, {
-      method: 'PUT',
-      headers: createHeaders(),
-      body: JSON.stringify({status, metadata}),
-    });
+      notes: 'admin request',
+      reason: 'Customer request',
+    };
+    const response = await fetch(
+      `${API_BASE_URL}/api/admin/subscriptions/${subscriptionId}`,
+      {
+        method: 'PUT',
+        headers: createHeaders(),
+        body: JSON.stringify({ status, metadata }),
+      }
+    );
 
     const data = await response.json();
 
