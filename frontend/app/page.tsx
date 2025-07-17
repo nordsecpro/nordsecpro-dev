@@ -49,6 +49,14 @@ function NordSecProLogo({ className = "h-8 w-auto" }: { className?: string }) {
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Helper function to handle navigation with URL update
+  const handleNavigation = (sectionId: string, path: string) => {
+    // Scroll to section
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    // Update URL without page reload
+    window.history.pushState({}, '', path);
+  };
+
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,41 +67,85 @@ function Header() {
 
           {/* Desktop Navigation - Responsive breakpoints */}
           <nav className="hidden lg:flex space-x-6 xl:space-x-8">
-            <a href="#services" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/services" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('services', '/services'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Services
             </a>
-            <a href="#packages" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/packages" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('packages', '/packages'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Packages
             </a>
-            <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/about" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('about', '/about'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               About
             </a>
-            <a href="#case-studies" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/case-studies" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('case-studies', '/case-studies'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Case Studies
             </a>
-            <a href="#resources" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/resources" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('resources', '/resources'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Resources
             </a>
-            <a href="#insights" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/insights" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('insights', '/insights'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Insights
             </a>
-            <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/contact" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('contact', '/contact'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Contact
             </a>
           </nav>
 
           {/* Medium Screen Navigation - Shows fewer items */}
           <nav className="hidden md:flex lg:hidden space-x-4">
-            <a href="#services" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/services" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('services', '/services'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Services
             </a>
-            <a href="#packages" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/packages" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('packages', '/packages'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Packages
             </a>
-            <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/about" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('about', '/about'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               About
             </a>
-            <a href="#contact" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            <a 
+              href="/contact" 
+              onClick={(e) => { e.preventDefault(); handleNavigation('contact', '/contact'); }}
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+            >
               Contact
             </a>
           </nav>
@@ -122,51 +174,51 @@ function Header() {
           }`}>
           <nav className="space-y-1 pt-4 border-t">
             <a
-              href="#services"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/services"
+              onClick={(e) => { e.preventDefault(); handleNavigation('services', '/services'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Services
             </a>
             <a
-              href="#packages"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/packages"
+              onClick={(e) => { e.preventDefault(); handleNavigation('packages', '/packages'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Packages
             </a>
             <a
-              href="#about"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/about"
+              onClick={(e) => { e.preventDefault(); handleNavigation('about', '/about'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               About
             </a>
             <a
-              href="#case-studies"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/case-studies"
+              onClick={(e) => { e.preventDefault(); handleNavigation('case-studies', '/case-studies'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Case Studies
             </a>
             <a
-              href="#resources"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/resources"
+              onClick={(e) => { e.preventDefault(); handleNavigation('resources', '/resources'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Resources
             </a>
             <a
-              href="#insights"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/insights"
+              onClick={(e) => { e.preventDefault(); handleNavigation('insights', '/insights'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Insights
             </a>
             <a
-              href="#contact"
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium"
-              onClick={() => setIsMenuOpen(false)}
+              href="/contact"
+              onClick={(e) => { e.preventDefault(); handleNavigation('contact', '/contact'); setIsMenuOpen(false); }}
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Contact
             </a>
@@ -177,6 +229,7 @@ function Header() {
     </header>
   )
 }
+
 // Hero Section Component
 function HeroSection() {
   return (
@@ -1392,7 +1445,14 @@ function ContactSection() {
                   <div>
                     <p className="font-semibold">Office Locations</p>
                     <p className="text-gray-300">Remote offices based in:</p>
-                    <p className="text-gray-300">Madrid, Spain & Gothenburg, Sweden</p>
+                    <a
+                      href="https://www.google.com/maps/place/Nueva+Andaluc%C3%ADa,+29660+Marbella,+M%C3%A1laga,+Spain/@36.504587,-4.9670655,5869m/data=!3m2!1e3!4b1!4m6!3m5!1s0xd7329f95778141f:0x89f7238dbe6dc699!8m2!3d36.4923752!4d-4.9516096!16s%2Fg%2F122y5q61?entry=ttu&g_ep=EgoyMDI1MDcxMy4wIKXMDSoASAFQAw%3D%3D"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-300 hover:text-blue-400 transition-colors duration-200"
+                    >
+                      Nueva Andalucia district of Marbella-29069, Spain
+                    </a>
                   </div>
                 </div>
               </div>
@@ -1424,7 +1484,7 @@ function ContactSection() {
 
                 <Button
                   variant="outline"
-                  onClick={() => window.location.href = 'mailto:info@codelink.se'}
+                  onClick={() => window.location.href = 'mailto:info@nordsecpro.com'}
                   className="w-full border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-all duration-200"
                 >
                   <Mail className="h-4 w-4 mr-2" />
@@ -1608,7 +1668,7 @@ function ContactSection() {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                       </svg>
                       <p className="text-sm text-red-800 font-medium">
-                        Failed to submit inquiry. Please try again or email us directly at info@codelink.se
+                        Failed to submit inquiry. Please try again or email us directly at info@nordsecpro.com
                       </p>
                     </div>
                   </div>
@@ -1617,7 +1677,7 @@ function ContactSection() {
 
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <p className="text-xs text-gray-500 text-center">
-                  Your inquiry will be sent securely to our security team at info@codelink.se
+                  Your inquiry will be sent securely to our security team at info@nordsecpro.com
                 </p>
               </div>
             </div>
@@ -1752,21 +1812,42 @@ function Footer() {
                 <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Legal</h4>
                 <ul className="space-y-3">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                    <a
+                      href="/assets/privacy_policy.pdf"
+                      download
+                      className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"
+                    >
                       <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                      Privacy Policy
+                      Download Privacy Policy
+                      <svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                    <a
+                      href="/assets/terms_of_service.pdf"
+                      download
+                      className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"
+                    >
                       <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                      Terms of Service
+                      Download Terms of Service
+                      <svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                    <a
+                      href="/assets/cookie_policy.pdf"
+                      download
+                      className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"
+                    >
                       <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                      Cookie Policy
+                      Download Cookie Policy
+                      <svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
                     </a>
                   </li>
                 </ul>
