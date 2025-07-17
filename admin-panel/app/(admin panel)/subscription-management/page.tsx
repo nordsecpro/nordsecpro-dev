@@ -47,7 +47,6 @@ export interface Subscription {
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
-  // New fields from updated response (made optional to handle missing data)
   autoRenew?: boolean;
   nextBillingDate?: string;
   planType?: string;
@@ -73,8 +72,6 @@ const SubscriptionsPage = () => {
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<string>('all');
   const [planTypeFilter, setPlanTypeFilter] = useState<string>('all');
   const [autoRenewFilter, setAutoRenewFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('createdAt');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedSubscriptions, setSelectedSubscriptions] = useState<
@@ -123,7 +120,6 @@ const SubscriptionsPage = () => {
         });
 
         const response: any = await getAllSubscriptions(requestFilters);
-        console.log(response);
 
         if (response.success) {
           setSubscriptions(response.data.subscriptions);
@@ -150,7 +146,6 @@ const SubscriptionsPage = () => {
       searchTerm,
       setLoading,
       setError,
-      setSubscriptions,
       setPagination,
     ]
   );
@@ -183,15 +178,13 @@ const SubscriptionsPage = () => {
     autoRenewFilter,
     pageSize,
     currentPage,
-    debugFilters,
-    fetchSubscriptions,
   ]);
 
   // Handle page changes separately
   useEffect(() => {
     debugFilters();
     fetchSubscriptions();
-  }, [currentPage, debugFilters, fetchSubscriptions]);
+  }, [currentPage]);
 
   // Debounced search effect
   useEffect(() => {
@@ -204,7 +197,7 @@ const SubscriptionsPage = () => {
       }
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, currentPage, debugFilters, fetchSubscriptions]);
+  }, [searchTerm, currentPage]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
