@@ -7,6 +7,7 @@ const { AppError } = require('../middlewares/errorHandler');
 const { catchAsync } = require('../middlewares/requestHandler');
 const APIFeatures = require('../utils/apiFeatures');
 const logger = require('../utils/logger');
+const { sendContactNotificationEmail } = require('../utils/email');
 
 /**
  * Admin login
@@ -62,6 +63,13 @@ exports.createContact = catchAsync(async (req, res, next) => {
     message,
     type,
   });
+
+  // Send notification email to admin
+  try {
+    await sendContactNotificationEmail(contact);
+  } catch (err) {
+    logger.error('Failed to send contact notification email:', err);
+  }
 
   sendSuccess(res, { contact }, 'Message sent successfully', 201);
 });
@@ -463,7 +471,7 @@ exports.getSubscription = catchAsync(async (req, res, next) => {
             (sum, plan) => sum + plan.numberOfEmployees,
             0
           )) *
-          100
+        100
       ) / 100,
     avgPlanPrice:
       Math.round((subscription.totalPrice / subscription.plans.length) * 100) /

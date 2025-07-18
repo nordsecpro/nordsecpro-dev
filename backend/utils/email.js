@@ -16,7 +16,7 @@ const createTransporter = () => {
 // Enhanced confirmation email that handles renewals and different plan types
 const sendConfirmationEmail = async (subscription, options = {}) => {
     const customerEmail = subscription.customerDetails?.email;
-    
+
     if (!customerEmail || customerEmail === 'Unknown') {
         logger.error('Cannot send confirmation email: No valid recipient email');
         return;
@@ -27,11 +27,11 @@ const sendConfirmationEmail = async (subscription, options = {}) => {
 
     try {
         const transporter = createTransporter();
-        
+
         // Generate plans summary for email
         let plansHtml = '';
         let totalEmployees = 0;
-        
+
         if (subscription.plans && Array.isArray(subscription.plans)) {
             // Multiple plans format
             plansHtml = subscription.plans.map((plan, index) => {
@@ -52,12 +52,12 @@ const sendConfirmationEmail = async (subscription, options = {}) => {
                 <p><strong>Price:</strong> $${(subscription.price || subscription.totalPrice || 0).toLocaleString()}</p>
             `;
         }
-        
+
         const planCount = subscription.plans && Array.isArray(subscription.plans) ? subscription.plans.length : 1;
         const totalPrice = subscription.totalPrice || subscription.price || 0;
-        
+
         let subject, title, subtitle, description;
-        
+
         if (isRenewal) {
             subject = `✅ Subscription Renewed Successfully`;
             title = '🔄 Subscription Renewed';
@@ -144,7 +144,7 @@ const sendConfirmationEmail = async (subscription, options = {}) => {
                 </div>
             `
         };
-        
+
         await transporter.sendMail(mailOptions);
         logger.info(`${isRenewal ? 'Renewal' : 'Confirmation'} email sent to ${customerEmail}`, {
             subscriptionId: subscription._id,
@@ -153,7 +153,7 @@ const sendConfirmationEmail = async (subscription, options = {}) => {
             isRenewal: isRenewal,
             planType: subscription.planType
         });
-        
+
     } catch (error) {
         logger.error(`Error sending ${isRenewal ? 'renewal' : 'confirmation'} email:`, error);
         throw error;
@@ -164,11 +164,11 @@ const sendConfirmationEmail = async (subscription, options = {}) => {
 const sendInvoiceEmail = async (subscription, invoicePath) => {
     try {
         const transporter = createTransporter();
-        
+
         // Generate plans summary for email
         let plansHtml = '';
         let totalEmployees = 0;
-        
+
         if (subscription.plans && Array.isArray(subscription.plans)) {
             // Multiple plans format
             plansHtml = subscription.plans.map((plan, index) => {
@@ -184,11 +184,11 @@ const sendInvoiceEmail = async (subscription, invoicePath) => {
                 <li><strong>${subscription.planTitle || 'Security Service'}:</strong> ${totalEmployees.toLocaleString()} employees - $${(subscription.price || subscription.totalPrice || 0).toLocaleString()}</li>
             `;
         }
-        
+
         const planCount = subscription.plans && Array.isArray(subscription.plans) ? subscription.plans.length : 1;
         const totalPrice = subscription.totalPrice || subscription.price || 0;
         const invoiceNumber = subscription._id ? `INV-${subscription._id.toString().slice(-8).toUpperCase()}` : 'INV-UNKNOWN';
-        
+
         const mailOptions = {
             from: config.email.user,
             to: subscription.customerDetails.email,
@@ -232,7 +232,7 @@ const sendInvoiceEmail = async (subscription, invoicePath) => {
                 }
             ]
         };
-        
+
         await transporter.sendMail(mailOptions);
         logger.info(`Invoice email sent to ${subscription.customerDetails.email}`, {
             subscriptionId: subscription._id,
@@ -240,7 +240,7 @@ const sendInvoiceEmail = async (subscription, invoicePath) => {
             planCount: planCount,
             totalAmount: totalPrice
         });
-        
+
     } catch (error) {
         logger.error('Error sending invoice email:', error);
         throw error;
@@ -252,7 +252,7 @@ const sendInvoiceEmail = async (subscription, invoicePath) => {
  */
 const sendOngoingPlanWelcomeEmail = async (subscription) => {
     const customerEmail = subscription.customerDetails?.email;
-    
+
     if (!customerEmail || customerEmail === 'Unknown') {
         logger.error('Cannot send ongoing plan welcome email: No valid recipient email');
         return;
@@ -325,7 +325,7 @@ const sendOngoingPlanWelcomeEmail = async (subscription) => {
  */
 const sendAlreadySubscribedEmail = async (customerData, existingSubscription) => {
     const customerEmail = customerData.email;
-    
+
     if (!customerEmail) {
         logger.error('Cannot send already subscribed email: No valid recipient email');
         return;
@@ -394,9 +394,46 @@ const sendAlreadySubscribedEmail = async (customerData, existingSubscription) =>
     }
 };
 
+/**
+ * Send notification email to admin when a new contact form is submitted
+ */
+const sendContactNotificationEmail = async (contact) => {
+    try {
+        const transporter = createTransporter();
+        const adminEmail = config.email.user;
+        const mailOptions = {
+            from: config.email.user,
+            to: adminEmail,
+            subject: `New Contact Form Submission from ${contact.name}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #1e293b;">New Contact Form Submission</h2>
+                    <p><strong>Name:</strong> ${contact.name}</p>
+                    <p><strong>Email:</strong> ${contact.email}</p>
+                    <p><strong>Company:</strong> ${contact.company || 'N/A'}</p>
+                    <p><strong>Subject:</strong> ${contact.subject || 'N/A'}</p>
+                    <p><strong>Type:</strong> ${contact.type || 'N/A'}</p>
+                    <p><strong>Message:</strong></p>
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; color: #334155;">${contact.message}</div>
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                    <p style="color: #64748b; font-size: 12px; text-align: center; margin: 0;">
+                        ${process.env.COMPANY_NAME || 'codelink.se'} | ${process.env.COMPANY_EMAIL || config.email.user}
+                    </p>
+                </div>
+            `
+        };
+        await transporter.sendMail(mailOptions);
+        logger.info(`Contact notification email sent to admin: ${adminEmail}`);
+    } catch (error) {
+        logger.error('Error sending contact notification email:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     sendConfirmationEmail,
     sendInvoiceEmail,
     sendOngoingPlanWelcomeEmail,
-    sendAlreadySubscribedEmail
+    sendAlreadySubscribedEmail,
+    sendContactNotificationEmail
 };
