@@ -821,7 +821,7 @@ function AboutSection() {
                 alt="Sam Josefsson"
                 className="w-36 h-36 rounded-full object-cover border-4 border-white shadow-xl"
               />
-              <p className="mt-4 text-lg font-semibold text-gray-800">Sam Josefsson</p>
+              <p className="mt-4 text-lg font-semibold text-gray-800">Sam Josefi</p>
               <p className="text-sm text-gray-500">CEO</p>
 
               {/* Connecting Lines */}
@@ -845,7 +845,7 @@ function AboutSection() {
                 alt="Eric"
                 className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
               />
-              <p className="mt-4 text-lg font-semibold text-gray-800">ERIC</p>
+              <p className="mt-4 text-lg font-semibold text-gray-800">Eric Slavic</p>
               <p className="text-sm text-gray-500 text-center">SOC 2 Compliance Specialist</p>
             </div>
 
