@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'NordSecPro',
-  description: 'NordSecPro',
+  title: 'Cypentra',
+  description: 'Cypentra',
   icons: {
     icon: '/favicon.png',
   },

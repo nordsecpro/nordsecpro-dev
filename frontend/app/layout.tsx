@@ -3,8 +3,8 @@ import './globals.css'
 import { CartProvider } from '@/contexts/CartContext'
 
 export const metadata: Metadata = {
-  title: 'NordSecPro',
-  description: 'NordSecPro',
+  title: 'Cypentra',
+  description: 'Cypentra',
   generator: 'Next.js',
   icons: {
     icon: '/favicon.png',

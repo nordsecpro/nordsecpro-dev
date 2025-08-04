@@ -34,14 +34,14 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
-        
+
         <CardContent className="flex-1 overflow-y-auto">
           {isTerms ? (
             <div className="space-y-6 text-sm">
               <section>
                 <h3 className="font-semibold text-lg mb-3">1. Services</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  NordSecPro provides cybersecurity consulting services including but not limited to:
+                  Cypentra provides cybersecurity consulting services including but not limited to:
                   security assessments, SOC 2 preparation, compliance support, and virtual CISO services.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
@@ -56,14 +56,14 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
                   Payments are processed securely through Stripe.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
-                  No refunds are provided once services have begun, except in cases of material breach by NordSecPro.
+                  No refunds are provided once services have begun, except in cases of material breach by Cypentra.
                 </p>
               </section>
 
               <section>
                 <h3 className="font-semibold text-lg mb-3">3. Service Delivery</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  Services will be delivered within agreed timelines. Delays due to client unavailability or 
+                  Services will be delivered within agreed timelines. Delays due to client unavailability or
                   insufficient access to required systems may extend delivery timelines.
                 </p>
                 <p className="text-gray-700 leading-relaxed">
@@ -74,7 +74,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">4. Confidentiality</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  NordSecPro maintains strict confidentiality of all client information and data. 
+                  Cypentra maintains strict confidentiality of all client information and data.
                   We will not disclose any confidential information without written consent, except as required by law.
                 </p>
               </section>
@@ -82,7 +82,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">5. Limitation of Liability</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  NordSecPro's liability is limited to the amount paid for services. We provide consulting recommendations 
+                  Cypentra's liability is limited to the amount paid for services. We provide consulting recommendations
                   but cannot guarantee specific security outcomes or compliance certification results.
                 </p>
               </section>
@@ -90,15 +90,15 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">6. Intellectual Property</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Deliverables created specifically for the client become client property upon full payment. 
-                  NordSecPro retains rights to general methodologies, templates, and knowledge.
+                  Deliverables created specifically for the client become client property upon full payment.
+                  Cypentra retains rights to general methodologies, templates, and knowledge.
                 </p>
               </section>
 
               <section>
                 <h3 className="font-semibold text-lg mb-3">7. Termination</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  Either party may terminate ongoing services with 30 days written notice. 
+                  Either party may terminate ongoing services with 30 days written notice.
                   Client remains liable for services rendered up to termination date.
                 </p>
               </section>
@@ -106,7 +106,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">8. Governing Law</h3>
                 <p className="text-gray-700 leading-relaxed">
-                  These terms are governed by the laws of [Your State/Country]. 
+                  These terms are governed by the laws of [Your State/Country].
                   Any disputes will be resolved through binding arbitration.
                 </p>
               </section>
@@ -125,7 +125,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">Information We Collect</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  We collect information you provide directly to us, including name, email, phone number, 
+                  We collect information you provide directly to us, including name, email, phone number,
                   company information, and payment details necessary for service delivery.
                 </p>
               </section>
@@ -133,7 +133,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">How We Use Information</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  We use collected information to provide cybersecurity services, process payments, 
+                  We use collected information to provide cybersecurity services, process payments,
                   communicate about services, and improve our offerings.
                 </p>
               </section>
@@ -141,7 +141,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">Information Sharing</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  We do not sell or rent personal information. We may share information with service providers 
+                  We do not sell or rent personal information. We may share information with service providers
                   (like Stripe for payments) and as required by law.
                 </p>
               </section>
@@ -149,7 +149,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">Data Security</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  We implement appropriate security measures to protect personal information. 
+                  We implement appropriate security measures to protect personal information.
                   Payment information is processed securely through Stripe and not stored on our servers.
                 </p>
               </section>
@@ -157,8 +157,8 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
               <section>
                 <h3 className="font-semibold text-lg mb-3">Your Rights</h3>
                 <p className="text-gray-700 leading-relaxed mb-3">
-                  You may request access to, correction of, or deletion of your personal information. 
-                  Contact us at privacy@nordsecpro.com for data requests.
+                  You may request access to, correction of, or deletion of your personal information.
+                  Contact us at privacy@Cypentra.com for data requests.
                 </p>
               </section>
 
@@ -170,7 +170,7 @@ export default function TermsModal({ isOpen, onClose, type }: TermsModalProps) {
             </div>
           )}
         </CardContent>
-        
+
         <div className="p-6 border-t">
           <Button onClick={onClose} className="w-full bg-blue-600 hover:bg-blue-700">
             I Understand
