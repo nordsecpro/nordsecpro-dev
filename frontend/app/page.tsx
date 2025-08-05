@@ -39,7 +39,7 @@ function CypentraLogo({ className = "h-8 w-auto" }: { className?: string }) {
       <img
         src="/nord-logo.png"
         alt="Cypentra Logo"
-        className="h-28 lg:h-36 w-auto"
+        className="h-32 md:h-44 w-auto"
       />
     </div>
   )
@@ -787,11 +787,11 @@ function SecureAccessSection() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 mb-12 border border-blue-100">
             <div className="flex items-start space-x-4 mb-6">
-              <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                <img 
-                  src="/bitwarden-logo.png" 
+              <div className="h-20 px-1 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                <img
+                  src="/bitwarden-logo.png"
                   alt="Bitwarden"
-                  className="w-8 h-8 filter brightness-0 invert"
+                  className="w-auto h-12 filter brightness-0 invert"
                   onError={(e) => {
                     // Fallback to text if image doesn't load
                     e.target.style.display = 'none';
@@ -807,7 +807,7 @@ function SecureAccessSection() {
                   Partnership with Bitwarden
                 </h3>
                 <p className="text-blue-800">
-                  We partner with Bitwarden to ensure a safe and encrypted way for our clients to share sensitive 
+                  We partner with Bitwarden to ensure a safe and encrypted way for our clients to share sensitive
                   information like passwords, API keys, or admin access.
                 </p>
               </div>
@@ -858,10 +858,10 @@ function SecureAccessSection() {
               <h3 className="text-xl font-bold text-gray-900">You're Always in Control</h3>
             </div>
             <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-              If you're unsure how to proceed with secure credential sharing, we'll walk you through 
+              If you're unsure how to proceed with secure credential sharing, we'll walk you through
               the entire process during your free consultation call. Your security comes first.
             </p>
-            <Button 
+            <Button
               onClick={() => {
                 document.getElementById('contact')?.scrollIntoView({
                   behavior: 'smooth'
