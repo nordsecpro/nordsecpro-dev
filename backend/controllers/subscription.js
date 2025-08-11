@@ -214,7 +214,6 @@ exports.handleWebhook = async (req, res) => {
                 break;
             }
 
-            // ONGOING: treat both invoice events the same
             case 'invoice.payment_succeeded':
             case 'invoice.paid': {
                 const invoice = event.data.object;
@@ -222,17 +221,28 @@ exports.handleWebhook = async (req, res) => {
                 // FIRST CHARGE ON SUBSCRIPTION
                 if (invoice.billing_reason === 'subscription_create') {
                     const paymentIntentId = invoice.payment_intent;
-                    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-                    const md = paymentIntent.metadata || {};
-                    if (md.planType !== 'ongoing') break;
 
+                    // Fetch both; but prefer Subscription metadata
+                    const [paymentIntent, stripeSub] = await Promise.all([
+                        paymentIntentId ? stripe.paymentIntents.retrieve(paymentIntentId) : null,
+                        stripe.subscriptions.retrieve(invoice.subscription),
+                    ]);
+
+                    const md = {
+                        ...(stripeSub?.metadata || {}),
+                        ...(paymentIntent?.metadata || {}),
+                    };
+
+                    // If it’s a subscription_create invoice, it *is* ongoing for our product.
+                    // (Avoid breaking out when md.planType missing.)
                     const plans = safeParsePlans(md.plansData, md);
 
-                    // fetch Stripe subscription to get period end (next billing)
-                    const stripeSub = await stripe.subscriptions.retrieve(invoice.subscription);
+                    // idempotency: one doc per Stripe subscription
+                    let sub = await Subscription.findOne({
+                        stripeSubscriptionId: invoice.subscription,
+                        planType: 'ongoing',
+                    });
 
-                    // idempotency
-                    let sub = await Subscription.findOne({ stripeSubscriptionId: invoice.subscription, planType: 'ongoing' });
                     if (!sub) {
                         sub = await Subscription.create({
                             plans,
@@ -243,7 +253,7 @@ exports.handleWebhook = async (req, res) => {
                                 email: md.customerEmail || '',
                                 phone: md.customerPhone || '',
                             },
-                            stripePaymentIntentId: paymentIntent.id,
+                            stripePaymentIntentId: paymentIntent?.id || invoice.payment_intent || '',
                             stripeSubscriptionId: invoice.subscription,
                             nextBillingDate: stripeSub?.current_period_end ? new Date(stripeSub.current_period_end * 1000) : undefined,
                             autoRenew: true,
@@ -255,8 +265,13 @@ exports.handleWebhook = async (req, res) => {
 
                     try {
                         await sendOngoingPlanWelcomeEmail(sub);
-                        const pdf = await generateInvoicePDF(sub);      // { buffer, filename, mimeType }
+                        const pdf = await generateInvoicePDF(sub);   // { buffer, filename, mimeType }
                         await sendInvoiceEmail(sub, pdf);
+
+                        // optional: prevent duplicates on retries
+                        if (!sub.confirmationEmailSent) sub.confirmationEmailSent = true;
+                        if (!sub.invoiceEmailSent) sub.invoiceEmailSent = true;
+                        await sub.save();
                     } catch (e) {
                         console.error('Email/PDF error (ongoing first charge):', e);
                     }
@@ -266,11 +281,16 @@ exports.handleWebhook = async (req, res) => {
                 if (invoice.billing_reason === 'subscription_cycle') {
                     try {
                         const stripeSub = await stripe.subscriptions.retrieve(invoice.subscription);
-                        const subRecord = await Subscription.findOne({ stripeSubscriptionId: invoice.subscription, planType: 'ongoing', status: 'active' });
+                        const subRecord = await Subscription.findOne({
+                            stripeSubscriptionId: invoice.subscription,
+                            planType: 'ongoing',
+                            status: 'active',
+                        });
+
                         if (subRecord) {
-                            // update next billing date
                             if (stripeSub?.current_period_end) {
                                 subRecord.nextBillingDate = new Date(stripeSub.current_period_end * 1000);
+                                subRecord.lastRenewalDate = new Date();
                                 await subRecord.save();
                             }
                             await sendConfirmationEmail(subRecord, { isRenewal: true });
@@ -282,6 +302,7 @@ exports.handleWebhook = async (req, res) => {
 
                 break;
             }
+
 
             case 'payment_intent.payment_failed':
             case 'invoice.payment_failed': {
