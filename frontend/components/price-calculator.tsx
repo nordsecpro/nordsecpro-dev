@@ -1,13 +1,26 @@
 // components/PriceCalculator.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { useRouter } from 'next/navigation';
 import { X, ShoppingCart, Check } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+
+const TITLES = {
+  startup: 'Startup Security Launchpad',
+  soc2: 'SOC 2 Pre-Audit Blueprint',
+  audit: 'Audit Check: Final Review',
+  vciso: 'vCISO On-Demand',
+} as const;
+
+const ONE_TIME_TITLES = new Set([
+  TITLES.startup,
+  TITLES.soc2,
+  TITLES.audit,
+]);
 
 const pricingData = {
   basicSecurity: [
@@ -39,8 +52,8 @@ const pricingData = {
 
 function findPrice(arr: any[], employees: number) {
   return (
-    arr.find((range) => employees >= range.min && employees <= range.max)
-      ?.price || arr[arr.length - 1].price
+    arr.find((range) => employees >= range.min && employees <= range.max)?.price ||
+    arr[arr.length - 1].price
   );
 }
 
@@ -53,7 +66,7 @@ export default function PriceCalculator() {
     clearCart,
     isPlanSelected,
     totalPrice,
-    totalItems
+    totalItems,
   } = useCart();
   const router = useRouter();
 
@@ -62,12 +75,32 @@ export default function PriceCalculator() {
   const auditPrice = findPrice(pricingData.readyForAudit, employees[0]);
   const vcisoPrice = findPrice(pricingData.vCISOplus, employees[0]);
 
+  // ---- derive current cart "type" ----
+  const cartType: 'ongoing' | 'one-time' | 'empty' = useMemo(() => {
+    if (!selectedPlans || selectedPlans.length === 0) return 'empty';
+    const hasVCISO = selectedPlans.some((p) => p.planTitle === TITLES.vciso);
+    return hasVCISO ? 'ongoing' : 'one-time';
+  }, [selectedPlans]);
+
+  const isOngoingInCart = cartType === 'ongoing';
+  const isAnyOneTimeInCart = cartType === 'one-time';
+
+  // ---- mutual-exclusion add handler ----
   function handleAddToCart(title: string, employeeCount: number, price: number) {
+    // If adding ongoing, clear any one-time selections first
+    if (title === TITLES.vciso && isAnyOneTimeInCart) {
+      clearCart();
+    }
+    // If adding one-time, clear ongoing first
+    if (ONE_TIME_TITLES.has(title) && isOngoingInCart) {
+      clearCart();
+    }
+
     const planData = {
       planTitle: title,
       numberOfEmployees: employeeCount,
-      price: price,
-      timestamp: Date.now()
+      price,
+      timestamp: Date.now(),
     };
 
     addToCart(planData);
@@ -78,6 +111,16 @@ export default function PriceCalculator() {
     router.push('/checkout');
   }
 
+  // ---- UI helpers for disabling conflicting cards ----
+  const disableOneTimeCards = isOngoingInCart;
+  const disableOngoingCard = isAnyOneTimeInCart;
+
+  const disabledClass = 'opacity-50 pointer-events-none';
+  const oneTimeCardClass = (extra = '') =>
+    `border-2 transition-colors h-full flex flex-col ${disableOneTimeCards ? disabledClass : ''} ${extra}`;
+  const ongoingCardClass = (extra = '') =>
+    `border-2 transition-colors h-full flex flex-col ${disableOngoingCard ? disabledClass : ''} ${extra}`;
+
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg max-w-6xl mx-auto">
       <div className="text-center mb-8">
@@ -87,6 +130,10 @@ export default function PriceCalculator() {
         <p className="text-gray-600">
           Get personalized pricing for all our services based on your company size
         </p>
+        <p className="text-xs text-gray-500 mt-2">
+          Select <span className="font-semibold">either</span> the ongoing plan <span className="italic">(vCISO On-Demand)</span> <span className="font-semibold">or</span> any/all one-time plans.
+          Switching types will clear your current selection.
+        </p>
       </div>
 
       {/* Cart Summary */}
@@ -95,7 +142,8 @@ export default function PriceCalculator() {
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-semibold text-blue-900 flex items-center gap-2">
               <ShoppingCart className="w-5 h-5" />
-              Selected Plans ({totalItems})
+              Selected Plans ({totalItems}) •{' '}
+              <span className="text-blue-700 capitalize">{cartType.replace('-', ' ')}</span>
             </h4>
             <Button
               variant="outline"
@@ -165,22 +213,20 @@ export default function PriceCalculator() {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border-2 border-gray-200 hover:border-gray-300 transition-colors h-full flex flex-col">
+        {/* One-time #1 */}
+        <Card className={oneTimeCardClass('border-gray-200 hover:border-gray-300')}>
           <CardHeader className="text-center pb-4 flex-grow">
             <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              Startup Security Launchpad
+              {TITLES.startup}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
             <div className="text-3xl font-bold text-gray-900 mb-2">
-              ${basicPrice.toLocaleString()}
+              ${findPrice(pricingData.basicSecurity, employees[0]).toLocaleString()}
             </div>
             <p className="text-sm text-gray-600 mb-4">One-time retainer</p>
-            {isPlanSelected('Startup Security Launchpad') ? (
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                disabled
-              >
+            {isPlanSelected(TITLES.startup) ? (
+              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
                 <Check className="w-4 h-4 mr-2" />
                 Added to Cart
               </Button>
@@ -188,8 +234,13 @@ export default function PriceCalculator() {
               <Button
                 className="w-full bg-gray-600 hover:bg-gray-700"
                 onClick={() =>
-                  handleAddToCart('Startup Security Launchpad', employees[0], basicPrice)
+                  handleAddToCart(
+                    TITLES.startup,
+                    employees[0],
+                    findPrice(pricingData.basicSecurity, employees[0])
+                  )
                 }
+                disabled={disableOneTimeCards}
               >
                 Add to Cart
               </Button>
@@ -197,25 +248,23 @@ export default function PriceCalculator() {
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-blue-500 bg-blue-50 hover:border-blue-600 transition-colors h-full flex flex-col">
+        {/* One-time #2 */}
+        <Card className={oneTimeCardClass('border-blue-500 bg-blue-50 hover:border-blue-600')}>
           <CardHeader className="text-center pb-4 flex-grow">
             <div className="inline-block bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold mb-2">
               Most Popular
             </div>
             <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              SOC 2 Pre-Audit Blueprint
+              {TITLES.soc2}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
             <div className="text-3xl font-bold text-blue-900 mb-2">
-              ${soc2Price.toLocaleString()}
+              ${findPrice(pricingData.soc2Readiness, employees[0]).toLocaleString()}
             </div>
             <p className="text-sm text-blue-700 mb-4">One-time retainer</p>
-            {isPlanSelected('SOC 2 Pre-Audit Blueprint') ? (
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                disabled
-              >
+            {isPlanSelected(TITLES.soc2) ? (
+              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
                 <Check className="w-4 h-4 mr-2" />
                 Added to Cart
               </Button>
@@ -223,8 +272,13 @@ export default function PriceCalculator() {
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 onClick={() =>
-                  handleAddToCart('SOC 2 Pre-Audit Blueprint', employees[0], soc2Price)
+                  handleAddToCart(
+                    TITLES.soc2,
+                    employees[0],
+                    findPrice(pricingData.soc2Readiness, employees[0])
+                  )
                 }
+                disabled={disableOneTimeCards}
               >
                 Add to Cart
               </Button>
@@ -232,22 +286,20 @@ export default function PriceCalculator() {
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-green-500 bg-green-50 hover:border-green-600 transition-colors h-full flex flex-col">
+        {/* One-time #3 */}
+        <Card className={oneTimeCardClass('border-green-500 bg-green-50 hover:border-green-600')}>
           <CardHeader className="text-center pb-4 flex-grow">
             <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              Audit Check: Final Review
+              {TITLES.audit}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
             <div className="text-3xl font-bold text-green-900 mb-2">
-              ${auditPrice.toLocaleString()}
+              ${findPrice(pricingData.readyForAudit, employees[0]).toLocaleString()}
             </div>
             <p className="text-sm text-green-700 mb-4">One-time retainer</p>
-            {isPlanSelected('Audit Check: Final Review') ? (
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                disabled
-              >
+            {isPlanSelected(TITLES.audit) ? (
+              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
                 <Check className="w-4 h-4 mr-2" />
                 Added to Cart
               </Button>
@@ -255,8 +307,13 @@ export default function PriceCalculator() {
               <Button
                 className="w-full bg-green-600 hover:bg-green-700"
                 onClick={() =>
-                  handleAddToCart('Audit Check: Final Review', employees[0], auditPrice)
+                  handleAddToCart(
+                    TITLES.audit,
+                    employees[0],
+                    findPrice(pricingData.readyForAudit, employees[0])
+                  )
                 }
+                disabled={disableOneTimeCards}
               >
                 Add to Cart
               </Button>
@@ -264,22 +321,20 @@ export default function PriceCalculator() {
           </CardContent>
         </Card>
 
-        <Card className="border-2 border-purple-500 bg-purple-50 hover:border-purple-600 transition-colors h-full flex flex-col">
+        {/* Ongoing */}
+        <Card className={ongoingCardClass('border-purple-500 bg-purple-50 hover:border-purple-600')}>
           <CardHeader className="text-center pb-4 flex-grow">
             <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              vCISO On-Demand
+              {TITLES.vciso}
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center">
             <div className="text-3xl font-bold text-purple-900 mb-2">
-              ${vcisoPrice.toLocaleString()}
+              ${findPrice(pricingData.vCISOplus, employees[0]).toLocaleString()}
             </div>
             <p className="text-sm text-purple-700 mb-4">Ongoing engagement</p>
-            {isPlanSelected('vCISO On-Demand') ? (
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                disabled
-              >
+            {isPlanSelected(TITLES.vciso) ? (
+              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
                 <Check className="w-4 h-4 mr-2" />
                 Added to Cart
               </Button>
@@ -287,8 +342,13 @@ export default function PriceCalculator() {
               <Button
                 className="w-full bg-purple-600 hover:bg-purple-700"
                 onClick={() =>
-                  handleAddToCart('vCISO On-Demand', employees[0], vcisoPrice)
+                  handleAddToCart(
+                    TITLES.vciso,
+                    employees[0],
+                    findPrice(pricingData.vCISOplus, employees[0])
+                  )
                 }
+                disabled={disableOngoingCard}
               >
                 Add to Cart
               </Button>
