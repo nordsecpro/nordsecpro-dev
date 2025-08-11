@@ -218,90 +218,117 @@ exports.handleWebhook = async (req, res) => {
             case 'invoice.paid': {
                 const invoice = event.data.object;
 
-                // FIRST CHARGE ON SUBSCRIPTION
-                if (invoice.billing_reason === 'subscription_create') {
-                    const paymentIntentId = invoice.payment_intent;
+                // First charge (subscription_create) and renewals (subscription_cycle)
+                const isFirstCharge = invoice.billing_reason === 'subscription_create';
+                const isRenewal = invoice.billing_reason === 'subscription_cycle';
 
-                    // Fetch both; but prefer Subscription metadata
-                    const [paymentIntent, stripeSub] = await Promise.all([
-                        paymentIntentId ? stripe.paymentIntents.retrieve(paymentIntentId) : null,
-                        stripe.subscriptions.retrieve(invoice.subscription),
-                    ]);
+                // Fetch subscription (+ customer) and paymentIntent
+                const [stripeSub, paymentIntent] = await Promise.all([
+                    stripe.subscriptions.retrieve(invoice.subscription, { expand: ['customer'] }),
+                    invoice.payment_intent ? stripe.paymentIntents.retrieve(invoice.payment_intent) : null,
+                ]);
 
-                    const md = {
-                        ...(stripeSub?.metadata || {}),
-                        ...(paymentIntent?.metadata || {}),
-                    };
+                // Merge metadata (prefer Subscription)
+                const md = { ...(stripeSub?.metadata || {}), ...(paymentIntent?.metadata || {}) };
 
-                    // If it’s a subscription_create invoice, it *is* ongoing for our product.
-                    // (Avoid breaking out when md.planType missing.)
-                    const plans = safeParsePlans(md.plansData, md);
+                // Robust customer email fallback chain
+                const customerEmail =
+                    md.customerEmail ||
+                    invoice.customer_email ||
+                    (stripeSub?.customer && typeof stripeSub.customer === 'object' ? stripeSub.customer.email : null) ||
+                    paymentIntent?.receipt_email ||
+                    paymentIntent?.charges?.data?.[0]?.billing_details?.email ||
+                    null;
 
-                    // idempotency: one doc per Stripe subscription
-                    let sub = await Subscription.findOne({
+                // Build plans
+                const plans = safeParsePlans(md.plansData, md);
+
+                // Idempotency: one doc per Stripe subscription
+                let sub = await Subscription.findOne({
+                    stripeSubscriptionId: invoice.subscription,
+                    planType: 'ongoing',
+                });
+
+                if (!sub && isFirstCharge) {
+                    sub = await Subscription.create({
+                        plans,
+                        totalPrice: Number(md.totalPrice || 0),
+                        customerDetails: {
+                            firstName: md.customerFirstName || '',
+                            lastName: md.customerLastName || '',
+                            email: customerEmail || '',          // <- ensure set
+                            phone: md.customerPhone || '',
+                        },
+                        stripePaymentIntentId: paymentIntent?.id || invoice.payment_intent || '',
                         stripeSubscriptionId: invoice.subscription,
+                        nextBillingDate: stripeSub?.current_period_end ? new Date(stripeSub.current_period_end * 1000) : undefined,
+                        autoRenew: true,
+                        paymentStatus: 'succeeded',
+                        status: 'active',
                         planType: 'ongoing',
                     });
-
-                    if (!sub) {
-                        sub = await Subscription.create({
-                            plans,
-                            totalPrice: Number(md.totalPrice || 0),
-                            customerDetails: {
-                                firstName: md.customerFirstName || '',
-                                lastName: md.customerLastName || '',
-                                email: md.customerEmail || '',
-                                phone: md.customerPhone || '',
-                            },
-                            stripePaymentIntentId: paymentIntent?.id || invoice.payment_intent || '',
-                            stripeSubscriptionId: invoice.subscription,
-                            nextBillingDate: stripeSub?.current_period_end ? new Date(stripeSub.current_period_end * 1000) : undefined,
-                            autoRenew: true,
-                            paymentStatus: 'succeeded',
-                            status: 'active',
-                            planType: 'ongoing',
-                        });
-                    }
-
-                    try {
-                        await sendOngoingPlanWelcomeEmail(sub);
-                        const pdf = await generateInvoicePDF(sub);   // { buffer, filename, mimeType }
-                        await sendInvoiceEmail(sub, pdf);
-
-                        // optional: prevent duplicates on retries
-                        if (!sub.confirmationEmailSent) sub.confirmationEmailSent = true;
-                        if (!sub.invoiceEmailSent) sub.invoiceEmailSent = true;
-                        await sub.save();
-                    } catch (e) {
-                        console.error('Email/PDF error (ongoing first charge):', e);
-                    }
+                } else if (sub && !sub.customerDetails?.email && customerEmail) {
+                    // backfill missing email if needed
+                    sub.customerDetails.email = customerEmail;
+                    await sub.save();
                 }
 
-                // RENEWAL CHARGE
-                if (invoice.billing_reason === 'subscription_cycle') {
-                    try {
-                        const stripeSub = await stripe.subscriptions.retrieve(invoice.subscription);
-                        const subRecord = await Subscription.findOne({
-                            stripeSubscriptionId: invoice.subscription,
-                            planType: 'ongoing',
-                            status: 'active',
-                        });
+                // If somehow still no DB record (rare), create a sub-like for emails
+                const subForEmail = sub || {
+                    plans,
+                    totalPrice: Number(md.totalPrice || 0),
+                    customerDetails: {
+                        firstName: md.customerFirstName || '',
+                        lastName: md.customerLastName || '',
+                        email: customerEmail || '',
+                        phone: md.customerPhone || '',
+                    },
+                    paymentStatus: 'succeeded',
+                    planType: 'ongoing',
+                    _id: invoice.subscription, // just for filename
+                    createdAt: new Date(invoice.created || Date.now()),
+                    nextBillingDate: stripeSub?.current_period_end ? new Date(stripeSub.current_period_end * 1000) : undefined,
+                };
 
-                        if (subRecord) {
-                            if (stripeSub?.current_period_end) {
-                                subRecord.nextBillingDate = new Date(stripeSub.current_period_end * 1000);
-                                subRecord.lastRenewalDate = new Date();
-                                await subRecord.save();
-                            }
-                            await sendConfirmationEmail(subRecord, { isRenewal: true });
+                // --- SEND EMAILS ---
+                try {
+                    if (isFirstCharge) {
+                        await sendOngoingPlanWelcomeEmail(subForEmail);
+                        const pdf = await generateInvoicePDF(subForEmail);
+                        await sendInvoiceEmail(subForEmail, pdf);
+
+                        // mark flags if we have a DB record (avoid duplicates on retries)
+                        if (sub) {
+                            if (!sub.confirmationEmailSent) sub.confirmationEmailSent = true;
+                            if (!sub.invoiceEmailSent) sub.invoiceEmailSent = true;
+                            await sub.save();
                         }
-                    } catch (e) {
-                        console.error('Renewal email error:', e);
                     }
+
+                    if (isRenewal) {
+                        if (sub) {
+                            // update next billing + renewal date
+                            if (stripeSub?.current_period_end) {
+                                sub.nextBillingDate = new Date(stripeSub.current_period_end * 1000);
+                                sub.lastRenewalDate = new Date();
+                                await sub.save();
+                            }
+                            await sendConfirmationEmail(sub, { isRenewal: true });
+                            // (optional) also attach the renewal invoice pdf:
+                            const pdf = await generateInvoicePDF(sub);
+                            await sendInvoiceEmail(sub, pdf);
+                        } else {
+                            // fallback if DB doc missing
+                            await sendConfirmationEmail(subForEmail, { isRenewal: true });
+                        }
+                    }
+                } catch (e) {
+                    console.error('Ongoing invoice email/PDF error:', e);
                 }
 
                 break;
             }
+
 
 
             case 'payment_intent.payment_failed':
