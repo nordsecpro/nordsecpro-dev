@@ -422,103 +422,116 @@ function PaymentForm() {
   const oneTimePlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'one-time');
   const ongoingPlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'ongoing');
 
+  // --- replace handlePayment in PaymentForm with this version ---
   const handlePayment = async (customerData: any) => {
     if (!stripe || !elements) {
       setError('Stripe has not loaded yet.');
       return;
     }
-  
     if (selectedPlans.length === 0) {
       setError('No plans selected for checkout.');
       return;
     }
-
     if (!customerData.firstName || !customerData.lastName || !customerData.email) {
       setError('First name, last name, and email are required.');
       return;
     }
-  
+
     setIsLoading(true);
     setError(null);
-    
+    setPaymentProgress('');
+
     try {
-      console.log('customerData', customerData);
-      console.log('oneTimePlans', oneTimePlans);
-      console.log('ongoingPlans', ongoingPlans);
+      // 0) Get the mounted CardElement safely
+      const card = elements.getElement(CardElement);
+      if (!card) {
+        setError('Please enter card details.');
+        setIsLoading(false);
+        return;
+      }
 
-      let oneTimeResult = null;
-      let ongoingResult = null;
-
-      // Step 1: Process one-time plans if any exist
-      if (oneTimePlans.length > 0) {
-        setPaymentProgress('Processing one-time plans...');
-        
-        const oneTimeTotal = oneTimePlans.reduce((sum, plan) => sum + plan.price, 0);
-        
-        const oneTimeResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            plans: oneTimePlans,
-            totalPrice: oneTimeTotal,
-            customerData
-          }),
-        });
-
-        if (!oneTimeResponse.ok) {
-          const errorData = await oneTimeResponse.json();
-          throw new Error(errorData.message || 'Failed to create one-time payment intent');
-        }
-
-        oneTimeResult = await oneTimeResponse.json();
-        
-        // Confirm one-time payment
-        if (oneTimeResult.data.oneTime?.clientSecret) {
-          const { error: oneTimeError } = await stripe.confirmCardPayment(oneTimeResult.data.oneTime.clientSecret, {
+      // Helpers
+      const confirmPI = async (clientSecret: string, label: string) => {
+        setPaymentProgress(`Confirming ${label}...`);
+        const { error, paymentIntent } = await stripe.confirmCardPayment(
+          clientSecret,
+          {
             payment_method: {
-              card: elements.getElement(CardElement)!,
+              card,
               billing_details: {
                 name: `${customerData.firstName} ${customerData.lastName}`,
                 email: customerData.email,
                 phone: customerData.phone,
               },
-            }
-          });
+            },
+          },
+          { redirect: 'if_required' } // handle SCA inline when possible
+        );
 
-          if (oneTimeError) {
-            throw new Error(oneTimeError.message || 'One-time payment failed');
-          }
+        if (error) {
+          console.error(`${label} confirm error:`, error);
+          throw new Error(error.message || `${label} payment failed`);
         }
+        if (!paymentIntent) {
+          throw new Error(`${label} payment could not be confirmed.`);
+        }
+        console.log(`${label} PI status:`, paymentIntent.status, paymentIntent.id);
+        if (paymentIntent.status !== 'succeeded') {
+          // If SCA triggered a redirect, you might land back here with succeeded.
+          // Any other status at this point is unexpected.
+          throw new Error(`${label} not completed (status: ${paymentIntent.status}).`);
+        }
+        return paymentIntent.id;
+      };
+
+      // Derive plan split (your helper is fine—keeping it here for clarity)
+      const getPlanType = (t: string) => (t === 'vCISO On-Demand' ? 'ongoing' : 'one-time');
+      const oneTimePlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'one-time');
+      const ongoingPlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'ongoing');
+
+      let oneTimeResult: any = null;
+      let ongoingResult: any = null;
+
+      // 1) One-time flow
+      if (oneTimePlans.length > 0) {
+        setPaymentProgress('Processing one-time plans...');
+        const oneTimeTotal = oneTimePlans.reduce((s, p) => s + p.price, 0);
+
+        const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plans: oneTimePlans, totalPrice: oneTimeTotal, customerData }),
+        });
+        const json = await resp.json();
+        if (!resp.ok || !json?.data?.oneTime?.clientSecret) {
+          console.error('One-time init response:', json);
+          throw new Error(json?.message || 'Failed to create one-time payment intent');
+        }
+        oneTimeResult = json;
+
+        await confirmPI(json.data.oneTime.clientSecret, 'one-time');
       }
 
-      // Step 2: Process ongoing plans if any exist
+      // 2) Ongoing flow (subscription – confirm invoice PI)
       if (ongoingPlans.length > 0) {
         setPaymentProgress('Processing ongoing subscription...');
-        
-        const ongoingTotal = ongoingPlans.reduce((sum, plan) => sum + plan.price, 0);
-        
-        const ongoingResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
+        const ongoingTotal = ongoingPlans.reduce((s, p) => s + p.price, 0);
+
+        const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            plans: ongoingPlans,
-            totalPrice: ongoingTotal,
-            customerData
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plans: ongoingPlans, totalPrice: ongoingTotal, customerData }),
         });
 
-        if (!ongoingResponse.ok) {
-          const errorData = await ongoingResponse.json();
-          
-          // Handle the "already subscribed" case gracefully
-          if (ongoingResponse.status === 400 && errorData.message?.includes('already have an active ongoing subscription')) {
-            setError(`You already have an active ongoing subscription. ${oneTimePlans.length > 0 ? 'Your one-time plans were processed successfully.' : 'Please check your email for details about your existing subscription.'}`);
-            
-            // If one-time plans were successful, show partial success
+        const json = await resp.json();
+
+        // Graceful "already subscribed" handling
+        if (!resp.ok) {
+          if (resp.status === 400 && json?.message?.includes('already have an active ongoing subscription')) {
+            setError(
+              `You already have an active ongoing subscription.${oneTimePlans.length > 0 ? ' Your one-time plans were processed successfully.' : ''
+              }`
+            );
             if (oneTimePlans.length > 0) {
               setSuccess(true);
               clearCart();
@@ -526,35 +539,23 @@ function PaymentForm() {
             setIsLoading(false);
             return;
           }
-          
-          throw new Error(errorData.message || 'Failed to create ongoing payment intent');
+          console.error('Ongoing init response:', json);
+          throw new Error(json?.message || 'Failed to create ongoing payment intent');
         }
 
-        ongoingResult = await ongoingResponse.json();
-        
-        // Confirm ongoing payment
-        if (ongoingResult.data.ongoing?.clientSecret) {
-          const { error: ongoingError } = await stripe.confirmCardPayment(ongoingResult.data.ongoing.clientSecret, {
-            payment_method: {
-              card: elements.getElement(CardElement)!,
-              billing_details: {
-                name: `${customerData.firstName} ${customerData.lastName}`,
-                email: customerData.email,
-                phone: customerData.phone,
-              },
-            }
-          });
-
-          if (ongoingError) {
-            throw new Error(ongoingError.message || 'Subscription payment failed');
-          }
+        if (!json?.data?.ongoing?.clientSecret) {
+          console.error('Ongoing init response missing clientSecret:', json);
+          throw new Error('Subscription client secret missing.');
         }
+
+        ongoingResult = json;
+
+        await confirmPI(json.data.ongoing.clientSecret, 'subscription');
       }
 
       setPaymentProgress('Payment completed successfully!');
       setSuccess(true);
       clearCart();
-      
     } catch (err: any) {
       console.error('Payment error:', err);
       setError(err.message || 'Something went wrong');
@@ -563,6 +564,7 @@ function PaymentForm() {
       setPaymentProgress('');
     }
   };
+
 
   if (success) {
     return (
@@ -579,7 +581,7 @@ function PaymentForm() {
             {oneTimePlans.length > 0 && ongoingPlans.length > 0 && (
               <div className="bg-blue-50 p-4 rounded-lg mb-6 text-sm">
                 <p className="text-blue-800">
-                  ✅ One-time plans: Processed immediately<br/>
+                  ✅ One-time plans: Processed immediately<br />
                   ✅ Ongoing subscription: Activated with monthly billing
                 </p>
               </div>
