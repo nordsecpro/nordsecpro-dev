@@ -422,6 +422,7 @@ function PaymentForm() {
   const oneTimePlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'one-time');
   const ongoingPlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'ongoing');
 
+
   // --- replace handlePayment in PaymentForm with this version ---
   const handlePayment = async (customerData: any) => {
     if (!stripe || !elements) {
@@ -442,7 +443,7 @@ function PaymentForm() {
     setPaymentProgress('');
 
     try {
-      // 0) Get the mounted CardElement safely
+      // 0) Card element must be mounted
       const card = elements.getElement(CardElement);
       if (!card) {
         setError('Please enter card details.');
@@ -450,7 +451,11 @@ function PaymentForm() {
         return;
       }
 
-      // Helpers
+      // helpers
+      const getPlanType = (t: string) => (t === 'vCISO On-Demand' ? 'ongoing' : 'one-time');
+      const oneTimePlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'one-time');
+      const ongoingPlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'ongoing');
+
       const confirmPI = async (clientSecret: string, label: string) => {
         setPaymentProgress(`Confirming ${label}...`);
         const { error, paymentIntent } = await stripe.confirmCardPayment(
@@ -465,7 +470,7 @@ function PaymentForm() {
               },
             },
           },
-          { redirect: 'if_required' } // handle SCA inline when possible
+          { redirect: 'if_required' }
         );
 
         if (error) {
@@ -477,20 +482,26 @@ function PaymentForm() {
         }
         console.log(`${label} PI status:`, paymentIntent.status, paymentIntent.id);
         if (paymentIntent.status !== 'succeeded') {
-          // If SCA triggered a redirect, you might land back here with succeeded.
-          // Any other status at this point is unexpected.
           throw new Error(`${label} not completed (status: ${paymentIntent.status}).`);
         }
         return paymentIntent.id;
       };
 
-      // Derive plan split (your helper is fine—keeping it here for clarity)
-      const getPlanType = (t: string) => (t === 'vCISO On-Demand' ? 'ongoing' : 'one-time');
-      const oneTimePlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'one-time');
-      const ongoingPlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'ongoing');
-
-      let oneTimeResult: any = null;
-      let ongoingResult: any = null;
+      // extract clientSecret from either legacy (nested) or lean (flat) shapes
+      const extractClientSecret = (json: any, expectedType: 'one-time' | 'ongoing') => {
+        // lean shape
+        if (json?.data?.type === expectedType && json?.data?.clientSecret) {
+          return json.data.clientSecret;
+        }
+        // legacy nested shape
+        if (expectedType === 'one-time' && json?.data?.oneTime?.clientSecret) {
+          return json.data.oneTime.clientSecret;
+        }
+        if (expectedType === 'ongoing' && json?.data?.ongoing?.clientSecret) {
+          return json.data.ongoing.clientSecret;
+        }
+        return null;
+      };
 
       // 1) One-time flow
       if (oneTimePlans.length > 0) {
@@ -503,13 +514,19 @@ function PaymentForm() {
           body: JSON.stringify({ plans: oneTimePlans, totalPrice: oneTimeTotal, customerData }),
         });
         const json = await resp.json();
-        if (!resp.ok || !json?.data?.oneTime?.clientSecret) {
+
+        if (!resp.ok) {
           console.error('One-time init response:', json);
           throw new Error(json?.message || 'Failed to create one-time payment intent');
         }
-        oneTimeResult = json;
 
-        await confirmPI(json.data.oneTime.clientSecret, 'one-time');
+        const oneTimeClientSecret = extractClientSecret(json, 'one-time');
+        if (!oneTimeClientSecret) {
+          console.error('One-time init response missing clientSecret:', json);
+          throw new Error('One-time client secret missing.');
+        }
+
+        await confirmPI(oneTimeClientSecret, 'one-time');
       }
 
       // 2) Ongoing flow (subscription – confirm invoice PI)
@@ -522,10 +539,9 @@ function PaymentForm() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ plans: ongoingPlans, totalPrice: ongoingTotal, customerData }),
         });
-
         const json = await resp.json();
 
-        // Graceful "already subscribed" handling
+        // graceful "already subscribed"
         if (!resp.ok) {
           if (resp.status === 400 && json?.message?.includes('already have an active ongoing subscription')) {
             setError(
@@ -543,14 +559,13 @@ function PaymentForm() {
           throw new Error(json?.message || 'Failed to create ongoing payment intent');
         }
 
-        if (!json?.data?.ongoing?.clientSecret) {
+        const ongoingClientSecret = extractClientSecret(json, 'ongoing');
+        if (!ongoingClientSecret) {
           console.error('Ongoing init response missing clientSecret:', json);
           throw new Error('Subscription client secret missing.');
         }
 
-        ongoingResult = json;
-
-        await confirmPI(json.data.ongoing.clientSecret, 'subscription');
+        await confirmPI(ongoingClientSecret, 'subscription');
       }
 
       setPaymentProgress('Payment completed successfully!');
@@ -564,6 +579,7 @@ function PaymentForm() {
       setPaymentProgress('');
     }
   };
+
 
 
   if (success) {
