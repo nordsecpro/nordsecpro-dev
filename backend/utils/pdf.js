@@ -1,27 +1,46 @@
 // utils/pdf.js
 const PDFDocument = require('pdfkit');
-const fs = require('fs');
-const path = require('path');
 const logger = require('./logger');
 
-const formatMoney = (n) =>
-   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n || 0));
+const money = (n) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(n || 0));
 
 /**
- * Generate a professional invoice PDF for multiple plans subscription
- * @param {Object} subscription - Subscription object from database with plans array
- * @returns {Promise<string>} - Path to generated PDF file
+ * Generate a professional invoice PDF (multi-plan supported).
+ * Returns a Buffer (no filesystem writes; safe for serverless).
+ *
+ * @param {Object} subscription - DB subscription object (or sub-like) with:
+ *   - _id, createdAt, paymentStatus, planType
+ *   - customerDetails: { firstName, lastName, email, phone }
+ *   - plans: [{ planTitle, numberOfEmployees, price }]  // one-time or ongoing
+ *   - totalPrice
+ * @returns {Promise<{ buffer: Buffer, filename: string, mimeType: string }>}
  */
 const generateInvoicePDF = async (subscription = {}) => {
-   try {
+  return new Promise((resolve, reject) => {
+    try {
       const doc = new PDFDocument({ margin: 50 });
+
+      // collect PDF data into memory
+      const chunks = [];
+      doc.on('data', (c) => chunks.push(c));
+      doc.on('error', (err) => {
+        logger.error('PDF document error:', err);
+        reject(err);
+      });
+      doc.on('end', () => {
+        const buffer = Buffer.concat(chunks);
+        const shortId = subscription._id ? String(subscription._id).slice(-8).toUpperCase() : 'UNKNOWN';
+        const filename = `invoice_${shortId}_${Date.now()}.pdf`;
+        logger.info('Invoice PDF buffer generated', {
+          subscriptionId: subscription._id || 'unknown',
+          filename,
+        });
+        resolve({ buffer, filename, mimeType: 'application/pdf' });
+      });
+
+      // ---------- data prep ----------
       const shortId = subscription._id ? String(subscription._id).slice(-8).toUpperCase() : 'UNKNOWN';
-      const fileName = `invoice_${shortId}_${Date.now()}.pdf`;
-      const invoicesDir = path.join(__dirname, '../invoices');
-      const filePath = path.join(invoicesDir, fileName);
-
-      if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir, { recursive: true });
-
       const invoiceDate = subscription.createdAt ? new Date(subscription.createdAt) : new Date();
       const dueDate = new Date(invoiceDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
@@ -31,59 +50,54 @@ const generateInvoicePDF = async (subscription = {}) => {
       const custPhone = cust.phone || '';
 
       const plans = Array.isArray(subscription.plans) && subscription.plans.length > 0
-         ? subscription.plans
-         : [{
+        ? subscription.plans
+        : [{
             planTitle: subscription.planTitle || 'Security Service',
             numberOfEmployees: Number(subscription.numberOfEmployees) || 0,
             price: Number(subscription.price || subscription.totalPrice || 0),
-         }];
+          }];
 
       const paymentStatus = String(subscription.paymentStatus || 'pending').toUpperCase();
-
-      // Tally
       const subtotal = plans.reduce((s, p) => s + (Number(p.price) || 0), 0);
-      const finalTotalPrice = Number(subscription.totalPrice || subtotal || 0);
+      const finalTotalPrice = Number(subscription.totalPrice ?? subtotal ?? 0);
       const totalEmployees = plans.reduce((s, p) => s + (Number(p.numberOfEmployees) || 0), 0);
       const planCount = plans.length;
 
-      // Start writing
-      const stream = fs.createWriteStream(filePath);
-      doc.pipe(stream);
-
-      // Colors
+      // ---------- styles / helpers ----------
       const primaryColor = '#2563eb';
       const secondaryColor = '#64748b';
       const textColor = '#1e293b';
-
-      // Header
-      try {
-         doc.rect(0, 0, doc.page.width, 120).fill(primaryColor);
-
-         doc.fillColor('white')
-            .fontSize(28).font('Helvetica-Bold')
-            .text(process.env.COMPANY_NAME || 'Cypentra', 50, 30);
-
-         doc.fontSize(12).font('Helvetica')
-            .text(process.env.COMPANY_TAGLINE || 'Professional Security & Compliance Services', 50, 65);
-
-         doc.fontSize(32).font('Helvetica-Bold').text('INVOICE', 400, 40);
-      } catch (e) {
-         logger.warn('PDF header fallback:', e.message);
-         doc.fillColor(textColor).fontSize(24).font('Helvetica-Bold').text('INVOICE', 50, 50);
-      }
-
-      let currentY = 150;
+      let currentY = 50;
       const addLine = (y) => doc.moveTo(50, y).lineTo(550, y).stroke('#e0e0e0');
 
-      // Invoice info
+      // ---------- header ----------
+      try {
+        doc.rect(0, 0, doc.page.width, 120).fill(primaryColor);
+
+        doc.fillColor('white')
+          .fontSize(28).font('Helvetica-Bold')
+          .text(process.env.COMPANY_NAME || 'Cypentra', 50, 30);
+
+        doc.fontSize(12).font('Helvetica')
+          .text(process.env.COMPANY_TAGLINE || 'Professional Security & Compliance Services', 50, 65);
+
+        doc.fontSize(32).font('Helvetica-Bold').text('INVOICE', 400, 40);
+      } catch (e) {
+        logger.warn('PDF header fallback:', e.message);
+        doc.fillColor(textColor).fontSize(24).font('Helvetica-Bold').text('INVOICE', 50, 50);
+      }
+
+      currentY = 150;
+
+      // ---------- invoice info ----------
       doc.fillColor(textColor).fontSize(14).font('Helvetica-Bold').text('Invoice Information', 50, currentY);
       currentY += 25;
 
       doc.fontSize(11).font('Helvetica').fillColor(secondaryColor);
-      doc.text(`Invoice Number:`, 50, currentY);
-      doc.text(`Invoice Date:`, 50, currentY + 15);
-      doc.text(`Due Date:`, 50, currentY + 30);
-      doc.text(`Payment Status:`, 50, currentY + 45);
+      doc.text('Invoice Number:', 50, currentY);
+      doc.text('Invoice Date:', 50, currentY + 15);
+      doc.text('Due Date:', 50, currentY + 30);
+      doc.text('Payment Status:', 50, currentY + 45);
 
       doc.fillColor(textColor).font('Helvetica-Bold');
       doc.text(`INV-${shortId}`, 200, currentY);
@@ -96,25 +110,25 @@ const generateInvoicePDF = async (subscription = {}) => {
 
       currentY += 80;
 
-      // From (company)
+      // ---------- from (company) ----------
       doc.fillColor(textColor).fontSize(14).font('Helvetica-Bold').text('From:', 50, currentY);
       currentY += 20;
+
       doc.fontSize(12).font('Helvetica-Bold').text(process.env.COMPANY_NAME || 'Cypentra', 50, currentY);
       doc.font('Helvetica').fillColor(secondaryColor);
-
       if (process.env.COMPANY_ADDRESS) { currentY += 15; doc.text(process.env.COMPANY_ADDRESS, 50, currentY); }
       if (process.env.COMPANY_CITY) {
-         currentY += 15;
-         const cityLine = `${process.env.COMPANY_CITY}${process.env.COMPANY_STATE ? ', ' + process.env.COMPANY_STATE : ''} ${process.env.COMPANY_ZIP || ''}`.trim();
-         doc.text(cityLine, 50, currentY);
+        currentY += 15;
+        const cityLine = `${process.env.COMPANY_CITY}${process.env.COMPANY_STATE ? ', ' + process.env.COMPANY_STATE : ''} ${process.env.COMPANY_ZIP || ''}`.trim();
+        doc.text(cityLine, 50, currentY);
       }
       if (process.env.COMPANY_EMAIL) { currentY += 15; doc.fillColor(primaryColor).text(`Email: ${process.env.COMPANY_EMAIL}`, 50, currentY); }
       if (process.env.COMPANY_PHONE) { currentY += 15; doc.fillColor(secondaryColor).text(`Phone: ${process.env.COMPANY_PHONE}`, 50, currentY); }
 
-      // Bill To
+      // ---------- bill to (right) ----------
       doc.fillColor(textColor).fontSize(14).font('Helvetica-Bold').text('Bill To:', 320, currentY - 80);
-      let customerY = currentY - 60;
 
+      let customerY = currentY - 60;
       doc.fontSize(12).font('Helvetica-Bold').text(custName, 320, customerY);
       doc.font('Helvetica').fillColor(secondaryColor);
       if (custEmail) { customerY += 15; doc.fillColor(primaryColor).text(custEmail, 320, customerY); }
@@ -124,95 +138,69 @@ const generateInvoicePDF = async (subscription = {}) => {
       addLine(currentY);
       currentY += 30;
 
-      // Services table
+      // ---------- services ----------
       doc.fillColor(textColor).fontSize(16).font('Helvetica-Bold').text('Security Services Provided', 50, currentY);
       currentY += 30;
 
+      // header
       doc.rect(50, currentY, 500, 30).fill('#f8fafc').stroke('#e2e8f0');
       doc.fillColor(textColor).fontSize(11).font('Helvetica-Bold')
-         .text('Service Description', 60, currentY + 10)
-         .text('Employees', 320, currentY + 10)
-         .text('Amount', 450, currentY + 10);
+        .text('Service Description', 60, currentY + 10)
+        .text('Employees', 320, currentY + 10)
+        .text('Amount', 450, currentY + 10);
       currentY += 30;
 
+      // rows
       plans.forEach((plan, index) => {
-         const rowHeight = 35;
-         const price = Number(plan.price) || 0;
-         const emp = Number(plan.numberOfEmployees) || 0;
-         if (index % 2 === 0) doc.rect(50, currentY, 500, rowHeight).fill('#fafafa').stroke('#e2e8f0');
-         else doc.rect(50, currentY, 500, rowHeight).stroke('#e2e8f0');
+        const rowHeight = 35;
+        if (index % 2 === 0) doc.rect(50, currentY, 500, rowHeight).fill('#fafafa').stroke('#e2e8f0');
+        else doc.rect(50, currentY, 500, rowHeight).stroke('#e2e8f0');
 
-         doc.fillColor(textColor).fontSize(10).font('Helvetica')
-            .text(plan.planTitle || 'Security Service', 60, currentY + 10, { width: 250 });
+        const price = Number(plan.price) || 0;
+        const emp = Number(plan.numberOfEmployees) || 0;
 
-         doc.text(String(emp), 320, currentY + 10);
-         doc.font('Helvetica-Bold').text(formatMoney(price), 450, currentY + 10);
+        doc.fillColor(textColor).fontSize(10).font('Helvetica')
+          .text(plan.planTitle || 'Security Service', 60, currentY + 10, { width: 250 });
 
-         currentY += rowHeight;
+        doc.text(String(emp), 320, currentY + 10);
+        doc.font('Helvetica-Bold').text(money(price), 450, currentY + 10);
+
+        currentY += rowHeight;
       });
 
       currentY += 20;
 
-      // Summary
+      // ---------- summary ----------
       const summaryY = currentY;
       doc.fillColor(textColor).fontSize(12).font('Helvetica-Bold').text('Order Summary', 50, summaryY);
       doc.fontSize(10).font('Helvetica').fillColor(secondaryColor);
       doc.text(`Total Plans: ${planCount}`, 50, summaryY + 25);
       doc.text(`Total Employees Covered: ${totalEmployees.toLocaleString()}`, 50, summaryY + 40);
       if (totalEmployees > 0) {
-         const avg = Math.round(finalTotalPrice / totalEmployees);
-         doc.text(`Average Price per Employee: ${formatMoney(avg)}`, 50, summaryY + 55);
+        const avg = Math.round(finalTotalPrice / totalEmployees);
+        doc.text(`Average Price per Employee: ${money(avg)}`, 50, summaryY + 55);
       }
 
-      // Totals box (right)
+      // totals box
       doc.rect(350, currentY, 200, 80).fill('#f8fafc').stroke('#e2e8f0');
       doc.fillColor(secondaryColor).fontSize(11).font('Helvetica').text('Subtotal:', 360, currentY + 15);
-      doc.fillColor(textColor).font('Helvetica-Bold').text(formatMoney(subtotal), 450, currentY + 15);
-
+      doc.fillColor(textColor).font('Helvetica-Bold').text(money(subtotal), 450, currentY + 15);
       doc.fillColor(secondaryColor).font('Helvetica').text('Tax (0%):', 360, currentY + 35);
-      doc.fillColor(textColor).font('Helvetica-Bold').text(formatMoney(0), 450, currentY + 35);
+      doc.fillColor(textColor).font('Helvetica-Bold').text(money(0), 450, currentY + 35);
 
       addLine(currentY + 50);
       doc.fillColor(textColor).fontSize(14).font('Helvetica-Bold').text('Total Amount:', 360, currentY + 60);
-      doc.fillColor(primaryColor).text(formatMoney(finalTotalPrice), 450, currentY + 60);
+      doc.fillColor(primaryColor).text(money(finalTotalPrice), 450, currentY + 60);
 
       currentY += 120;
 
-      // Finish
+      // end
       doc.end();
-
-      stream.on('finish', () => {
-         logger.info(`Invoice PDF generated: ${fileName}`, {
-            subscriptionId: subscription._id || 'unknown',
-            planCount,
-            totalAmount: finalTotalPrice,
-            customerEmail: custEmail || 'unknown',
-         });
-         return resolve(filePath);
-      });
-
-      stream.on('error', (err) => {
-         logger.error('PDF stream error:', err);
-         return reject(err);
-      });
-
-      // Also catch doc errors
-      doc.on('error', (err) => {
-         logger.error('PDF document error:', err);
-      });
-
-      // Wrap in a Promise
-      function resolve(p) { }
-      function reject(e) { }
-      return await new Promise((res, rej) => {
-         // Patch resolve/reject closure
-         resolve = res; reject = rej;
-      });
-
-   } catch (error) {
+    } catch (error) {
       logger.error('Error in generateInvoicePDF:', error);
-      throw error;
-   }
+      reject(error);
+    }
+  });
 };
 
 module.exports = { generateInvoicePDF };

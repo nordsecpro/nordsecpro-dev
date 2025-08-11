@@ -177,117 +177,102 @@ exports.handleWebhook = async (req, res) => {
 
     try {
         switch (event.type) {
-            // One-time: PaymentIntent succeeded
+            // ONE-TIME: direct PI success
             case 'payment_intent.succeeded': {
                 const pi = event.data.object;
-
                 if (pi.metadata?.planType !== 'one-time') break;
 
-                // Persist (optional)
-                if (Subscription) {
-                    const metadata = pi.metadata || {};
-                    const plans = safeParsePlans(metadata.plansData, metadata);
+                const md = pi.metadata || {};
+                const plans = safeParsePlans(md.plansData, md);
 
-                    await Subscription.create({
+                // idempotency
+                let sub = await Subscription.findOne({ stripePaymentIntentId: pi.id, planType: 'one-time' });
+                if (!sub) {
+                    sub = await Subscription.create({
                         plans,
-                        totalPrice: Number(metadata.totalPrice || 0),
+                        totalPrice: Number(md.totalPrice || 0),
                         customerDetails: {
-                            firstName: metadata.customerFirstName || '',
-                            lastName: metadata.customerLastName || '',
-                            email: metadata.customerEmail || '',
-                            phone: metadata.customerPhone || '',
+                            firstName: md.customerFirstName || '',
+                            lastName: md.customerLastName || '',
+                            email: md.customerEmail || '',
+                            phone: md.customerPhone || '',
                         },
                         stripePaymentIntentId: pi.id,
                         paymentStatus: 'succeeded',
                         status: 'active',
                         planType: 'one-time',
                     });
+                }
 
-                    // inside the 'payment_intent.succeeded' case, after (optional) DB create
-                    try {
-                        // build a minimal subscription-like object your email utils expect
-                        const subLike = Subscription
-                            ? await Subscription.findOne({ stripePaymentIntentId: pi.id })
-                            : {
-                                plans: safeParsePlans(pi.metadata?.plansData, pi.metadata || {}),
-                                totalPrice: Number(pi.metadata?.totalPrice || 0),
-                                customerDetails: {
-                                    firstName: pi.metadata?.customerFirstName || '',
-                                    lastName: pi.metadata?.customerLastName || '',
-                                    email: pi.metadata?.customerEmail || '',
-                                    phone: pi.metadata?.customerPhone || '',
-                                },
-                                planType: 'one-time',
-                            };
-
-                        await sendConfirmationEmail(subLike);
-                        const invoicePDF = await generateInvoicePDF(subLike);
-                        if (invoicePDF) await sendInvoiceEmail(subLike, invoicePDF);
-                    } catch (e) {
-                        console.error('Email/PDF error (one-time):', e);
-                    }
-
+                try {
+                    await sendConfirmationEmail(sub);
+                    const pdf = await generateInvoicePDF(sub);        // { buffer, filename, mimeType }
+                    await sendInvoiceEmail(sub, pdf);                 // supports buffer attachment
+                } catch (e) {
+                    console.error('Email/PDF error (one-time):', e);
                 }
                 break;
             }
 
-            // Ongoing: first successful charge on subscription creation
+            // ONGOING: treat both invoice events the same
+            case 'invoice.payment_succeeded':
             case 'invoice.paid': {
                 const invoice = event.data.object;
-                if (invoice.billing_reason !== 'subscription_create') break;
 
-                const paymentIntentId = invoice.payment_intent;
-                const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-                const metadata = paymentIntent.metadata || {};
-                if (metadata.planType !== 'ongoing') break;
+                // FIRST CHARGE ON SUBSCRIPTION
+                if (invoice.billing_reason === 'subscription_create') {
+                    const paymentIntentId = invoice.payment_intent;
+                    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+                    const md = paymentIntent.metadata || {};
+                    if (md.planType !== 'ongoing') break;
 
-                // Persist (optional)
-                if (Subscription) {
-                    const plans = safeParsePlans(metadata.plansData, metadata);
-                    await Subscription.create({
-                        plans,
-                        totalPrice: Number(metadata.totalPrice || 0),
-                        customerDetails: {
-                            firstName: metadata.customerFirstName || '',
-                            lastName: metadata.customerLastName || '',
-                            email: metadata.customerEmail || '',
-                            phone: metadata.customerPhone || '',
-                        },
-                        stripePaymentIntentId: paymentIntent.id,
-                        stripeSubscriptionId: invoice.subscription,
-                        paymentStatus: 'succeeded',
-                        status: 'active',
-                        planType: 'ongoing',
-                    });
-                }
-                // inside the 'invoice.paid' case after (optional) DB create
-                try {
-                    const meta = (await stripe.paymentIntents.retrieve(invoice.payment_intent)).metadata || {};
-                    const subLike = Subscription
-                        ? await Subscription.findOne({ stripeSubscriptionId: invoice.subscription })
-                        : {
-                            plans: safeParsePlans(meta.plansData, meta),
-                            totalPrice: Number(meta.totalPrice || 0),
+                    const plans = safeParsePlans(md.plansData, md);
+
+                    // fetch Stripe subscription to get period end (next billing)
+                    const stripeSub = await stripe.subscriptions.retrieve(invoice.subscription);
+
+                    // idempotency
+                    let sub = await Subscription.findOne({ stripeSubscriptionId: invoice.subscription, planType: 'ongoing' });
+                    if (!sub) {
+                        sub = await Subscription.create({
+                            plans,
+                            totalPrice: Number(md.totalPrice || 0),
                             customerDetails: {
-                                firstName: meta.customerFirstName || '',
-                                lastName: meta.customerLastName || '',
-                                email: meta.customerEmail || '',
-                                phone: meta.customerPhone || '',
+                                firstName: md.customerFirstName || '',
+                                lastName: md.customerLastName || '',
+                                email: md.customerEmail || '',
+                                phone: md.customerPhone || '',
                             },
+                            stripePaymentIntentId: paymentIntent.id,
+                            stripeSubscriptionId: invoice.subscription,
+                            nextBillingDate: stripeSub?.current_period_end ? new Date(stripeSub.current_period_end * 1000) : undefined,
+                            autoRenew: true,
+                            paymentStatus: 'succeeded',
+                            status: 'active',
                             planType: 'ongoing',
-                        };
+                        });
+                    }
 
-                    await sendOngoingPlanWelcomeEmail(subLike);
-                    const invoicePDF = await generateInvoicePDF(subLike);
-                    if (invoicePDF) await sendInvoiceEmail(subLike, invoicePDF);
-                } catch (e) {
-                    console.error('Email/PDF error (ongoing first charge):', e);
+                    try {
+                        await sendOngoingPlanWelcomeEmail(sub);
+                        const pdf = await generateInvoicePDF(sub);      // { buffer, filename, mimeType }
+                        await sendInvoiceEmail(sub, pdf);
+                    } catch (e) {
+                        console.error('Email/PDF error (ongoing first charge):', e);
+                    }
                 }
-                // add to 'invoice.paid' branch:
+
+                // RENEWAL CHARGE
                 if (invoice.billing_reason === 'subscription_cycle') {
                     try {
-                        const subRecord = Subscription && await Subscription.findOne({ stripeSubscriptionId: invoice.subscription });
+                        const stripeSub = await stripe.subscriptions.retrieve(invoice.subscription);
+                        const subRecord = await Subscription.findOne({ stripeSubscriptionId: invoice.subscription, planType: 'ongoing', status: 'active' });
                         if (subRecord) {
+                            // update next billing date
+                            if (stripeSub?.current_period_end) {
+                                subRecord.nextBillingDate = new Date(stripeSub.current_period_end * 1000);
+                                await subRecord.save();
+                            }
                             await sendConfirmationEmail(subRecord, { isRenewal: true });
                         }
                     } catch (e) {
@@ -295,11 +280,9 @@ exports.handleWebhook = async (req, res) => {
                     }
                 }
 
-
                 break;
             }
 
-            // Optional: simple logging for failures
             case 'payment_intent.payment_failed':
             case 'invoice.payment_failed': {
                 console.warn('Stripe payment failed:', event.type, event.data.object?.id);
@@ -307,7 +290,6 @@ exports.handleWebhook = async (req, res) => {
             }
 
             default:
-                // ignore everything else
                 break;
         }
 

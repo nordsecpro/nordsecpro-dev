@@ -166,27 +166,42 @@ const sendConfirmationEmail = async (subscription = {}, options = {}) => {
 };
 
 // Invoice email with attachment
-const sendInvoiceEmail = async (subscription = {}, invoicePath) => {
-    const transporter = await getTransporter();
-    const to = safe(subscription.customerDetails?.email);
-    if (!to) {
-        logger.error('Cannot send invoice email: No recipient email');
-        return;
-    }
+const sendInvoiceEmail = async (subscription = {}, invoice) => {
+  const transporter = await getTransporter();
+  const to = safe(subscription.customerDetails?.email);
+  if (!to) {
+    logger.error('Cannot send invoice email: No recipient email');
+    return;
+  }
 
-    const { planCount, totalEmployees, totalPrice, listHtml } = buildPlanSummary(subscription);
-    const createdAt = subscription.createdAt ? new Date(subscription.createdAt) : new Date();
-    const invoiceNumber = subscription._id ? `INV-${String(subscription._id).slice(-8).toUpperCase()}` : 'INV-UNKNOWN';
+  const { planCount, totalEmployees, totalPrice, listHtml } = buildPlanSummary(subscription);
+  const createdAt = subscription.createdAt ? new Date(subscription.createdAt) : new Date();
+  const invoiceNumber = subscription._id
+    ? `INV-${String(subscription._id).slice(-8).toUpperCase()}`
+    : 'INV-UNKNOWN';
 
-    const mailOptions = {
-        from: config.email.user,
-        to,
-        subject: `Invoice ${invoiceNumber} - Security Services`,
-        html: `
+  // Accept both styles:
+  //  - string path
+  //  - { buffer, filename, mimeType }
+  let attachments = [];
+  if (typeof invoice === 'string' && invoice) {
+    attachments = [{ filename: `invoice_${invoiceNumber}.pdf`, path: invoice }];
+  } else if (invoice && invoice.buffer) {
+    attachments = [{
+      filename: invoice.filename || `invoice_${invoiceNumber}.pdf`,
+      content: invoice.buffer,
+      contentType: invoice.mimeType || 'application/pdf',
+    }];
+  }
+
+  const mailOptions = {
+    from: config.email.user,
+    to,
+    subject: `Invoice ${invoiceNumber} - Security Services`,
+    html: `
       <h2>Invoice for Your Security Services</h2>
       <p>Dear ${safe(subscription.customerDetails?.firstName)} ${safe(subscription.customerDetails?.lastName)},</p>
       <p>Please find attached your invoice for the security services.</p>
-
       <div style="background:#f5f5f5; padding:20px; border-radius:5px; margin:20px 0;">
         <h3>Invoice Details</h3>
         <p><strong>Invoice Number:</strong> ${invoiceNumber}</p>
@@ -198,28 +213,28 @@ const sendInvoiceEmail = async (subscription = {}, invoicePath) => {
         <p><strong>Total Amount:</strong> ${money(totalPrice)}</p>
         <p><strong>Status:</strong> Paid</p>
       </div>
-
       <p>Payment Information:</p>
       <ul>
         <li><strong>Transaction ID:</strong> ${safe(subscription.stripePaymentIntentId, 'N/A')}</li>
         <li><strong>Payment Date:</strong> ${createdAt.toLocaleDateString()}</li>
       </ul>
-
       <p>Thank you for your business!</p>
       <p>Best regards,<br/>Your Security Team at ${process.env.COMPANY_NAME || 'Cypentra'}</p>
     `,
-        attachments: invoicePath ? [{ filename: `invoice_${invoiceNumber}.pdf`, path: invoicePath }] : [],
-    };
+    attachments,
+  };
 
-    await transporter.sendMail(mailOptions);
-    logger.info(`Invoice email sent`, {
-        to,
-        subscriptionId: subscription._id,
-        invoiceNumber,
-        planCount,
-        totalAmount: totalPrice,
-    });
+  await transporter.sendMail(mailOptions);
+  logger.info(`Invoice email sent`, {
+    to,
+    subscriptionId: subscription._id,
+    invoiceNumber,
+    planCount,
+    totalAmount: totalPrice,
+    attachmentType: typeof invoice === 'string' ? 'path' : (invoice && invoice.buffer ? 'buffer' : 'none'),
+  });
 };
+
 
 // Welcome email for first-time ongoing plan
 const sendOngoingPlanWelcomeEmail = async (subscription = {}) => {
