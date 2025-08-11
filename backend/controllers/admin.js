@@ -471,7 +471,7 @@ exports.getSubscription = catchAsync(async (req, res, next) => {
             (sum, plan) => sum + plan.numberOfEmployees,
             0
           )) *
-        100
+          100
       ) / 100,
     avgPlanPrice:
       Math.round((subscription.totalPrice / subscription.plans.length) * 100) /
