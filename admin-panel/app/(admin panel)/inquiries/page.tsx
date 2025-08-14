@@ -115,9 +115,9 @@ const InquiryPage: React.FC = () => {
     setSearchTimeout(timeout);
 
     return () => {
-      if (timeout) clearTimeout(timeout);
+      clearTimeout(timeout); // Ensure to clear the timeout on component unmount or before re-running the effect
     };
-  }, [filters.search, fetchContacts, itemsPerPage, currentPage, searchTimeout]);
+  }, [filters.search, fetchContacts, itemsPerPage, currentPage]);
 
   // Filtered and sorted contacts
   const filteredContacts = useMemo(() => {
