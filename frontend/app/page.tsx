@@ -34,6 +34,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import CypentraReviewProfile from "@/components/profileOne"
 import PriceCalculator from "@/components/price-calculator";
 import CartDropdown from "@/components/CartDropdown";
 import { useState, useEffect } from "react";
@@ -1732,23 +1733,21 @@ const TrustpilotSeeMore = () => {
 
   return (
     <div className="flex justify-center mt-6 mb-4">
-      <button
+      <div
         onClick={handleClick}
-        className="inline-flex items-center px-6 py-3 bg-white border-2 border-gray-200 rounded-lg hover:border-green-400 transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md group"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') handleClick();
+        }}
+        className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400/60 rounded-lg w-full max-w-7xl mx-auto"
       >
-        {/* Trustpilot Green Star Logo */}
-        <picture>
-          {/* Mobile image (sm and below) */}
-          <source srcSet="/assets/review-sm.png" media="(max-width: 640px)" />
-          {/* Default image (md and above) */}
-          <img
-            src="/assets/review.png"
-            alt="Trustpilot Logo"
-            className="mr-2"
-          />
-        </picture>
-        {/* External link icon */}
-      </button>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-3">
+            <CypentraReviewProfile />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
