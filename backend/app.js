@@ -120,6 +120,106 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/sitemap.xml', (req, res) => {
+  const urls = [
+    { loc: 'https://cypentra.com/',            changefreq: 'weekly',  priority: '1.0' },
+    { loc: 'https://cypentra.com/pricing',     changefreq: 'monthly', priority: '0.8' },
+    { loc: 'https://cypentra.com/docs',        changefreq: 'weekly',  priority: '0.8' },
+    { loc: 'https://cypentra.com/contact',     changefreq: 'yearly',  priority: '0.5' },
+  ];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    ${urls.map(u => `
+      <url>
+        <loc>${u.loc}</loc>
+        <changefreq>${u.changefreq}</changefreq>
+        <priority>${u.priority}</priority>
+      </url>`).join('')}
+  </urlset>`;
+  res.type('application/xml').send(xml);
+});
+
+
+app.get('/robots.txt', (req, res) => {
+  res.type('text').send(
+`User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://cypentra.com/sitemap.xml
+`
+  );
+});
+
+
+app.get('/', (req, res) => {
+  res.type('html').send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Cypentra | Secure Subscriptions & Stripe Billing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Cypentra provides secure subscription management with Stripe integration—billing, payments, and SaaS tooling for modern apps." />
+  <meta name="keywords" content="Cypentra, subscription service, Stripe billing, SaaS payments, subscription API, Node.js, Express, MongoDB" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://cypentra.com/" />
+
+  <!-- Favicon hints (backend copy, optional if already handled on frontend) -->
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cypentra" />
+  <meta property="og:title" content="Cypentra | Secure Subscriptions & Stripe Billing" />
+  <meta property="og:description" content="Secure subscription and billing API with Stripe integration." />
+  <meta property="og:url" content="https://cypentra.com/" />
+  <meta property="og:image" content="https://cypentra.com/og-image.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cypentra" />
+  <meta name="twitter:description" content="Secure subscription and billing API with Stripe integration." />
+  <meta name="twitter:image" content="https://cypentra.com/og-image.png" />
+
+  <!-- JSON-LD: WebSite + Organization -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://cypentra.com/",
+    "name": "Cypentra",
+    "description": "Secure subscription service with Stripe integration",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Cypentra",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://cypentra.com/icon-512.png"
+      }
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://cypentra.com/search?q={query}",
+      "query-input": "required name=query"
+    }
+  }
+  </script>
+</head>
+<body>
+  <main style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:32px;max-width:720px;margin:auto;">
+    <h1>Cypentra</h1>
+    <p>Secure subscription and billing API with Stripe integration.</p>
+    <p><a href="https://cypentra.com">Go to the main site</a></p>
+  </main>
+</body>
+</html>`);
+});
+
+
+
+
 // API Routes
 app.use('/api', routes);
 
