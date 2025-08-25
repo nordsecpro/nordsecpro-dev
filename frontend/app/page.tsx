@@ -135,11 +135,6 @@ function Header() {
             </a>
             <a
               href="/contact"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("contact", "/contact");
-              }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
             >
               Contact
             </a>
@@ -2799,6 +2794,8 @@ function PriceCalculatorSection() {
   );
 }
 
+
+
 // Main App Component - Optimized sequence for user journey and conversions
 export default function CompleteCypentraApp() {
   return (
@@ -2845,8 +2842,8 @@ export default function CompleteCypentraApp() {
       {/* 13. FAQ - Address objections */}
       <FAQSection />
 
-      {/* 14. Contact - Final conversion opportunity */}
-      <ContactSection />
+      {/* 14. Contact - Final conversion opportunity
+      <ContactSection /> */}
 
       {/* 15. Footer - Navigation and legal */}
       <Footer />
