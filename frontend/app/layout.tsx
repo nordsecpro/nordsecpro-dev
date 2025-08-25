@@ -1,23 +1,29 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import './globals.css'
 import { CartProvider } from '@/contexts/CartContext'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.cypentra.com'), // ← set your prod URL
+  metadataBase: new URL('https://www.cypentra.com'),
   title: {
-    default: 'Cypentra',
+    default: 'Cypentra - Your Digital Commerce Solution',
     template: '%s | Cypentra',
   },
-  description: 'Cypentra',
+  description: 'Cypentra provides cutting-edge digital commerce solutions to help your business thrive online. Discover our comprehensive platform for modern e-commerce.',
   applicationName: 'Cypentra',
   generator: 'Next.js',
+  keywords: ['cypentra', 'e-commerce', 'digital commerce', 'online store', 'business solutions'],
+  authors: [{ name: 'Cypentra Team' }],
+  creator: 'Cypentra',
+  publisher: 'Cypentra',
 
-  // Next will use /app/icon.png automatically.
-  // We also declare extra icons so crawlers can find them.
+  // Icons configuration
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },           // ICO fallback
-      { url: '/icon.png', type: 'image/png' },         // served from /app/icon.png
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
       { url: '/apple-touch-icon.png', sizes: '180x180' },
@@ -27,50 +33,70 @@ export const metadata: Metadata = {
 
   manifest: '/site.webmanifest',
 
-  // themeColor: [
-  //   { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-  //   { media: '(prefers-color-scheme: dark)', color: '#0b0b0b' },
-  // ],
-
+  // Viewport configuration
   viewport: {
     width: 'device-width',
     initialScale: 1,
     maximumScale: 5,
   },
 
+  // Open Graph metadata
   openGraph: {
     type: 'website',
     url: 'https://www.cypentra.com',
-    title: 'Cypentra',
-    description: 'Cypentra',
+    title: 'Cypentra - Your Digital Commerce Solution',
+    description: 'Cypentra provides cutting-edge digital commerce solutions to help your business thrive online.',
     siteName: 'Cypentra',
+    locale: 'en_US',
     images: [
-      { url: '/og-image.png', width: 1200, height: 630, alt: 'Cypentra' },
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Cypentra - Digital Commerce Solutions',
+        type: 'image/png',
+      },
     ],
   },
 
+  // Twitter Card metadata
   twitter: {
     card: 'summary_large_image',
-    title: 'Cypentra',
-    description: 'Cypentra',
-    images: ['/og-image.png'],
+    site: '@cypentra', // Add your Twitter handle
+    creator: '@cypentra',
+    title: 'Cypentra - Your Digital Commerce Solution',
+    description: 'Cypentra provides cutting-edge digital commerce solutions to help your business thrive online.',
+    images: [
+      {
+        url: '/og-image.png',
+        alt: 'Cypentra - Digital Commerce Solutions',
+      },
+    ],
   },
 
+  // Robots configuration
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
+      'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
-      'max-video-preview': -1,
     },
   },
 
+  // Canonical URL
   alternates: {
-    canonical: 'https://www.cypentra.com/',
+    canonical: 'https://www.cypentra.com',
   },
+
+  // Additional SEO metadata
+  category: 'E-commerce',
+  classification: 'Business',
 }
 
 export default function RootLayout({
@@ -78,7 +104,80 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17494469323"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17494469323', {
+              page_title: document.title,
+              page_location: window.location.href,
+            });
+          `}
+        </Script>
+
+        {/* Google Tag Manager (optional - if you want to use GTM instead) */}
+        {/* 
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-XXXXXXX');
+          `}
+        </Script>
+        */}
+
+        {/* Structured Data for SEO */}
+        <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Cypentra",
+              "url": "https://www.cypentra.com",
+              "logo": "https://www.cypentra.com/icon.png",
+              "description": "Cypentra provides cutting-edge digital commerce solutions to help your business thrive online.",
+              "foundingDate": "2024",
+              "sameAs": [
+                "https://twitter.com/cypentra",
+                "https://linkedin.com/company/cypentra"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "Customer Service",
+                "url": "https://www.cypentra.com/contact"
+              }
+            }
+          `}
+        </Script>
+
+        {/* Preconnect to external domains for performance */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+      </head>
+      
       <body>
+        {/* Google Tag Manager (noscript) - if using GTM */}
+        {/* 
+        <noscript>
+          <iframe 
+            src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+            height="0" 
+            width="0" 
+            style={{display: 'none', visibility: 'hidden'}}
+          />
+        </noscript>
+        */}
+        
         <CartProvider>{children}</CartProvider>
       </body>
     </html>
