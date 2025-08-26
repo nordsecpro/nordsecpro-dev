@@ -100,86 +100,74 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({
-  children,
+ children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17494469323"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'AW-17494469323', {
-              page_title: document.title,
-              page_location: window.location.href,
-            });
-          `}
-        </Script>
+ return (
+   <html lang="en" suppressHydrationWarning>
+     <head>
+       {/* Google Analytics */}
+       <Script
+         src="https://www.googletagmanager.com/gtag/js?id=G-JRFT3MY9EF"
+         strategy="afterInteractive"
+       />
+       <Script id="google-analytics-1" strategy="afterInteractive">
+         {`
+           window.dataLayer = window.dataLayer || [];
+           function gtag(){dataLayer.push(arguments);}
+           gtag('js', new Date());
+           gtag('config', 'G-JRFT3MY9EF');
+         `}
+       </Script>
 
-        {/* Google Tag Manager (optional - if you want to use GTM instead) */}
-        {/* 
-        <Script id="google-tag-manager" strategy="afterInteractive">
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-XXXXXXX');
-          `}
-        </Script>
-        */}
+       <Script
+         src="https://www.googletagmanager.com/gtag/js?id=AW-17494469323"
+         strategy="afterInteractive"
+       />
+       <Script id="google-analytics-2" strategy="afterInteractive">
+         {`
+           window.dataLayer = window.dataLayer || [];
+           function gtag(){dataLayer.push(arguments);}
+           gtag('js', new Date());
+           gtag('config', 'AW-17494469323', {
+             page_title: document.title,
+             page_location: window.location.href,
+           });
+         `}
+       </Script>
 
-        {/* Structured Data for SEO */}
-        <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
-          {`
-            {
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Cypentra",
-              "url": "https://www.cypentra.com",
-              "logo": "https://www.cypentra.com/icon.png",
-              "description": "Cypentra provides cutting-edge digital commerce solutions to help your business thrive online.",
-              "foundingDate": "2024",
-              "sameAs": [
-                "https://twitter.com/cypentra",
-                "https://linkedin.com/company/cypentra"
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "contactType": "Customer Service",
-                "url": "https://www.cypentra.com/contact"
-              }
-            }
-          `}
-        </Script>
+       {/* Structured Data for SEO */}
+       <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
+         {`
+           {
+             "@context": "https://schema.org",
+             "@type": "Organization",
+             "name": "Cypentra",
+             "url": "https://www.cypentra.com",
+             "logo": "https://www.cypentra.com/icon.png",
+             "description": "Cypentra provides cutting-edge digital commerce solutions to help your business thrive online.",
+             "foundingDate": "2024",
+             "sameAs": [
+               "https://twitter.com/cypentra",
+               "https://linkedin.com/company/cypentra"
+             ],
+             "contactPoint": {
+               "@type": "ContactPoint",
+               "contactType": "Customer Service",
+               "url": "https://www.cypentra.com/contact"
+             }
+           }
+         `}
+       </Script>
 
-        {/* Preconnect to external domains for performance */}
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://www.google-analytics.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-      </head>
-      
-      <body>
-        {/* Google Tag Manager (noscript) - if using GTM */}
-        {/* 
-        <noscript>
-          <iframe 
-            src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
-            height="0" 
-            width="0" 
-            style={{display: 'none', visibility: 'hidden'}}
-          />
-        </noscript>
-        */}
-        
-        <CartProvider>{children}</CartProvider>
-      </body>
-    </html>
-  )
+       {/* Preconnect to external domains for performance */}
+       <link rel="preconnect" href="https://www.googletagmanager.com" />
+       <link rel="preconnect" href="https://www.google-analytics.com" />
+       <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+     </head>
+
+     <body>
+       <CartProvider>{children}</CartProvider>
+     </body>
+   </html>
+ )
 }

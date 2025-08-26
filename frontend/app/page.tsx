@@ -174,10 +174,6 @@ function Header() {
             </a>
             <a
               href="/contact"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("contact", "/contact");
-              }}
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
             >
               Contact
@@ -278,11 +274,7 @@ function Header() {
             </a>
             <a
               href="/contact"
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation("contact", "/contact");
-                setIsMenuOpen(false);
-              }}
+
               className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
             >
               Contact
@@ -312,11 +304,7 @@ function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => {
-                document.getElementById("contact")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
+              onClick={() => window.location.href = '/contact'}
               size="lg"
               className="bg-white text-blue-600 hover:bg-gray-100"
             >
@@ -1048,11 +1036,7 @@ function SecureAccessSection() {
               consultation call. Your security comes first.
             </p>
             <Button
-              onClick={() => {
-                document.getElementById("contact")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
+              onClick={() => window.location.href = '/contact'}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Calendar className="h-4 w-4 mr-2" />
@@ -1329,11 +1313,7 @@ function BookCallSection() {
         </div>
 
         <Button
-          onClick={() => {
-            document.getElementById("contact")?.scrollIntoView({
-              behavior: "smooth",
-            });
-          }}
+          onClick={() => window.location.href = '/contact'}
           size="lg"
           className="bg-white text-blue-600 hover:bg-gray-100"
         >
@@ -2216,7 +2196,7 @@ function ContactSection() {
 
               <div className="space-y-4">
                 <Button
-                  onClick={() => setIsDialogOpen(true)}
+                  onClick={() => window.location.href = '/contact'}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
@@ -2641,7 +2621,7 @@ function Footer() {
                   </li>
                   <li>
                     <a
-                      href="#contact"
+                      href="/contact"
                       className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"
                     >
                       <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -2842,8 +2822,8 @@ export default function CompleteCypentraApp() {
       {/* 13. FAQ - Address objections */}
       <FAQSection />
 
-      {/* 14. Contact - Final conversion opportunity
-      <ContactSection /> */}
+      {/*14. Contact - Final conversion opportunity*/}
+      <ContactSection />
 
       {/* 15. Footer - Navigation and legal */}
       <Footer />
