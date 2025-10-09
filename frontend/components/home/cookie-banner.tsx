@@ -1,5 +1,11 @@
 // Cookie Banner Component
-function CookieBanner({ onAccept, onDecline, onCustomize }) {
+type CookieBannerProps = {
+  onAccept: () => void;
+  onDecline: () => void;
+  onCustomize: () => void;
+};
+
+function CookieBanner({ onAccept, onDecline, onCustomize }: CookieBannerProps) {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

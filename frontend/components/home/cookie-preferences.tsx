@@ -4,7 +4,22 @@ import { useState } from 'react';
 // Cookie Preferences Modal
 type CookieCategory = 'essential' | 'analytics' | 'marketing' | 'functional';
 
-function CookiePreferences({ isOpen, onClose, onSave }) {
+interface CookiePreferencesProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (preferences: {
+    essential: boolean;
+    analytics: boolean;
+    marketing: boolean;
+    functional: boolean;
+  }) => void;
+}
+
+function CookiePreferences({
+  isOpen,
+  onClose,
+  onSave,
+}: CookiePreferencesProps) {
   const [preferences, setPreferences] = useState<{
     essential: boolean;
     analytics: boolean;
