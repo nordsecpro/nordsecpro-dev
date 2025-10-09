@@ -1,55 +1,111 @@
 // app/contact/page.js or pages/contact.js
 'use client';
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // For app directory
-import { Mail, Menu, Globe, ArrowLeft, X, Phone, MapPin, Clock, Shield, CheckCircle, AlertCircle } from "lucide-react";
-import CartDropdown from "@/components/CartDropdown";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // For app directory
+import {
+  Mail,
+  Menu,
+  ArrowLeft,
+  X,
+  MapPin,
+  Clock,
+  Shield,
+  CheckCircle,
+  AlertCircle,
+} from 'lucide-react';
+import CartDropdown from '@/components/CartDropdown';
 
 // Professional Button Component
-const Button = ({ children, onClick, type = "button", variant = "default", disabled = false, className = "", size = "md" }) => {
-  const baseClasses = "inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
-  
+type ButtonProps = {
+  children: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  type?: 'button' | 'submit' | 'reset';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'ghost'
+    | 'success'
+    | 'danger'
+    | 'default';
+  disabled?: boolean;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+};
+
+const Button = ({
+  children,
+  onClick,
+  type = 'button',
+  variant = 'default',
+  disabled = false,
+  className = '',
+  size = 'md',
+}: ButtonProps) => {
+  const baseClasses =
+    'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+
   const variants = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl focus:ring-blue-500",
-    secondary: "bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl focus:ring-gray-500",
-    outline: "border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500",
-    ghost: "text-gray-600 hover:bg-gray-100 focus:ring-gray-500",
-    success: "bg-green-600 hover:bg-green-700 text-white focus:ring-green-500",
-    danger: "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
+    primary:
+      'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl focus:ring-blue-500',
+    secondary:
+      'bg-gray-600 hover:bg-gray-700 text-white shadow-lg hover:shadow-xl focus:ring-gray-500',
+    outline:
+      'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500',
+    ghost: 'text-gray-600 hover:bg-gray-100 focus:ring-gray-500',
+    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
+    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+    default: '',
   };
 
   const sizes = {
-    sm: "px-3 py-2 text-sm rounded-md",
-    md: "px-4 py-2 text-base rounded-lg",
-    lg: "px-6 py-3 text-lg rounded-lg"
+    sm: 'px-3 py-2 text-sm rounded-md',
+    md: 'px-4 py-2 text-base rounded-lg',
+    lg: 'px-6 py-3 text-lg rounded-lg',
   };
-  
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}
-    >
+      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}>
       {children}
     </button>
   );
 };
 
 // Professional Input Component
-const Input = ({ label, required, error, helperText, className = "", ...props }) => {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  label?: React.ReactNode;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
+  className?: string;
+};
+
+const Input = ({
+  label,
+  required,
+  error,
+  helperText,
+  className = '',
+  ...props
+}: InputProps) => {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={props.id} className="block text-sm font-semibold text-gray-200 mb-2">
+        <label
+          htmlFor={props.id}
+          className="block text-sm font-semibold text-gray-200 mb-2">
           {label} {required && <span className="text-red-400">*</span>}
         </label>
       )}
       <input
         {...props}
         className={`w-full px-4 py-3 bg-white/10 border-2 rounded-lg transition-all duration-200 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          error 
-            ? 'border-red-400 focus:border-red-400' 
+          error
+            ? 'border-red-400 focus:border-red-400'
             : 'border-white/20 focus:border-blue-400 hover:border-white/30'
         }`}
       />
@@ -67,19 +123,36 @@ const Input = ({ label, required, error, helperText, className = "", ...props })
 };
 
 // Professional Textarea Component
-const Textarea = ({ label, required, error, helperText, className = "", ...props }) => {
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  label?: React.ReactNode;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
+  className?: string;
+};
+
+const Textarea = ({
+  label,
+  required,
+  error,
+  helperText,
+  className = '',
+  ...props
+}: TextareaProps) => {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={props.id} className="block text-sm font-semibold text-gray-200 mb-2">
+        <label
+          htmlFor={props.id}
+          className="block text-sm font-semibold text-gray-200 mb-2">
           {label} {required && <span className="text-red-400">*</span>}
         </label>
       )}
       <textarea
         {...props}
         className={`w-full px-4 py-3 bg-white/10 border-2 rounded-lg transition-all duration-200 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          error 
-            ? 'border-red-400 focus:border-red-400' 
+          error
+            ? 'border-red-400 focus:border-red-400'
             : 'border-white/20 focus:border-blue-400 hover:border-white/30'
         }`}
       />
@@ -97,7 +170,7 @@ const Textarea = ({ label, required, error, helperText, className = "", ...props
 };
 
 // Logo Component
-function CypentraLogo({ className = "h-8 w-auto" }) {
+function CypentraLogo({ className = 'h-8 w-auto' }) {
   return (
     <div className={`flex items-center ${className}`}>
       <img
@@ -114,7 +187,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
-  const handleNavigation = (path) => {
+  const handleNavigation = (path: any) => {
     if (path.startsWith('#')) {
       // Navigate to home page with section
       router.push(`/${path}`);
@@ -124,13 +197,13 @@ function Header() {
   };
 
   const navigationItems = [
-    { name: 'Services', path: '/' },
-    { name: 'Packages', path: '/' },
-    { name: 'About', path: '/' },
-    { name: 'Case Studies', path: '/' },
-    { name: 'Resources', path: '/' },
-    { name: 'Insights', path: '/' },
-    { name: 'Contact', path: '/contact' }
+    { name: 'Services', path: '/', active: false },
+    { name: 'Packages', path: '/', active: false },
+    { name: 'About', path: '/', active: false },
+    { name: 'Case Studies', path: '/', active: false },
+    { name: 'Resources', path: '/', active: false },
+    { name: 'Insights', path: '/', active: false },
+    { name: 'Contact', path: '/contact' },
   ];
 
   return (
@@ -149,11 +222,10 @@ function Header() {
                 key={item.name}
                 onClick={() => handleNavigation(item.path)}
                 className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  item.active 
-                    ? 'bg-blue-600 text-white shadow-lg' 
+                  item.active
+                    ? 'bg-blue-600 text-white shadow-lg'
                     : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-              >
+                }`}>
                 {item.name}
               </button>
             ))}
@@ -163,20 +235,17 @@ function Header() {
           <nav className="hidden md:flex lg:hidden space-x-1">
             <button
               onClick={() => handleNavigation('/#services')}
-              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors"
-            >
+              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors">
               Services
             </button>
             <button
               onClick={() => handleNavigation('/#packages')}
-              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors"
-            >
+              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors">
               Packages
             </button>
             <button
               onClick={() => handleNavigation('/#about')}
-              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors"
-            >
+              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors">
               About
             </button>
             <button className="px-3 py-2 rounded-lg bg-blue-600 text-white font-medium shadow-lg">
@@ -189,15 +258,21 @@ function Header() {
             <CartDropdown />
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors"
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              className="md:hidden p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors">
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <div className={`md:hidden transition-all duration-300 overflow-hidden ${isMenuOpen ? "max-h-screen pb-4" : "max-h-0"}`}>
+        <div
+          className={`md:hidden transition-all duration-300 overflow-hidden ${
+            isMenuOpen ? 'max-h-screen pb-4' : 'max-h-0'
+          }`}>
           <nav className="space-y-2 pt-4 border-t">
             {navigationItems.map((item) => (
               <button
@@ -207,11 +282,10 @@ function Header() {
                   setIsMenuOpen(false);
                 }}
                 className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
-                  item.active 
-                    ? 'bg-blue-600 text-white' 
+                  item.active
+                    ? 'bg-blue-600 text-white'
                     : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-              >
+                }`}>
                 {item.name}
               </button>
             ))}
@@ -226,59 +300,71 @@ function Header() {
 export default function ContactPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    subject: "",
-    message: "",
+    name: '',
+    email: '',
+    company: '',
+    subject: '',
+    message: '',
   });
 
-  const [errors, setErrors] = useState({});
+  type Errors = {
+    name?: string;
+    email?: string;
+    message?: string;
+    company?: string;
+    subject?: string;
+  };
+
+  const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(
+    null
+  );
 
   const validateForm = () => {
-    const newErrors = {};
-    
+    const newErrors: Errors = {};
+
     if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
+      newErrors.name = 'Name is required';
     }
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = 'Please enter a valid email address';
     }
-    
+
     if (!formData.message.trim()) {
-      newErrors.message = "Message is required";
+      newErrors.message = 'Message is required';
     } else if (formData.message.trim().length < 10) {
-      newErrors.message = "Please provide more details (minimum 10 characters)";
+      newErrors.message = 'Please provide more details (minimum 10 characters)';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    
+
     // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
+    if (errors[name as keyof Errors]) {
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: '',
       }));
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -290,32 +376,32 @@ export default function ContactPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/contact`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
             company: formData.company,
-            subject: formData.subject || "Security Consultation Request",
+            subject: formData.subject || 'Security Consultation Request',
             message: formData.message,
-            type: "security_consultation",
+            type: 'security_consultation',
           }),
         }
       );
 
       if (response.ok) {
-        setSubmitStatus("success");
+        setSubmitStatus('success');
         setTimeout(() => {
           router.push('/');
         }, 3000);
       } else {
-        throw new Error("Failed to send message");
+        throw new Error('Failed to send message');
       }
     } catch (error) {
-      console.error("Error sending message:", error);
-      setSubmitStatus("error");
+      console.error('Error sending message:', error);
+      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }
@@ -330,10 +416,15 @@ export default function ContactPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Let's Secure Your
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400"> Business</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+              {' '}
+              Business
+            </span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Connect with our cybersecurity experts for a personalized consultation. We'll analyze your security needs and provide tailored solutions within 24 hours.
+            Connect with our cybersecurity experts for a personalized
+            consultation. We'll analyze your security needs and provide tailored
+            solutions within 24 hours.
           </p>
         </div>
       </div>
@@ -341,14 +432,14 @@ export default function ContactPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid lg:grid-cols-5 gap-12 items-start">
-          
           {/* Contact Information - Left Side */}
           <div className="lg:col-span-2 space-y-8">
-            
             {/* Contact Details */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <h2 className="text-2xl font-bold text-white mb-8">Get in Touch</h2>
-              
+              <h2 className="text-2xl font-bold text-white mb-8">
+                Get in Touch
+              </h2>
+
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="bg-blue-500/20 p-3 rounded-lg">
@@ -358,11 +449,12 @@ export default function ContactPage() {
                     <h3 className="font-semibold text-white mb-1">Email Us</h3>
                     <a
                       href="mailto:info@cypentra.com"
-                      className="text-blue-400 hover:text-blue-300 transition-colors"
-                    >
+                      className="text-blue-400 hover:text-blue-300 transition-colors">
                       info@cypentra.com
                     </a>
-                    <p className="text-gray-400 text-sm mt-1">We respond within 24 hours</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      We respond within 24 hours
+                    </p>
                   </div>
                 </div>
 
@@ -371,10 +463,14 @@ export default function ContactPage() {
                     <MapPin className="h-6 w-6 text-green-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white mb-1">Office Location</h3>
+                    <h3 className="font-semibold text-white mb-1">
+                      Office Location
+                    </h3>
                     <p className="text-gray-300">Nueva Andalucia district</p>
                     <p className="text-gray-300">Marbella-29069, Spain</p>
-                    <p className="text-gray-400 text-sm mt-1">Remote-first team</p>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Remote-first team
+                    </p>
                   </div>
                 </div>
 
@@ -383,7 +479,9 @@ export default function ContactPage() {
                     <Clock className="h-6 w-6 text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white mb-1">Response Time</h3>
+                    <h3 className="font-semibold text-white mb-1">
+                      Response Time
+                    </h3>
                     <p className="text-gray-300">Standard: 24 hours</p>
                     <p className="text-gray-300">Emergency: Immediate</p>
                   </div>
@@ -398,7 +496,8 @@ export default function ContactPage() {
                 <h3 className="font-bold text-white">24/7 Emergency Support</h3>
               </div>
               <p className="text-gray-300 text-sm">
-                For critical security incidents requiring immediate attention, our emergency response team is available around the clock.
+                For critical security incidents requiring immediate attention,
+                our emergency response team is available around the clock.
               </p>
             </div>
 
@@ -406,10 +505,10 @@ export default function ContactPage() {
             <div className="space-y-3">
               <h3 className="font-semibold text-white mb-4">Our Commitment</h3>
               {[
-                "Free initial security assessment",
-                "No obligation consultation", 
-                "Guaranteed 24-hour response",
-                "Confidential security review"
+                'Free initial security assessment',
+                'No obligation consultation',
+                'Guaranteed 24-hour response',
+                'Confidential security review',
               ].map((item, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />
@@ -423,8 +522,13 @@ export default function ContactPage() {
           <div className="lg:col-span-3">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-white mb-2">Send Us a Message</h2>
-                <p className="text-gray-300">Fill out the form below and we'll get back to you within 24 hours</p>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Send Us a Message
+                </h2>
+                <p className="text-gray-300">
+                  Fill out the form below and we'll get back to you within 24
+                  hours
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -440,7 +544,7 @@ export default function ContactPage() {
                     placeholder="Enter your full name"
                     error={errors.name}
                   />
-                  
+
                   <Input
                     id="email"
                     name="email"
@@ -465,7 +569,7 @@ export default function ContactPage() {
                     placeholder="Your company name"
                     helperText="Optional but helps us understand your needs"
                   />
-                  
+
                   <Input
                     id="subject"
                     name="subject"
@@ -498,19 +602,17 @@ export default function ContactPage() {
                     variant="ghost"
                     onClick={() => router.push('/')}
                     disabled={isSubmitting}
-                    className="sm:w-auto w-full text-white/80 hover:bg-white/10"
-                  >
+                    className="sm:w-auto w-full text-white/80 hover:bg-white/10">
                     <ArrowLeft className="h-4 w-4 mr-2 text-white" />
                     Back to Home
                   </Button>
-                  
+
                   <Button
                     type="submit"
                     variant="primary"
                     disabled={isSubmitting}
                     className="sm:flex-1 w-full"
-                    size="lg"
-                  >
+                    size="lg">
                     {isSubmitting ? (
                       <>
                         <div className="h-5 w-5 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -526,29 +628,38 @@ export default function ContactPage() {
                 </div>
 
                 {/* Status Messages */}
-                {submitStatus === "success" && (
+                {submitStatus === 'success' && (
                   <div className="mt-6 p-4 bg-green-500/20 border border-green-400/40 rounded-xl">
                     <div className="flex items-start">
                       <CheckCircle className="h-6 w-6 text-green-400 mr-3 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-green-400 mb-1">Message Sent Successfully!</h4>
+                        <h4 className="font-semibold text-green-400 mb-1">
+                          Message Sent Successfully!
+                        </h4>
                         <p className="text-green-300 text-sm">
-                          Thank you for reaching out. Our security team will review your inquiry and respond within 24 hours. Redirecting you to the home page...
+                          Thank you for reaching out. Our security team will
+                          review your inquiry and respond within 24 hours.
+                          Redirecting you to the home page...
                         </p>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {submitStatus === "error" && (
+                {submitStatus === 'error' && (
                   <div className="mt-6 p-4 bg-red-500/20 border border-red-400/40 rounded-xl">
                     <div className="flex items-start">
                       <AlertCircle className="h-6 w-6 text-red-400 mr-3 flex-shrink-0 mt-0.5" />
                       <div>
-                        <h4 className="font-semibold text-red-400 mb-1">Failed to Send Message</h4>
+                        <h4 className="font-semibold text-red-400 mb-1">
+                          Failed to Send Message
+                        </h4>
                         <p className="text-red-300 text-sm">
-                          We encountered an issue sending your message. Please try again or email us directly at{' '}
-                          <a href="mailto:info@cypentra.com" className="underline hover:no-underline">
+                          We encountered an issue sending your message. Please
+                          try again or email us directly at{' '}
+                          <a
+                            href="mailto:info@cypentra.com"
+                            className="underline hover:no-underline">
                             info@cypentra.com
                           </a>
                         </p>
@@ -560,7 +671,8 @@ export default function ContactPage() {
 
               <div className="mt-8 pt-6 border-t border-white/20">
                 <p className="text-xs text-gray-400 text-center">
-                  🔒 Your information is transmitted securely and will only be used to respond to your inquiry
+                  🔒 Your information is transmitted securely and will only be
+                  used to respond to your inquiry
                 </p>
               </div>
             </div>
