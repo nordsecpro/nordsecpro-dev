@@ -69,13 +69,6 @@ const RoadmapSection = dynamic(() => import('@/components/roadmap-section'), {
   ssr: true,
 });
 
-// Main page component with metadata
-export const metadata = {
-  title: 'Our Services - Cypentra',
-  description:
-    'Comprehensive cybersecurity services and our proven 5-step security roadmap',
-};
-
 export default function ServicesPage() {
   return (
     <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">

@@ -3,7 +3,6 @@
 
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { Sparkles, Calendar } from 'lucide-react';
 
 // Dynamic imports with loading states
 const LitePackagesSection = dynamic(
