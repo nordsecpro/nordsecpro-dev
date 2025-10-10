@@ -1,7 +1,7 @@
 import React from 'react';
 
-const page = () => {
+const CaseStudiesPage = () => {
   return <div>Case Studies</div>;
 };
 
-export default page;
+export default CaseStudiesPage;

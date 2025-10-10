@@ -1,7 +1,7 @@
 import React from 'react';
 
-const page = () => {
+const InsightsPage = () => {
   return <div>Insights Page</div>;
 };
 
-export default page;
+export default InsightsPage;

@@ -6,7 +6,7 @@ import TestimonialsSection from '@/components/home/testimonials-section';
 import BookCallSection from '@/components/home/bookCall-section';
 
 // Main App Component - Optimized sequence for user journey and conversions
-export default function CompleteCypenstraApp() {
+export default function HomePage() {
   return (
     <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <HeroSection />
