@@ -159,7 +159,7 @@ const DesktopCard: React.FC<DesktopCardProps> = ({ step, index }) => {
       style={{ animationDelay: `${index * 100}ms` }}>
       {/* Icon Circle */}
       <div
-        className={`mx-auto w-20 h-20 ${colors.badge} rounded-full flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-10`}>
+        className={`mx-auto w-20 h-20 ${colors.badge} rounded-full flex items-center justify-center mb-6 mt-10 shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-10`}>
         <Icon className="h-10 w-10 text-white" />
       </div>
 
