@@ -1,367 +1,265 @@
-// components/PriceCalculator.tsx
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { X, ShoppingCart, Check } from 'lucide-react';
+import {
+  ShoppingCart,
+  Check,
+  Cloud,
+  Shield,
+  Users,
+  ArrowRight,
+  Sparkles,
+  Zap,
+  Star,
+} from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import Link from 'next/link';
 
-const TITLES = {
-  startup: 'Startup Security Launchpad',
-  soc2: 'SOC 2 Pre-Audit Blueprint',
-  audit: 'Audit Check: Final Review',
-  vciso: 'vCISO On-Demand',
-} as const;
+const litePackages = [
+  {
+    id: 'cloud-starter',
+    title: 'Cloud Security Starter Pack',
+    icon: Cloud,
+    price: 999,
+    currency: '$',
+    scope: 'Secure AWS/Azure/GCP setup (IAM, logging, MFA, baseline hardening)',
+    format: 'One-time project',
+    duration: '2 weeks',
+    color: 'blue',
+    features: [
+      'IAM configuration & MFA setup',
+      'Logging & monitoring baseline',
+      'Security hardening checklist',
+      'Cloud architecture review',
+    ],
+  },
+  {
+    id: 'gdpr-quick',
+    title: 'GDPR & Privacy Quick-Setup',
+    badge: 'EU/US',
+    icon: Shield,
+    price: 599,
+    currency: '€',
+    scope: 'Cookie banner, privacy policy, data mapping, risk assessment',
+    format: 'Pre-defined deliverables',
+    duration: '1h consultation',
+    color: 'blue',
+    features: [
+      'Cookie consent banner setup',
+      'Privacy policy template',
+      'Data mapping documentation',
+      'Compliance risk assessment',
+    ],
+  },
+  {
+    id: 'vciso-lite',
+    title: 'vCISO Lite (On Demand)',
+    badge: 'Most Flexible',
+    icon: Users,
+    price: 499,
+    currency: '$',
+    priceNote: '/month',
+    scope: '4h/month advisory via Zoom/Meet + IR Plan + Policies',
+    format: 'Monthly subscription',
+    duration: 'Cancel anytime',
+    color: 'blue',
+    features: [
+      '4 hours monthly advisory',
+      'Incident response plan',
+      'Policy templates & guidance',
+      'Priority email support',
+    ],
+  },
+];
 
-const ONE_TIME_TITLES = new Set([
-  TITLES.startup,
-  TITLES.soc2,
-  TITLES.audit,
-]);
-
-const pricingData = {
-  basicSecurity: [
-    { min: 5, max: 25, price: 1700 },
-    { min: 26, max: 50, price: 2200 },
-    { min: 51, max: 100, price: 2800 },
-    { min: 101, max: 250, price: 3500 },
-  ],
-  soc2Readiness: [
-    { min: 5, max: 25, price: 4200 },
-    { min: 26, max: 50, price: 6000 },
-    { min: 51, max: 150, price: 7200 },
-    { min: 151, max: 250, price: 8500 },
-  ],
-  readyForAudit: [
-    { min: 5, max: 25, price: 4800 },
-    { min: 26, max: 50, price: 5600 },
-    { min: 51, max: 100, price: 8000 },
-    { min: 101, max: 200, price: 10000 },
-    { min: 201, max: 250, price: 12000 },
-  ],
-  vCISOplus: [
-    { min: 5, max: 20, price: 2800 },
-    { min: 21, max: 50, price: 3200 },
-    { min: 51, max: 150, price: 4800 },
-    { min: 151, max: 250, price: 6000 },
-  ],
+const getColorClasses = (color: string) => {
+  const colors: Record<string, any> = {
+    blue: {
+      bg: 'bg-gradient-to-br from-blue-50 to-blue-100',
+      border: 'border-blue-300',
+      text: 'text-blue-600',
+      badge: 'bg-gradient-to-r from-blue-500 to-blue-600',
+      button: 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800',
+      icon: 'bg-blue-100 text-blue-600',
+    },
+  };
+  return colors[color];
 };
 
-function findPrice(arr: any[], employees: number) {
-  return (
-    arr.find((range) => employees >= range.min && employees <= range.max)?.price ||
-    arr[arr.length - 1].price
-  );
-}
+function LitePackagesSection() {
+  const { addToCart, isPlanSelected } = useCart();
 
-export default function PriceCalculator() {
-  const [employees, setEmployees] = useState([25]);
-  const {
-    selectedPlans,
-    addToCart,
-    removeFromCart,
-    clearCart,
-    isPlanSelected,
-    totalPrice,
-    totalItems,
-  } = useCart();
-  const router = useRouter();
-
-  const basicPrice = findPrice(pricingData.basicSecurity, employees[0]);
-  const soc2Price = findPrice(pricingData.soc2Readiness, employees[0]);
-  const auditPrice = findPrice(pricingData.readyForAudit, employees[0]);
-  const vcisoPrice = findPrice(pricingData.vCISOplus, employees[0]);
-
-  // ---- derive current cart "type" ----
-  const cartType: 'ongoing' | 'one-time' | 'empty' = useMemo(() => {
-    if (!selectedPlans || selectedPlans.length === 0) return 'empty';
-    const hasVCISO = selectedPlans.some((p) => p.planTitle === TITLES.vciso);
-    return hasVCISO ? 'ongoing' : 'one-time';
-  }, [selectedPlans]);
-
-  const isOngoingInCart = cartType === 'ongoing';
-  const isAnyOneTimeInCart = cartType === 'one-time';
-
-  // ---- mutual-exclusion add handler ----
-  function handleAddToCart(title: string, employeeCount: number, price: number) {
-    // If adding ongoing, clear any one-time selections first
-    if (title === TITLES.vciso && isAnyOneTimeInCart) {
-      clearCart();
-    }
-    // If adding one-time, clear ongoing first
-    if (ONE_TIME_TITLES.has(title) && isOngoingInCart) {
-      clearCart();
-    }
-
+  const handleAddToCart = (pkg: any) => {
     const planData = {
-      planTitle: title,
-      numberOfEmployees: employeeCount,
-      price,
+      planTitle: pkg.title,
+      numberOfEmployees: 1,
+      price: pkg.price,
       timestamp: Date.now(),
     };
-
     addToCart(planData);
-  }
-
-  function handleProceedToCheckout() {
-    if (totalItems === 0) return;
-    router.push('/checkout');
-  }
-
-  // ---- UI helpers for disabling conflicting cards ----
-  const disableOneTimeCards = isOngoingInCart;
-  const disableOngoingCard = isAnyOneTimeInCart;
-
-  const disabledClass = 'opacity-50 pointer-events-none';
-  const oneTimeCardClass = (extra = '') =>
-    `border-2 transition-colors h-full flex flex-col ${disableOneTimeCards ? disabledClass : ''} ${extra}`;
-  const ongoingCardClass = (extra = '') =>
-    `border-2 transition-colors h-full flex flex-col ${disableOngoingCard ? disabledClass : ''} ${extra}`;
+  };
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-lg max-w-6xl mx-auto">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">
-          Calculate Your Security Investment
-        </h3>
-        <p className="text-gray-600">
-          Get personalized pricing for all our services based on your company size
-        </p>
-        <p className="text-xs text-gray-500 mt-2">
-          Select <span className="font-semibold">either</span> the ongoing plan <span className="italic">(vCISO On-Demand)</span> <span className="font-semibold">or</span> any/all one-time plans.
-          Switching types will clear your current selection.
-        </p>
-      </div>
+    <section className="py-24 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-grid-slate-200/40 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl" />
 
-      {/* Cart Summary */}
-      {totalItems > 0 && (
-        <div className="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-lg font-semibold text-blue-900 flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5" />
-              Selected Plans ({totalItems}) •{' '}
-              <span className="text-blue-700 capitalize">{cartType.replace('-', ' ')}</span>
-            </h4>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={clearCart}
-              className="text-red-600 border-red-300 hover:bg-red-50"
-            >
-              Clear All
-            </Button>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+            <Zap className="h-4 w-4" />
+            <span>Quick Start Solutions</span>
+            <Sparkles className="h-3.5 w-3.5" />
           </div>
+          <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
+            Lite Packages
+          </h2>
+          <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+            Entry-level security solutions to get you started quickly
+          </p>
+        </div>
 
-          <div className="space-y-2 mb-4">
-            {selectedPlans.map((plan, index) => (
-              <div key={index} className="flex items-center justify-between bg-white p-3 rounded border">
-                <div>
-                  <span className="font-medium">{plan.planTitle}</span>
-                  <span className="text-sm text-gray-500 ml-2">
-                    ({plan.numberOfEmployees} employees)
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold">${plan.price.toLocaleString()}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFromCart(index)}
-                    className="text-red-600 hover:bg-red-50 p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
+        {/* Package Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {litePackages.map((pkg, index) => {
+            const colors = getColorClasses(pkg.color);
+            const Icon = pkg.icon;
+            const isSelected = isPlanSelected(pkg.title);
+
+            return (
+              <div
+                key={pkg.id}
+                className="animate-in fade-in slide-in-from-bottom-8 duration-700"
+                style={{ animationDelay: `${index * 150}ms` }}>
+                <Card
+                  className={`${colors.bg} border-2 ${colors.border} rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 h-full flex flex-col group`}>
+                  {/* Card Header */}
+                  <CardHeader className="pb-6 pt-8 px-8">
+                    {pkg.badge && (
+                      <div
+                        className={`flex mx-auto items-center justify-center gap-1 ${colors.badge} text-white px-3 py-1.5 rounded-full text-xs font-bold mb-4 shadow-lg w-1/2`}>
+                        <Star className="h-3 w-3" />
+                        {pkg.badge}
+                      </div>
+                    )}
+
+                    <div
+                      className={`${colors.icon} rounded-2xl p-4 w-fit mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="h-8 w-8" />
+                    </div>
+
+                    <CardTitle className="text-2xl font-bold text-slate-900 mb-3 min-h-[4rem] flex items-start">
+                      {pkg.title}
+                    </CardTitle>
+
+                    {/* Price */}
+                    <div className="mb-4">
+                      <div className="flex items-baseline gap-1">
+                        <span className={`text-4xl font-bold ${colors.text}`}>
+                          {pkg.currency}
+                          {pkg.price.toLocaleString()}
+                        </span>
+                        {pkg.priceNote && (
+                          <span className="text-lg text-slate-600">
+                            {pkg.priceNote}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-600 mt-2">
+                        {pkg.format} • {pkg.duration}
+                      </p>
+                    </div>
+                  </CardHeader>
+
+                  {/* Card Content */}
+                  <CardContent className="px-8 pb-8 flex-1 flex flex-col">
+                    <p className="text-sm text-slate-700 mb-6 leading-relaxed">
+                      {pkg.scope}
+                    </p>
+
+                    {/* Features List */}
+                    <div className="space-y-3 mb-8 flex-1">
+                      {pkg.features.map((feature, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <Check
+                            className={`h-5 w-5 ${colors.text} flex-shrink-0 mt-0.5`}
+                          />
+                          <span className="text-sm text-slate-700">
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CTA Button */}
+                    {isSelected ? (
+                      <Button
+                        className="w-full bg-green-600 hover:bg-green-700 text-white h-14 rounded-2xl font-bold shadow-lg"
+                        disabled>
+                        <Check className="h-5 w-5 mr-2" />
+                        Added to Cart
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => handleAddToCart(pkg)}
+                        className={`w-full ${colors.button} text-white h-14 rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 group/btn`}>
+                        <ShoppingCart className="h-5 w-5 mr-2 transition-transform group-hover/btn:scale-110" />
+                        Add to Cart
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-xl font-bold text-blue-900">
-              Total: ${totalPrice.toLocaleString()}
+        {/* See All Packages CTA */}
+        <div
+          className="text-center animate-in fade-in zoom-in-95 duration-700"
+          style={{ animationDelay: '600ms' }}>
+          <div className="inline-block bg-white rounded-3xl shadow-2xl p-10 border-2 border-slate-200 hover:border-blue-300 hover:shadow-blue-100/50 transition-all duration-500">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full mb-6">
+              <Sparkles className="h-4 w-4 text-blue-600" />
+              <span className="text-sm font-semibold text-blue-700">
+                Need More Power?
+              </span>
             </div>
-            <Button
-              onClick={handleProceedToCheckout}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Proceed to Checkout
-            </Button>
+
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">
+              Explore Our Full Range
+            </h3>
+            <p className="text-slate-600 mb-8 max-w-md mx-auto">
+              Check out our Pro & Advanced packages for comprehensive security
+              solutions
+            </p>
+
+            <Link href="/packages" className="group inline-block">
+              <Button
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 px-10 py-7 rounded-2xl font-bold text-base group-hover:scale-105">
+                See All Packages
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
+              </Button>
+            </Link>
           </div>
         </div>
-      )}
 
-      <div className="mb-8">
-        <label className="block text-sm font-medium text-gray-700 mb-4">
-          Number of Employees:{' '}
-          <span className="font-bold text-blue-600">{employees[0]}</span>
-        </label>
-        <Slider
-          value={employees}
-          onValueChange={setEmployees}
-          max={250}
-          min={5}
-          step={1}
-          className="w-full"
-        />
-        <div className="flex justify-between text-xs text-gray-500 mt-2">
-          <span>5</span>
-          <span>250+</span>
+        {/* Disclaimer */}
+        <div className="mt-12 text-center">
+          <p className="text-sm text-slate-500">
+            Prices shown are starting rates. Final pricing may vary based on
+            specific requirements.
+          </p>
         </div>
       </div>
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* One-time #1 */}
-        <Card className={oneTimeCardClass('border-gray-200 hover:border-gray-300')}>
-          <CardHeader className="text-center pb-4 flex-grow">
-            <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              {TITLES.startup}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="text-3xl font-bold text-gray-900 mb-2">
-              ${findPrice(pricingData.basicSecurity, employees[0]).toLocaleString()}
-            </div>
-            <p className="text-sm text-gray-600 mb-4">One-time retainer</p>
-            {isPlanSelected(TITLES.startup) ? (
-              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
-                <Check className="w-4 h-4 mr-2" />
-                Added to Cart
-              </Button>
-            ) : (
-              <Button
-                className="w-full bg-gray-600 hover:bg-gray-700"
-                onClick={() =>
-                  handleAddToCart(
-                    TITLES.startup,
-                    employees[0],
-                    findPrice(pricingData.basicSecurity, employees[0])
-                  )
-                }
-                disabled={disableOneTimeCards}
-              >
-                Add to Cart
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* One-time #2 */}
-        <Card className={oneTimeCardClass('border-blue-500 bg-blue-50 hover:border-blue-600')}>
-          <CardHeader className="text-center pb-4 flex-grow">
-            <div className="inline-block bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold mb-2">
-              Most Popular
-            </div>
-            <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              {TITLES.soc2}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="text-3xl font-bold text-blue-900 mb-2">
-              ${findPrice(pricingData.soc2Readiness, employees[0]).toLocaleString()}
-            </div>
-            <p className="text-sm text-blue-700 mb-4">One-time retainer</p>
-            {isPlanSelected(TITLES.soc2) ? (
-              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
-                <Check className="w-4 h-4 mr-2" />
-                Added to Cart
-              </Button>
-            ) : (
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() =>
-                  handleAddToCart(
-                    TITLES.soc2,
-                    employees[0],
-                    findPrice(pricingData.soc2Readiness, employees[0])
-                  )
-                }
-                disabled={disableOneTimeCards}
-              >
-                Add to Cart
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* One-time #3 */}
-        <Card className={oneTimeCardClass('border-green-500 bg-green-50 hover:border-green-600')}>
-          <CardHeader className="text-center pb-4 flex-grow">
-            <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              {TITLES.audit}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="text-3xl font-bold text-green-900 mb-2">
-              ${findPrice(pricingData.readyForAudit, employees[0]).toLocaleString()}
-            </div>
-            <p className="text-sm text-green-700 mb-4">One-time retainer</p>
-            {isPlanSelected(TITLES.audit) ? (
-              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
-                <Check className="w-4 h-4 mr-2" />
-                Added to Cart
-              </Button>
-            ) : (
-              <Button
-                className="w-full bg-green-600 hover:bg-green-700"
-                onClick={() =>
-                  handleAddToCart(
-                    TITLES.audit,
-                    employees[0],
-                    findPrice(pricingData.readyForAudit, employees[0])
-                  )
-                }
-                disabled={disableOneTimeCards}
-              >
-                Add to Cart
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Ongoing */}
-        <Card className={ongoingCardClass('border-purple-500 bg-purple-50 hover:border-purple-600')}>
-          <CardHeader className="text-center pb-4 flex-grow">
-            <CardTitle className="text-lg min-h-[3rem] flex items-center justify-center">
-              {TITLES.vciso}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <div className="text-3xl font-bold text-purple-900 mb-2">
-              ${findPrice(pricingData.vCISOplus, employees[0]).toLocaleString()}
-            </div>
-            <p className="text-sm text-purple-700 mb-4">Ongoing engagement</p>
-            {isPlanSelected(TITLES.vciso) ? (
-              <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
-                <Check className="w-4 h-4 mr-2" />
-                Added to Cart
-              </Button>
-            ) : (
-              <Button
-                className="w-full bg-purple-600 hover:bg-purple-700"
-                onClick={() =>
-                  handleAddToCart(
-                    TITLES.vciso,
-                    employees[0],
-                    findPrice(pricingData.vCISOplus, employees[0])
-                  )
-                }
-                disabled={disableOngoingCard}
-              >
-                Add to Cart
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-8 text-center">
-        <p className="text-sm text-gray-500 mb-4">
-          Prices shown are estimates. Final pricing may vary based on specific requirements.
-        </p>
-      </div>
-    </div>
+    </section>
   );
 }
+
+export default LitePackagesSection;

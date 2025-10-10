@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import CypentraLogo from '@/components/home/cypentra-logo';
-import CookieBanner from '@/components/home/cookie-banner';
-import CookiePreferences from '@/components/home/cookie-preferences';
+import CypentraLogo from '@/components/cypentra-logo';
+import CookieBanner from '@/components/others/cookie-banner';
+import CookiePreferences from '@/components/others/cookie-preferences';
 
 // Main Footer Component with Cookie Management
 function Footer() {

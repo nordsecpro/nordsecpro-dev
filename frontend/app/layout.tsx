@@ -1,7 +1,10 @@
-import type { Metadata } from 'next'
-import Script from 'next/script'
-import './globals.css'
-import { CartProvider } from '@/contexts/CartContext'
+import type { Metadata } from 'next';
+import Script from 'next/script';
+import { GeistSans } from 'geist/font/sans';
+import './globals.css';
+import { CartProvider } from '@/contexts/CartContext';
+import Header from '@/components/layouts/header';
+import Footer from '@/components/layouts/footer';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.cypentra.com'),
@@ -9,10 +12,17 @@ export const metadata: Metadata = {
     default: 'Cypentra - Your Digital Commerce Solution',
     template: '%s | Cypentra',
   },
-  description: 'Cypentra provides cutting-edge digital commerce solutions to help your business thrive online. Discover our comprehensive platform for modern e-commerce.',
+  description:
+    'Cypentra provides cutting-edge digital commerce solutions to help your business thrive online. Discover our comprehensive platform for modern e-commerce.',
   applicationName: 'Cypentra',
   generator: 'Next.js',
-  keywords: ['cypentra', 'e-commerce', 'digital commerce', 'online store', 'business solutions'],
+  keywords: [
+    'cypentra',
+    'e-commerce',
+    'digital commerce',
+    'online store',
+    'business solutions',
+  ],
   authors: [{ name: 'Cypentra Team' }],
   creator: 'Cypentra',
   publisher: 'Cypentra',
@@ -25,9 +35,7 @@ export const metadata: Metadata = {
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180' },
-    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
     shortcut: ['/favicon.ico'],
   },
 
@@ -41,22 +49,23 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "Cypentra – Straightforward Cybersecurity",
-    description: "Secure the center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.",
-    images: ["/og.png"],
-    url: "https://cypentra.com",
-    siteName: "Cypentra",
+    title: 'Cypentra – Straightforward Cybersecurity',
+    description:
+      'Secure the center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.',
+    images: ['/og.png'],
+    url: 'https://cypentra.com',
+    siteName: 'Cypentra',
   },
 
   twitter: {
     card: 'summary_large_image',
     site: '@cypentra',
     creator: '@cypentra',
-    title: "Cypentra – Straightforward Cybersecurity",
-    description: "Secure the center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.",
-    images: ["/og.png"],
+    title: 'Cypentra – Straightforward Cybersecurity',
+    description:
+      'Secure the center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.',
+    images: ['/og.png'],
   },
-
 
   // Robots configuration
   robots: {
@@ -81,13 +90,13 @@ export const metadata: Metadata = {
   // Additional SEO metadata
   category: 'E-commerce',
   classification: 'Business',
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={GeistSans.variable}>
       <head>
         {/* Google Analytics */}
         <Script
@@ -120,7 +129,10 @@ export default function RootLayout({
         </Script>
 
         {/* Structured Data for SEO */}
-        <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          strategy="beforeInteractive">
           {`
            {
              "@context": "https://schema.org",
@@ -149,9 +161,13 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       </head>
 
-      <body>
-        <CartProvider>{children}</CartProvider>
+      <body className={`${GeistSans.className} antialiased`}>
+        <CartProvider>
+          <Header />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
-  )
+  );
 }

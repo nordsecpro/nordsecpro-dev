@@ -182,120 +182,6 @@ function CypentraLogo({ className = 'h-8 w-auto' }) {
   );
 }
 
-// Professional Header Component
-function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const router = useRouter();
-
-  const handleNavigation = (path: any) => {
-    if (path.startsWith('#')) {
-      // Navigate to home page with section
-      router.push(`/${path}`);
-    } else {
-      router.push(path);
-    }
-  };
-
-  const navigationItems = [
-    { name: 'Services', path: '/', active: false },
-    { name: 'Packages', path: '/', active: false },
-    { name: 'About', path: '/', active: false },
-    { name: 'Case Studies', path: '/', active: false },
-    { name: 'Resources', path: '/', active: false },
-    { name: 'Insights', path: '/', active: false },
-    { name: 'Contact', path: '/contact' },
-  ];
-
-  return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-lg border-b sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          {/* Logo - Clickable to home */}
-          <div onClick={() => router.push('/')} className="cursor-pointer">
-            <CypentraLogo />
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex space-x-1">
-            {navigationItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavigation(item.path)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  item.active
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                }`}>
-                {item.name}
-              </button>
-            ))}
-          </nav>
-
-          {/* Medium Screen Navigation */}
-          <nav className="hidden md:flex lg:hidden space-x-1">
-            <button
-              onClick={() => handleNavigation('/#services')}
-              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors">
-              Services
-            </button>
-            <button
-              onClick={() => handleNavigation('/#packages')}
-              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors">
-              Packages
-            </button>
-            <button
-              onClick={() => handleNavigation('/#about')}
-              className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 font-medium transition-colors">
-              About
-            </button>
-            <button className="px-3 py-2 rounded-lg bg-blue-600 text-white font-medium shadow-lg">
-              Contact
-            </button>
-          </nav>
-
-          {/* Right Side */}
-          <div className="flex items-center space-x-4">
-            <CartDropdown />
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors">
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={`md:hidden transition-all duration-300 overflow-hidden ${
-            isMenuOpen ? 'max-h-screen pb-4' : 'max-h-0'
-          }`}>
-          <nav className="space-y-2 pt-4 border-t">
-            {navigationItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => {
-                  handleNavigation(item.path);
-                  setIsMenuOpen(false);
-                }}
-                className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
-                  item.active
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                }`}>
-                {item.name}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-    </header>
-  );
-}
-
 // Main Contact Page Component
 export default function ContactPage() {
   const router = useRouter();
@@ -409,8 +295,6 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
-      <Header />
-
       {/* Hero Section */}
       <div className="relative py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
