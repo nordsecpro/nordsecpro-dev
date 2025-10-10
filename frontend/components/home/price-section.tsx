@@ -1,5 +1,5 @@
 'use client';
-import LitePackagesSection from '@/components/price-calculator';
+import LitePackagesSection from '@/components/packages/litePackages-section';
 
 // Price Calculator Section Component
 function PriceCalculatorSection() {
