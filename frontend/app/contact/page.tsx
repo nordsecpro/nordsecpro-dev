@@ -1,6 +1,6 @@
-// app/contact/page.js or pages/contact.js
+// app/contact/page.tsx or pages/contact.tsx
 'use client';
-import { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation'; // For app directory
 import {
   Mail,
@@ -14,15 +14,66 @@ import {
   Shield,
   CheckCircle,
   AlertCircle,
+  LucideIcon,
 } from 'lucide-react';
 import CartDropdown from '@/components/CartDropdown';
 
+// Types
+interface ButtonProps {
+  children: React.ReactNode;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'ghost'
+    | 'success'
+    | 'danger';
+  disabled?: boolean;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
+  className?: string;
+}
+
+interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
+  className?: string;
+}
+
+interface FormData {
+  name: string;
+  email: string;
+  company: string;
+  subject: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+type SubmitStatus = 'success' | 'error' | null;
+
 // Professional Button Component
-const Button = ({
+const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
   type = 'button',
-  variant = 'default',
+  variant = 'primary',
   disabled = false,
   className = '',
   size = 'md',
@@ -30,7 +81,7 @@ const Button = ({
   const baseClasses =
     'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
-  const variants = {
+  const variants: Record<string, string> = {
     primary:
       'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl focus:ring-blue-500',
     secondary:
@@ -42,7 +93,7 @@ const Button = ({
     danger: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
   };
 
-  const sizes = {
+  const sizes: Record<string, string> = {
     sm: 'px-3 py-2 text-sm rounded-md',
     md: 'px-4 py-2 text-base rounded-lg',
     lg: 'px-6 py-3 text-lg rounded-lg',
@@ -60,7 +111,7 @@ const Button = ({
 };
 
 // Professional Input Component
-const Input = ({
+const Input: React.FC<InputProps> = ({
   label,
   required,
   error,
@@ -99,7 +150,7 @@ const Input = ({
 };
 
 // Professional Textarea Component
-const Textarea = ({
+const Textarea: React.FC<TextareaProps> = ({
   label,
   required,
   error,
@@ -138,7 +189,7 @@ const Textarea = ({
 };
 
 // Logo Component
-function CypentraLogo({ className = 'h-8 w-auto' }) {
+function CypentraLogo({ className = 'h-8 w-auto' }: { className?: string }) {
   return (
     <div className={`flex items-center ${className}`}>
       <img
@@ -153,7 +204,7 @@ function CypentraLogo({ className = 'h-8 w-auto' }) {
 // Main Contact Page Component
 export default function ContactPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     company: '',
@@ -161,12 +212,12 @@ export default function ContactPage() {
     message: '',
   });
 
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null);
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -188,7 +239,9 @@ export default function ContactPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -196,7 +249,7 @@ export default function ContactPage() {
     }));
 
     // Clear error when user starts typing
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({
         ...prev,
         [name]: '',
@@ -204,7 +257,7 @@ export default function ContactPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) {

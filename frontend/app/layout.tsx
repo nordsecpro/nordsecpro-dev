@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+// @ts-ignore
 import './globals.css';
 import { CartProvider } from '@/contexts/CartContext';
 import Navbar from '@/components/common/navbar';
