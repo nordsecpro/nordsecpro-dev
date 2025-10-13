@@ -6,7 +6,6 @@ import {
   ArrowRight,
   FileText,
   Sparkles,
-  Zap,
 } from 'lucide-react';
 
 // Insights Section Component
@@ -91,18 +90,17 @@ function InsightsSection() {
             return (
               <div
                 key={index}
-                className="relative group cursor-pointer"
+                className="relative group cursor-pointer animate-fadeInUp"
                 style={{
-                  animation: 'fadeInUp 0.8s ease-out forwards',
-                  animationDelay: `${index * 200}ms`,
-                  opacity: 0,
+                  animationDelay: `${index * 100}ms`,
+                  animationFillMode: 'both',
                 }}>
                 {/* Glow effect */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700" />
 
                 {/* Card */}
                 <div
-                  className={`relative bg-white rounded-3xl p-8 lg:p-10 shadow-xl border-2 border-blue-300 hover:border-blue-500 transition-all duration-700 hover:shadow-2xl hover:shadow-blue-500/20 h-full flex flex-col ${insight.bgPattern} group-hover:-translate-y-2`}>
+                  className={`relative bg-white rounded-3xl p-8 lg:p-10 shadow-xl border-2 border-blue-300 hover:border-blue-500 transition-all duration-700 hover:shadow-2xl hover:shadow-blue-500/20 h-full flex flex-col ${insight.bgPattern} group-hover:-translate-y-2 overflow-hidden`}>
                   {/* Decorative Corner */}
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-transparent rounded-bl-[100px] rounded-tr-3xl" />
 
@@ -134,16 +132,20 @@ function InsightsSection() {
                   </p>
 
                   {/* Read More Link */}
-                  <div className="flex items-center gap-2 text-blue-600 font-bold group-hover:gap-4 transition-all duration-300">
+                  <div className="relative flex items-center gap-2 text-blue-600 font-bold group-hover:gap-4 transition-all duration-300">
                     <span className="text-sm uppercase tracking-wide">
                       Read More
                     </span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
 
-                  {/* Bottom Accent Line */}
+                  {/* Bottom Accent Line - Fixed positioning */}
                   <div
-                    className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${insight.gradient} rounded-b-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                    className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${insight.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                    style={{
+                      borderBottomLeftRadius: '1.5rem',
+                      borderBottomRightRadius: '1.5rem',
+                    }}
                   />
                 </div>
               </div>
@@ -156,12 +158,16 @@ function InsightsSection() {
         @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: translateY(40px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+
+        .animate-fadeInUp {
+          animation: fadeInUp 0.5s ease-out;
         }
       `}</style>
     </section>
