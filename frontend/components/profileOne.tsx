@@ -1,114 +1,58 @@
-import React from "react";
+interface RatingDistribution {
+  [key: string]: number;
+}
 
-interface ReviewData {
-  totalReviews: number;
-  averageRating: number;
-  ratingDistribution: {
-    five: number;
-    four: number;
-    three: number;
-    two: number;
-    one: number;
+interface ProfileData {
+  domain: string;
+  total_reviews: number;
+  rating_distribution: RatingDistribution;
+  language_distribution: {
+    [key: string]: number;
   };
 }
 
-// Default data matching the image
-const defaultData: ReviewData = {
-  totalReviews: 24,
-  averageRating: 4.6,
-  ratingDistribution: {
-    five: 18,
-    four: 3,
-    three: 2,
-    two: 1,
-    one: 0,
-  },
-};
+interface CypentraReviewProfileProps {
+  profileData: ProfileData | null;
+}
 
-export default function CypentraReviewProfile({
-  data = defaultData,
-}: {
-  data?: ReviewData;
-}) {
-  const { totalReviews, averageRating, ratingDistribution } = data;
+const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
+  profileData,
+}) => {
+  if (!profileData) return null;
 
-  // Calculate percentages
-  const getPercentage = (count: number) => {
-    if (totalReviews === 0) return 0;
-    return (count / totalReviews) * 100;
+  const { total_reviews, rating_distribution } = profileData;
+
+  // Calculate average rating
+  const calculateAverageRating = () => {
+    let totalStars = 0;
+    let totalCount = 0;
+
+    Object.entries(rating_distribution).forEach(([stars, count]) => {
+      totalStars += parseInt(stars) * count;
+      totalCount += count;
+    });
+
+    return totalCount > 0 ? totalStars / totalCount : 5.0;
   };
+
+  const averageRating = calculateAverageRating();
 
   // Get rating label
   const getRatingLabel = (rating: number) => {
-    if (rating >= 4.5) return "Excellent";
-    if (rating >= 4.0) return "Great";
-    if (rating >= 3.5) return "Good";
-    if (rating >= 3.0) return "Average";
-    return "Poor";
+    if (rating >= 4.5) return 'Excellent';
+    if (rating >= 4.0) return 'Great';
+    if (rating >= 3.5) return 'Good';
+    if (rating >= 3.0) return 'Average';
+    return 'Poor';
   };
 
-  // Render stars
-  const renderStars = (rating: number, size: string = "24") => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) {
-        stars.push(
-          <svg
-            key={i}
-            width={size}
-            height={size}
-            viewBox="0 0 24 24"
-            fill="#00b67a"
-          >
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-          </svg>
-        );
-      } else if (i === fullStars + 1 && hasHalfStar) {
-        stars.push(
-          <div
-            key={i}
-            className="relative inline-block"
-            style={{ width: size + "px", height: size + "px" }}
-          >
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="#dcdce6">
-              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-            <div
-              className="absolute inset-0 overflow-hidden"
-              style={{ width: "60%" }}
-            >
-              <svg
-                width={size}
-                height={size}
-                viewBox="0 0 24 24"
-                fill="#00b67a"
-              >
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-              </svg>
-            </div>
-          </div>
-        );
-      } else {
-        stars.push(
-          <svg
-            key={i}
-            width={size}
-            height={size}
-            viewBox="0 0 24 24"
-            fill="#dcdce6"
-          >
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-          </svg>
-        );
-      }
-    }
-    return stars;
+  // Calculate percentages
+  const getPercentage = (count: number) => {
+    if (total_reviews === 0) return 0;
+    return (count / total_reviews) * 100;
   };
 
-  // Render small Trustpilot stars for the rating box
+  // Render Trustpilot stars for the rating box
   const renderTrustpilotStars = (rating: number = 5) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -116,7 +60,6 @@ export default function CypentraReviewProfile({
 
     for (let i = 1; i <= 5; i++) {
       if (i <= fullStars) {
-        // Full star
         stars.push(
           <div key={i} className="bg-[#00b67a] p-1">
             <svg
@@ -124,14 +67,12 @@ export default function CypentraReviewProfile({
               height="16"
               viewBox="0 0 24 24"
               fill="white"
-              className="md:w-5 md:h-5"
-            >
+              className="md:w-5 md:h-5">
               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
           </div>
         );
       } else if (i === fullStars + 1 && hasHalfStar) {
-        // Half star - show partial green background
         stars.push(
           <div key={i} className="bg-gray-200 p-1 relative overflow-hidden">
             <svg
@@ -139,28 +80,24 @@ export default function CypentraReviewProfile({
               height="16"
               viewBox="0 0 24 24"
               fill="gray"
-              className="md:w-5 md:h-5"
-            >
+              className="md:w-5 md:h-5">
               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
             <div
               className="absolute inset-0 bg-[#00b67a] p-1"
-              style={{ width: "60%" }}
-            >
+              style={{ width: '60%' }}>
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="white"
-                className="md:w-5 md:h-5"
-              >
+                className="md:w-5 md:h-5">
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
               </svg>
             </div>
           </div>
         );
       } else {
-        // Empty star
         stars.push(
           <div key={i} className="bg-gray-200 p-1">
             <svg
@@ -168,8 +105,7 @@ export default function CypentraReviewProfile({
               height="16"
               viewBox="0 0 24 24"
               fill="gray"
-              className="md:w-5 md:h-5"
-            >
+              className="md:w-5 md:h-5">
               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
           </div>
@@ -191,8 +127,7 @@ export default function CypentraReviewProfile({
                 <svg
                   className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600"
                   fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                  viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -213,7 +148,7 @@ export default function CypentraReviewProfile({
             {/* Reviews and Rating */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3">
               <a href="#" className="text-black underline text-sm sm:text-base">
-                Reviews {totalReviews}
+                Reviews {total_reviews}
               </a>
               <span className="hidden sm:inline text-gray-400">•</span>
               <div className="flex items-center gap-2">
@@ -226,8 +161,7 @@ export default function CypentraReviewProfile({
                 <svg
                   className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400"
                   fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                  viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -238,9 +172,7 @@ export default function CypentraReviewProfile({
             </div>
 
             {/* Service Type */}
-            <a
-              className="text-blue-600 text-sm sm:text-base"
-            >
+            <a className="text-blue-600 text-sm sm:text-base">
               Computer Security Service
             </a>
           </div>
@@ -262,26 +194,25 @@ export default function CypentraReviewProfile({
               {renderTrustpilotStars(averageRating)}
             </div>
             <p className="text-xs sm:text-sm text-gray-600">
-              {totalReviews} reviews
+              {total_reviews} reviews
             </p>
           </div>
 
           {/* Rating Distribution Bars */}
           <div className="flex-1 w-full space-y-1.5 sm:space-y-2">
             {[
-              { stars: 5, count: ratingDistribution.five },
-              { stars: 4, count: ratingDistribution.four },
-              { stars: 3, count: ratingDistribution.three },
-              { stars: 2, count: ratingDistribution.two },
-              { stars: 1, count: ratingDistribution.one },
+              { stars: 5, count: rating_distribution['5'] || 0 },
+              { stars: 4, count: rating_distribution['4'] || 0 },
+              { stars: 3, count: rating_distribution['3'] || 0 },
+              { stars: 2, count: rating_distribution['2'] || 0 },
+              { stars: 1, count: rating_distribution['1'] || 0 },
             ].map(({ stars, count }) => {
               const percentage = getPercentage(count);
               return (
                 <div key={stars} className="flex items-center gap-2">
                   <span
                     className="text-xs sm:text-sm text-gray-600 text-right"
-                    style={{ minWidth: "40px" }}
-                  >
+                    style={{ minWidth: '40px' }}>
                     {stars}-star
                   </span>
                   <div className="flex-1 bg-gray-200 rounded-full h-2.5 sm:h-3 relative">
@@ -292,8 +223,7 @@ export default function CypentraReviewProfile({
                   </div>
                   <span
                     className="text-xs sm:text-sm text-gray-500 text-left"
-                    style={{ minWidth: "20px" }}
-                  >
+                    style={{ minWidth: '20px' }}>
                     {count}
                   </span>
                 </div>
@@ -304,4 +234,6 @@ export default function CypentraReviewProfile({
       </div>
     </div>
   );
-}
+};
+
+export default CypentraReviewProfile;

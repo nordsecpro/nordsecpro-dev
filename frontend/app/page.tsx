@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Shield,
@@ -25,22 +25,23 @@ import {
   Menu,
   X,
   ExternalLink,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import CypentraReviewProfile from "@/components/profileOne"
-import PriceCalculator from "@/components/price-calculator";
-import CartDropdown from "@/components/CartDropdown";
-import { useState, useEffect } from "react";
+} from '@/components/ui/card';
+import CypentraReviewProfile from '@/components/profileOne';
+import PriceCalculator from '@/components/price-calculator';
+import CartDropdown from '@/components/CartDropdown';
+import { useState, useEffect } from 'react';
+import TestimonialsSection from '@/components/TestimonialsSection';
 
 // Cypentra Logo Component
-function CypentraLogo({ className = "h-8 w-auto" }: { className?: string }) {
+function CypentraLogo({ className = 'h-8 w-auto' }: { className?: string }) {
   return (
     <div className={`flex items-center ${className}`}>
       <img
@@ -59,9 +60,9 @@ function Header() {
   // Helper function to handle navigation with URL update
   const handleNavigation = (sectionId: string, path: string) => {
     // Scroll to section
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
     // Update URL without page reload
-    window.history.pushState({}, "", path);
+    window.history.pushState({}, '', path);
   };
 
   return (
@@ -77,67 +78,57 @@ function Header() {
               href="/services"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("services", "/services");
+                handleNavigation('services', '/services');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Services
             </a>
             <a
               href="/packages"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("packages", "/packages");
+                handleNavigation('packages', '/packages');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Packages
             </a>
             <a
               href="/about"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("about", "/about");
+                handleNavigation('about', '/about');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               About
             </a>
             <a
               href="/case-studies"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("case-studies", "/case-studies");
+                handleNavigation('case-studies', '/case-studies');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Case Studies
             </a>
             <a
               href="/resources"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("resources", "/resources");
+                handleNavigation('resources', '/resources');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Resources
             </a>
             <a
               href="/insights"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("insights", "/insights");
+                handleNavigation('insights', '/insights');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Insights
             </a>
-            <a
-              href="/contact"
-            >
-              Contact
-            </a>
+            <a href="/contact">Contact</a>
           </nav>
 
           {/* Medium Screen Navigation - Shows fewer items */}
@@ -146,36 +137,32 @@ function Header() {
               href="/services"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("services", "/services");
+                handleNavigation('services', '/services');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Services
             </a>
             <a
               href="/packages"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("packages", "/packages");
+                handleNavigation('packages', '/packages');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Packages
             </a>
             <a
               href="/about"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("about", "/about");
+                handleNavigation('about', '/about');
               }}
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               About
             </a>
             <a
               href="/contact"
-              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
-            >
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer">
               Contact
             </a>
           </nav>
@@ -188,8 +175,7 @@ function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100"
-            >
+              className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100">
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
               ) : (
@@ -202,81 +188,72 @@ function Header() {
         {/* Mobile Menu - Full navigation for small screens */}
         <div
           className={`md:hidden transition-all duration-300 overflow-hidden ${
-            isMenuOpen ? "max-h-screen pb-4" : "max-h-0"
-          }`}
-        >
+            isMenuOpen ? 'max-h-screen pb-4' : 'max-h-0'
+          }`}>
           <nav className="space-y-1 pt-4 border-t">
             <a
               href="/services"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("services", "/services");
+                handleNavigation('services', '/services');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               Services
             </a>
             <a
               href="/packages"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("packages", "/packages");
+                handleNavigation('packages', '/packages');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               Packages
             </a>
             <a
               href="/about"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("about", "/about");
+                handleNavigation('about', '/about');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               About
             </a>
             <a
               href="/case-studies"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("case-studies", "/case-studies");
+                handleNavigation('case-studies', '/case-studies');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               Case Studies
             </a>
             <a
               href="/resources"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("resources", "/resources");
+                handleNavigation('resources', '/resources');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               Resources
             </a>
             <a
               href="/insights"
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation("insights", "/insights");
+                handleNavigation('insights', '/insights');
                 setIsMenuOpen(false);
               }}
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               Insights
             </a>
             <a
               href="/contact"
-
-              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer"
-            >
+              className="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded font-medium cursor-pointer">
               Contact
             </a>
           </nav>
@@ -304,23 +281,21 @@ function HeroSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => window.location.href = '/contact'}
+              onClick={() => (window.location.href = '/contact')}
               size="lg"
-              className="bg-white text-blue-600 hover:bg-gray-100"
-            >
+              className="bg-white text-blue-600 hover:bg-gray-100">
               <Calendar className="h-5 w-5 mr-2" />
               Talk to a Security Expert
             </Button>
             <Button
               onClick={() => {
-                document.getElementById("price")?.scrollIntoView({
-                  behavior: "smooth",
+                document.getElementById('price')?.scrollIntoView({
+                  behavior: 'smooth',
                 });
               }}
               size="lg"
               variant="outline"
-              className="bg-white text-blue-600 hover:bg-gray-100"
-            >
+              className="bg-white text-blue-600 hover:bg-gray-100">
               See Pricing & Packages
             </Button>
           </div>
@@ -601,15 +576,14 @@ function PackagesSection() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => togglePackage("startup")}
-                  className="flex items-center space-x-2 text-blue-600 border-blue-600 hover:bg-blue-50"
-                >
+                  onClick={() => togglePackage('startup')}
+                  className="flex items-center space-x-2 text-blue-600 border-blue-600 hover:bg-blue-50">
                   <span>
-                    {expandedPackages["startup"]
-                      ? "Hide Details"
+                    {expandedPackages['startup']
+                      ? 'Hide Details'
                       : "What's Included"}
                   </span>
-                  {expandedPackages["startup"] ? (
+                  {expandedPackages['startup'] ? (
                     <ChevronUp className="h-4 w-4" />
                   ) : (
                     <ChevronDown className="h-4 w-4" />
@@ -618,7 +592,7 @@ function PackagesSection() {
               </div>
             </CardHeader>
 
-            {expandedPackages["startup"] && (
+            {expandedPackages['startup'] && (
               <CardContent className="space-y-3 border-t pt-4">
                 <div className="space-y-2">
                   <div className="flex items-start space-x-2">
@@ -711,15 +685,14 @@ function PackagesSection() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => togglePackage("soc2")}
-                  className="flex items-center space-x-2 text-blue-600 border-blue-600 hover:bg-blue-50"
-                >
+                  onClick={() => togglePackage('soc2')}
+                  className="flex items-center space-x-2 text-blue-600 border-blue-600 hover:bg-blue-50">
                   <span>
-                    {expandedPackages["soc2"]
-                      ? "Hide Details"
+                    {expandedPackages['soc2']
+                      ? 'Hide Details'
                       : "What's Included"}
                   </span>
-                  {expandedPackages["soc2"] ? (
+                  {expandedPackages['soc2'] ? (
                     <ChevronUp className="h-4 w-4" />
                   ) : (
                     <ChevronDown className="h-4 w-4" />
@@ -728,7 +701,7 @@ function PackagesSection() {
               </div>
             </CardHeader>
 
-            {expandedPackages["soc2"] && (
+            {expandedPackages['soc2'] && (
               <CardContent className="space-y-3 border-t pt-4">
                 <div className="space-y-2">
                   <div className="flex items-start space-x-2">
@@ -788,15 +761,14 @@ function PackagesSection() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => togglePackage("audit")}
-                  className="flex items-center space-x-2 text-green-600 border-green-600 hover:bg-green-50"
-                >
+                  onClick={() => togglePackage('audit')}
+                  className="flex items-center space-x-2 text-green-600 border-green-600 hover:bg-green-50">
                   <span>
-                    {expandedPackages["audit"]
-                      ? "Hide Details"
+                    {expandedPackages['audit']
+                      ? 'Hide Details'
                       : "What's Included"}
                   </span>
-                  {expandedPackages["audit"] ? (
+                  {expandedPackages['audit'] ? (
                     <ChevronUp className="h-4 w-4" />
                   ) : (
                     <ChevronDown className="h-4 w-4" />
@@ -805,7 +777,7 @@ function PackagesSection() {
               </div>
             </CardHeader>
 
-            {expandedPackages["audit"] && (
+            {expandedPackages['audit'] && (
               <CardContent className="space-y-3 border-t pt-4">
                 <div className="space-y-2">
                   <div className="flex items-start space-x-2">
@@ -861,15 +833,14 @@ function PackagesSection() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => togglePackage("vciso")}
-                  className="flex items-center space-x-2 text-purple-600 border-purple-600 hover:bg-purple-50"
-                >
+                  onClick={() => togglePackage('vciso')}
+                  className="flex items-center space-x-2 text-purple-600 border-purple-600 hover:bg-purple-50">
                   <span>
-                    {expandedPackages["vciso"]
-                      ? "Hide Details"
+                    {expandedPackages['vciso']
+                      ? 'Hide Details'
                       : "What's Included"}
                   </span>
-                  {expandedPackages["vciso"] ? (
+                  {expandedPackages['vciso'] ? (
                     <ChevronUp className="h-4 w-4" />
                   ) : (
                     <ChevronDown className="h-4 w-4" />
@@ -878,7 +849,7 @@ function PackagesSection() {
               </div>
             </CardHeader>
 
-            {expandedPackages["vciso"] && (
+            {expandedPackages['vciso'] && (
               <CardContent className="space-y-3 border-t pt-4">
                 <div className="space-y-2">
                   <div className="flex items-start space-x-2">
@@ -955,8 +926,8 @@ function SecureAccessSection() {
                   className="w-auto h-12 filter brightness-0 invert"
                   onError={(e) => {
                     // Fallback to text if image doesn't load
-                    e.target.style.display = "none";
-                    e.target.nextSibling.style.display = "flex";
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
                   }}
                 />
                 <div className="w-8 h-8 hidden items-center justify-center">
@@ -1036,9 +1007,8 @@ function SecureAccessSection() {
               consultation call. Your security comes first.
             </p>
             <Button
-              onClick={() => window.location.href = '/contact'}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
+              onClick={() => (window.location.href = '/contact')}
+              className="bg-blue-600 hover:bg-blue-700 text-white">
               <Calendar className="h-4 w-4 mr-2" />
               Schedule Secure Onboarding Call
             </Button>
@@ -1313,10 +1283,9 @@ function BookCallSection() {
         </div>
 
         <Button
-          onClick={() => window.location.href = '/contact'}
+          onClick={() => (window.location.href = '/contact')}
           size="lg"
-          className="bg-white text-blue-600 hover:bg-gray-100"
-        >
+          className="bg-white text-blue-600 hover:bg-gray-100">
           <Calendar className="h-5 w-5 mr-2" />
           Talk to a Security Expert
         </Button>
@@ -1331,10 +1300,10 @@ function BookCallSection() {
 function ResourcesSection() {
   const handleDownload = (fileName, displayName) => {
     // Create a temporary link element
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = `/assets/${fileName}`;
     link.download = displayName;
-    link.target = "_blank";
+    link.target = '_blank';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1368,11 +1337,10 @@ function ResourcesSection() {
                 variant="outline"
                 onClick={() =>
                   handleDownload(
-                    "soc2-starter-kit.pdf",
-                    "SOC 2 Starter Kit - Cypentra.pdf"
+                    'soc2-starter-kit.pdf',
+                    'SOC 2 Starter Kit - Cypentra.pdf'
                   )
-                }
-              >
+                }>
                 <Download className="h-4 w-4 mr-2" />
                 Download Free
               </Button>
@@ -1394,11 +1362,10 @@ function ResourcesSection() {
                 variant="outline"
                 onClick={() =>
                   handleDownload(
-                    "cloud-security-cheat-sheet.pdf",
-                    "Cloud Security Cheat Sheet - Cypentra.pdf"
+                    'cloud-security-cheat-sheet.pdf',
+                    'Cloud Security Cheat Sheet - Cypentra.pdf'
                   )
-                }
-              >
+                }>
                 <Download className="h-4 w-4 mr-2" />
                 Download Free
               </Button>
@@ -1420,11 +1387,10 @@ function ResourcesSection() {
                 variant="outline"
                 onClick={() =>
                   handleDownload(
-                    "pentest-readiness-guide.pdf",
-                    "PenTest Readiness Guide - Cypentra.pdf"
+                    'pentest-readiness-guide.pdf',
+                    'PenTest Readiness Guide - Cypentra.pdf'
                   )
-                }
-              >
+                }>
                 <Download className="h-4 w-4 mr-2" />
                 Download Free
               </Button>
@@ -1522,26 +1488,26 @@ function FAQSection() {
 
   const faqs = [
     {
-      id: "speed",
-      question: "How fast can you deliver a PenTest?",
-      answer: "Most assessments are completed in 7–10 business days.",
+      id: 'speed',
+      question: 'How fast can you deliver a PenTest?',
+      answer: 'Most assessments are completed in 7–10 business days.',
     },
     {
-      id: "audit",
-      question: "Do you help with the SOC 2 audit itself?",
+      id: 'audit',
+      question: 'Do you help with the SOC 2 audit itself?',
       answer:
         "We prepare you fully and support you through the audit, but we don't act as the auditor.",
     },
     {
-      id: "timezone",
-      question: "What time zones do you support?",
-      answer: "We align with U.S. hours while operating 100% remotely.",
+      id: 'timezone',
+      question: 'What time zones do you support?',
+      answer: 'We align with U.S. hours while operating 100% remotely.',
     },
     {
-      id: "team",
-      question: "Who performs the work?",
+      id: 'team',
+      question: 'Who performs the work?',
       answer:
-        "All services are delivered by experienced professionals—no outsourcing, no junior handoffs.",
+        'All services are delivered by experienced professionals—no outsourcing, no junior handoffs.',
     },
   ];
 
@@ -1561,12 +1527,10 @@ function FAQSection() {
           {faqs.map((faq) => (
             <Card
               key={faq.id}
-              className="cursor-pointer hover:shadow-md transition-shadow"
-            >
+              className="cursor-pointer hover:shadow-md transition-shadow">
               <CardHeader
                 className="pb-4"
-                onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}
-              >
+                onClick={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{faq.question}</CardTitle>
                   {openFAQ === faq.id ? (
@@ -1657,423 +1621,15 @@ function TrustSection() {
   );
 }
 
-const Card1 = ({ className, children }) => (
-  <div className={`rounded-lg shadow-md border ${className}`}>{children}</div>
-);
-
-const CardContent1 = ({ className, children }) => (
-  <div className={className}>{children}</div>
-);
-
-// Star rating component
-const StarRating = ({ rating = 5 }) => (
-  <div className="flex items-center mb-3">
-    {[...Array(5)].map((_, i) => (
-      <svg
-        key={i}
-        className={`w-4 h-4 ${
-          i < rating ? "text-yellow-400" : "text-gray-300"
-        } fill-current`}
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </svg>
-    ))}
-  </div>
-);
-
-// Verified badge component
-const VerifiedBadge = () => (
-  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-2">
-    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-      <path
-        fillRule="evenodd"
-        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-        clipRule="evenodd"
-      />
-    </svg>
-    Verified
-  </span>
-);
-
-// Trustpilot See More component
-const TrustpilotSeeMore = () => {
-  const handleClick = () => {
-    window.open(
-      "https://www.trustpilot.com/review/cypentra.com",
-      "_blank",
-      "noopener,noreferrer"
-    );
-  };
-
-  return (
-    <div className="flex justify-center mt-6 mb-4">
-      <div
-        onClick={handleClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') handleClick();
-        }}
-        className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400/60 rounded-lg w-full max-w-7xl mx-auto"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          <div className="lg:col-span-3">
-            <CypentraReviewProfile />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Individual testimonial component
-const TestimonialCard = ({
-  name,
-  title,
-  company,
-  location,
-  review,
-  reviewTitle,
-  date,
-  verified = false,
-  rating = 5,
-}: any) => {
-  const getInitials = (name: any) => {
-    return name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase();
-  };
-
-  return (
-    <div className="h-full">
-      <Card1 className="bg-white min-h-[280px] flex flex-col hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-        <CardContent1 className="p-4 sm:p-6 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-4">
-            <StarRating rating={rating} />
-            {verified && <VerifiedBadge />}
-          </div>
-
-          <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">
-            {reviewTitle}
-          </h4>
-
-          <p className="text-gray-600 mb-4 italic flex-grow leading-relaxed text-sm">
-            "{review}"
-          </p>
-
-          <div className="border-t pt-4 mt-auto">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mr-2 sm:mr-3">
-                  <span className="text-white font-semibold text-xs sm:text-sm">
-                    {getInitials(name)}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-xs sm:text-sm">
-                    {name}
-                  </p>
-                  {title && company && (
-                    <p className="text-xs text-gray-500">
-                      {title}, {company}
-                    </p>
-                  )}
-                  <div className="flex items-center text-xs text-gray-400 mt-1">
-                    <span className="mr-2">{location}</span>
-                    <span className="hidden sm:inline">{date}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent1>
-      </Card1>
-    </div>
-  );
-};
-
-// Carousel dots indicator
-const CarouselDots = ({ total, current, onDotClick }) => (
-  <div className="flex justify-center space-x-1 ">
-    {[...Array(total)].map((_, index) => (
-      <button
-        key={index}
-        onClick={() => onDotClick(index)}
-        className={`w-3 h-3 rounded-full transition-all duration-200 ${
-          index === current
-            ? "bg-blue-600 scale-110"
-            : "bg-gray-300 hover:bg-gray-400"
-        }`}
-      />
-    ))}
-  </div>
-);
-
-// Main testimonials section component
-function TestimonialsSection() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isAutoPlay, setIsAutoPlay] = useState(true);
-
-  const testimonials = [
-    {
-      name: "Thomas Anderson",
-      title: "vCISO",
-      company: "Tech Solutions",
-      location: "US",
-      review:
-        "vCISO support gave us real, actionable steps instead of endless reports. The practical advice has been invaluable for our security posture.",
-      reviewTitle: "Practical advice!",
-      date: "August 13, 2025",
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: "Lily Prose",
-      title: "Founder",
-      company: "SaaS Austin",
-      location: "US",
-      review:
-        "We're a SaaS in Austin and needed SOC 2. Thought it'd be a nightmare but they just handled it. Simple and efficient process.",
-      reviewTitle: "SOC 2 without the headache",
-      date: "February 02, 2025",
-      verified: false,
-      rating: 5,
-    },
-    {
-      name: "Théodore Bodin",
-      title: "CTO",
-      company: "Small SaaS",
-      location: "US",
-      review:
-        "As a small SaaS, we don't have a big security team. Cypentra fills that gap perfectly with their comprehensive support.",
-      reviewTitle: "Perfect for startups",
-      date: "August 13, 2025",
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: "Andre Hobbs",
-      title: "Compliance Manager",
-      company: "EU Startup",
-      location: "US",
-      review:
-        "They understood EU compliance needs better than anyone we spoke with. Their expertise in international regulations is outstanding.",
-      reviewTitle: "Good for Europe based startups",
-      date: "August 12, 2025",
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: "Owen Adams",
-      title: "Security Lead",
-      company: "TechCorp",
-      location: "US",
-      review:
-        "Got our penetration test results within the week. Very professional team and thorough analysis.",
-      reviewTitle: "Fast penetration test delivery",
-      date: "June 12, 2025",
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: "Lucas Poole",
-      title: "DevOps Engineer",
-      company: "CloudTech",
-      location: "US",
-      review:
-        "Our AWS setup is much safer now. Professional service with clear communication throughout the process.",
-      reviewTitle: "Strong on cloud security",
-      date: "August 13, 2025",
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: "Jacob Miller",
-      title: "Finance Director",
-      company: "StartupCo",
-      location: "US",
-      review:
-        "No surprise costs, no contracts. Just clear pricing and reliable support. The flat fee model works perfectly for our budget.",
-      reviewTitle: "Flat fee is a big win",
-      date: "August 13, 2025",
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: "Christopher Thomas",
-      title: "IT Director",
-      company: "TechFlow",
-      location: "US",
-      review:
-        "We always know what's happening and why. No hidden agendas. Transparent communication throughout our engagement.",
-      reviewTitle: "Reliable and transparent!",
-      date: "August 14, 2025",
-      verified: false,
-      rating: 5,
-    },
-    {
-      name: "Dominic Owen",
-      title: "CEO",
-      company: "DataSecure",
-      location: "US",
-      review:
-        "They feel like part of our company, not just an outside vendor. True partnership approach to cybersecurity.",
-      reviewTitle: "Trustworthy team",
-      date: "August 12, 2025",
-      verified: true,
-      rating: 5,
-    },
-  ];
-
-  const totalSlides = Math.ceil(testimonials.length / 3);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  };
-
-  const goToSlide = (slideIndex) => {
-    setCurrentSlide(slideIndex);
-  };
-
-  // Auto-play functionality
-  useEffect(() => {
-    if (!isAutoPlay) return;
-
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [currentSlide, isAutoPlay]);
-
-  // Get current testimonials to display (3 per slide)
-  const getCurrentTestimonials = () => {
-    const startIndex = currentSlide * 3;
-    return testimonials.slice(startIndex, startIndex + 3);
-  };
-
-  return (
-    <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            What Our Clients Say
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Trusted by businesses worldwide to protect their digital assets and
-            ensure compliance
-          </p>
-          <div className="flex items-center justify-center mt-6">
-            <div className="flex items-center space-x-1">
-              {[...Array(5)].map((_, i) => (
-                <svg
-                  key={i}
-                  className="w-5 h-5 text-yellow-400 fill-current"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
-            </div>
-            <span className="ml-2 text-gray-600 font-medium">
-              5.0 out of 5 stars
-            </span>
-          </div>
-        </div>
-        {/* Trustpilot See More Button */}
-        <TrustpilotSeeMore />
-        {/* Carousel Container */}
-        <div
-          className="relative"
-          onMouseEnter={() => setIsAutoPlay(false)}
-          onMouseLeave={() => setIsAutoPlay(true)}
-        >
-          {/* Testimonials Display */}
-          <div className="overflow-hidden">
-            <div
-              className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-in-out"
-              style={{
-                minHeight: "300px",
-                opacity: 1,
-              }}
-            >
-              {getCurrentTestimonials().map((testimonial, index) => (
-                <div
-                  key={`${currentSlide}-${index}`}
-                  className="animate-fade-in"
-                >
-                  <TestimonialCard {...testimonial} />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Carousel Dots */}
-          <CarouselDots
-            total={totalSlides}
-            current={currentSlide}
-            onDotClick={goToSlide}
-          />
-        </div>
-
-        {/* Progress indicator */}
-        <div className="text-center mt-8">
-          <p className="text-gray-500 text-sm">
-            Showing {currentSlide * 3 + 1}-
-            {Math.min((currentSlide + 1) * 3, testimonials.length)} of{" "}
-            {testimonials.length} reviews
-          </p>
-          <p className="text-gray-400 text-xs mt-2">
-            All reviews are from verified customers • Last updated August 2025
-          </p>
-        </div>
-      </div>
-
-      {/* Custom CSS for animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out forwards;
-        }
-
-        .animate-fade-in:nth-child(2) {
-          animation-delay: 0.1s;
-        }
-
-        .animate-fade-in:nth-child(3) {
-          animation-delay: 0.2s;
-        }
-      `}</style>
-    </section>
-  );
-}
-
 // Contact Section Component
 function ContactSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    subject: "",
-    message: "",
+    name: '',
+    email: '',
+    company: '',
+    subject: '',
+    message: '',
   });
 
   const handleInputChange = (e) => {
@@ -2096,41 +1652,41 @@ function ContactSection() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/admin/contact`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             name: formData.name,
             email: formData.email,
             company: formData.company,
-            subject: formData.subject || "Security Consultation Request",
+            subject: formData.subject || 'Security Consultation Request',
             message: formData.message,
-            type: "security_consultation",
+            type: 'security_consultation',
           }),
         }
       );
 
       if (response.ok) {
-        setSubmitStatus("success");
+        setSubmitStatus('success');
         // Reset form after successful submission
         setTimeout(() => {
           setIsDialogOpen(false);
           setFormData({
-            name: "",
-            email: "",
-            company: "",
-            subject: "",
-            message: "",
+            name: '',
+            email: '',
+            company: '',
+            subject: '',
+            message: '',
           });
           setSubmitStatus(null);
         }, 2000);
       } else {
-        throw new Error("Failed to send message");
+        throw new Error('Failed to send message');
       }
     } catch (error) {
-      console.error("Error sending message:", error);
-      setSubmitStatus("error");
+      console.error('Error sending message:', error);
+      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }
@@ -2165,8 +1721,7 @@ function ContactSection() {
                       href="https://www.google.com/maps/place/Nueva+Andaluc%C3%ADa,+29660+Marbella,+M%C3%A1laga,+Spain/@36.504587,-4.9670655,5869m/data=!3m2!1e3!4b1!4m6!3m5!1s0xd7329f95778141f:0x89f7238dbe6dc699!8m2!3d36.4923752!4d-4.9516096!16s%2Fg%2F122y5q61?entry=ttu&g_ep=EgoyMDI1MDcxMy4wIKXMDSoASAFQAw%3D%3D"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-blue-400 transition-colors duration-200"
-                    >
+                      className="text-gray-300 hover:text-blue-400 transition-colors duration-200">
                       Nueva Andalucia district of Marbella-29069, Spain
                     </a>
                   </div>
@@ -2196,9 +1751,8 @@ function ContactSection() {
 
               <div className="space-y-4">
                 <Button
-                  onClick={() => window.location.href = '/contact'}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
-                >
+                  onClick={() => (window.location.href = '/contact')}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3">
                   <Calendar className="h-4 w-4 mr-2" />
                   Talk to a Security Expert
                 </Button>
@@ -2206,10 +1760,9 @@ function ContactSection() {
                 <Button
                   variant="outline"
                   onClick={() =>
-                    (window.location.href = "mailto:info@cypentra.com")
+                    (window.location.href = 'mailto:info@cypentra.com')
                   }
-                  className="w-full border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-all duration-200"
-                >
+                  className="w-full border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white transition-all duration-200">
                   <Mail className="h-4 w-4 mr-2" />
                   Send Security Inquiry
                 </Button>
@@ -2221,8 +1774,7 @@ function ContactSection() {
                   <svg
                     className="h-4 w-4 text-green-400"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                    viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -2235,8 +1787,7 @@ function ContactSection() {
                   <svg
                     className="h-4 w-4 text-green-400"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                    viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -2249,8 +1800,7 @@ function ContactSection() {
                   <svg
                     className="h-4 w-4 text-green-400"
                     fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                    viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -2276,14 +1826,12 @@ function ContactSection() {
                 </h3>
                 <button
                   onClick={() => setIsDialogOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
-                >
+                  className="text-gray-400 hover:text-gray-600 transition-colors">
                   <svg
                     className="h-6 w-6"
                     fill="none"
                     stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                    viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -2303,8 +1851,7 @@ function ContactSection() {
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
+                    className="block text-sm font-medium text-gray-700 mb-1">
                     Name *
                   </label>
                   <input
@@ -2322,8 +1869,7 @@ function ContactSection() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
+                    className="block text-sm font-medium text-gray-700 mb-1">
                     Email *
                   </label>
                   <input
@@ -2341,8 +1887,7 @@ function ContactSection() {
                 <div>
                   <label
                     htmlFor="company"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
+                    className="block text-sm font-medium text-gray-700 mb-1">
                     Company
                   </label>
                   <input
@@ -2359,8 +1904,7 @@ function ContactSection() {
                 <div>
                   <label
                     htmlFor="subject"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
+                    className="block text-sm font-medium text-gray-700 mb-1">
                     Subject
                   </label>
                   <input
@@ -2377,8 +1921,7 @@ function ContactSection() {
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
+                    className="block text-sm font-medium text-gray-700 mb-1">
                     Message *
                   </label>
                   <textarea
@@ -2399,15 +1942,13 @@ function ContactSection() {
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
                     disabled={isSubmitting}
-                    className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                  >
+                    className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50">
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed">
                     {isSubmitting ? (
                       <>
                         <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -2423,14 +1964,13 @@ function ContactSection() {
                 </div>
 
                 {/* Status Messages */}
-                {submitStatus === "success" && (
+                {submitStatus === 'success' && (
                   <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center">
                       <svg
                         className="h-5 w-5 text-green-400 mr-2"
                         fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
+                        viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -2445,14 +1985,13 @@ function ContactSection() {
                   </div>
                 )}
 
-                {submitStatus === "error" && (
+                {submitStatus === 'error' && (
                   <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <div className="flex items-center">
                       <svg
                         className="h-5 w-5 text-red-400 mr-2"
                         fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
+                        viewBox="0 0 20 20">
                         <path
                           fillRule="evenodd"
                           d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -2491,8 +2030,17 @@ function CookieBanner({ onAccept, onDecline, onCustomize }) {
           <div className="flex-1 pr-4">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
-                <svg className="w-6 h-6 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-6 h-6 text-blue-600 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div>
@@ -2500,8 +2048,10 @@ function CookieBanner({ onAccept, onDecline, onCustomize }) {
                   We value your privacy
                 </h3>
                 <p className="text-sm text-gray-600 leading-relaxed">
-                  We use cookies to enhance your browsing experience, analyze site traffic, and personalize content. 
-                  By clicking "Accept All", you consent to our use of cookies. You can manage your preferences anytime.
+                  We use cookies to enhance your browsing experience, analyze
+                  site traffic, and personalize content. By clicking "Accept
+                  All", you consent to our use of cookies. You can manage your
+                  preferences anytime.
                 </p>
               </div>
             </div>
@@ -2509,20 +2059,17 @@ function CookieBanner({ onAccept, onDecline, onCustomize }) {
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 flex-shrink-0">
             <button
               onClick={onCustomize}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
-            >
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200">
               Customize
             </button>
             <button
               onClick={onDecline}
-              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-            >
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors duration-200">
               Decline All
             </button>
             <button
               onClick={onAccept}
-              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200"
-            >
+              className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200">
               Accept All
             </button>
           </div>
@@ -2538,14 +2085,14 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
     essential: true, // Always true, can't be disabled
     analytics: false,
     marketing: false,
-    functional: false
+    functional: false,
   });
 
   const handleToggle = (category) => {
     if (category === 'essential') return; // Can't toggle essential cookies
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
-      [category]: !prev[category]
+      [category]: !prev[category],
     }));
   };
 
@@ -2558,17 +2105,29 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose}></div>
+        <div
+          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+          onClick={onClose}></div>
 
         <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-medium text-gray-900">Cookie Preferences</h3>
+            <h3 className="text-lg font-medium text-gray-900">
+              Cookie Preferences
+            </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              className="text-gray-400 hover:text-gray-600">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -2577,9 +2136,12 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
             {/* Essential Cookies */}
             <div className="flex items-start justify-between">
               <div className="flex-1 pr-4">
-                <h4 className="text-sm font-medium text-gray-900">Essential Cookies</h4>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Essential Cookies
+                </h4>
                 <p className="text-xs text-gray-500 mt-1">
-                  Required for the website to function properly. Cannot be disabled.
+                  Required for the website to function properly. Cannot be
+                  disabled.
                 </p>
               </div>
               <div className="flex-shrink-0">
@@ -2592,18 +2154,22 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
             {/* Analytics Cookies */}
             <div className="flex items-start justify-between">
               <div className="flex-1 pr-4">
-                <h4 className="text-sm font-medium text-gray-900">Analytics Cookies</h4>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Analytics Cookies
+                </h4>
                 <p className="text-xs text-gray-500 mt-1">
                   Help us understand how visitors interact with our website.
                 </p>
               </div>
               <button
                 onClick={() => handleToggle('analytics')}
-                className="flex-shrink-0"
-              >
-                <div className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-                  preferences.analytics ? 'bg-blue-600 justify-end' : 'bg-gray-300 justify-start'
-                }`}>
+                className="flex-shrink-0">
+                <div
+                  className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
+                    preferences.analytics
+                      ? 'bg-blue-600 justify-end'
+                      : 'bg-gray-300 justify-start'
+                  }`}>
                   <div className="w-4 h-4 bg-white rounded-full transition-transform"></div>
                 </div>
               </button>
@@ -2612,18 +2178,23 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
             {/* Marketing Cookies */}
             <div className="flex items-start justify-between">
               <div className="flex-1 pr-4">
-                <h4 className="text-sm font-medium text-gray-900">Marketing Cookies</h4>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Marketing Cookies
+                </h4>
                 <p className="text-xs text-gray-500 mt-1">
-                  Used to deliver personalized advertisements and track campaign performance.
+                  Used to deliver personalized advertisements and track campaign
+                  performance.
                 </p>
               </div>
               <button
                 onClick={() => handleToggle('marketing')}
-                className="flex-shrink-0"
-              >
-                <div className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-                  preferences.marketing ? 'bg-blue-600 justify-end' : 'bg-gray-300 justify-start'
-                }`}>
+                className="flex-shrink-0">
+                <div
+                  className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
+                    preferences.marketing
+                      ? 'bg-blue-600 justify-end'
+                      : 'bg-gray-300 justify-start'
+                  }`}>
                   <div className="w-4 h-4 bg-white rounded-full transition-transform"></div>
                 </div>
               </button>
@@ -2632,18 +2203,22 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
             {/* Functional Cookies */}
             <div className="flex items-start justify-between">
               <div className="flex-1 pr-4">
-                <h4 className="text-sm font-medium text-gray-900">Functional Cookies</h4>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Functional Cookies
+                </h4>
                 <p className="text-xs text-gray-500 mt-1">
                   Enable enhanced functionality and personalization features.
                 </p>
               </div>
               <button
                 onClick={() => handleToggle('functional')}
-                className="flex-shrink-0"
-              >
-                <div className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
-                  preferences.functional ? 'bg-blue-600 justify-end' : 'bg-gray-300 justify-start'
-                }`}>
+                className="flex-shrink-0">
+                <div
+                  className={`w-11 h-6 rounded-full flex items-center px-1 transition-colors ${
+                    preferences.functional
+                      ? 'bg-blue-600 justify-end'
+                      : 'bg-gray-300 justify-start'
+                  }`}>
                   <div className="w-4 h-4 bg-white rounded-full transition-transform"></div>
                 </div>
               </button>
@@ -2653,14 +2228,12 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
           <div className="flex space-x-3 mt-8">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
-            >
+              className="flex-1 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200">
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200"
-            >
+              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200">
               Save Preferences
             </button>
           </div>
@@ -2669,7 +2242,6 @@ function CookiePreferences({ isOpen, onClose, onSave }) {
     </div>
   );
 }
-
 
 // Main Footer Component with Cookie Management
 function Footer() {
@@ -2694,7 +2266,7 @@ function Footer() {
       analytics: true,
       marketing: true,
       functional: true,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     localStorage.setItem('cookieConsent', JSON.stringify(consent));
     setCookieConsent(consent);
@@ -2707,7 +2279,7 @@ function Footer() {
       analytics: false,
       marketing: false,
       functional: false,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     localStorage.setItem('cookieConsent', JSON.stringify(consent));
     setCookieConsent(consent);
@@ -2721,7 +2293,7 @@ function Footer() {
   const handleSavePreferences = (preferences) => {
     const consent = {
       ...preferences,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
     localStorage.setItem('cookieConsent', JSON.stringify(consent));
     setCookieConsent(consent);
@@ -2755,28 +2327,42 @@ function Footer() {
                 </div>
 
                 {/* Payment Methods */}
-              <div className="space-y-3">
-                <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
-                  Secure Payments
-                </p>
-                <img
-                  src="/payment-icons.png"
-                  alt="Accepted payment methods"
-                  className="h-8 w-auto opacity-70 hover:opacity-100 transition-opacity"
-                />
-              </div>
+                <div className="space-y-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">
+                    Secure Payments
+                  </p>
+                  <img
+                    src="/payment-icons.png"
+                    alt="Accepted payment methods"
+                    className="h-8 w-auto opacity-70 hover:opacity-100 transition-opacity"
+                  />
+                </div>
 
                 {/* Trust Badges */}
                 <div className="flex space-x-4 pt-4">
                   <div className="flex items-center space-x-2 text-gray-500">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span className="text-xs">SOC 2 Certified</span>
                   </div>
                   <div className="flex items-center space-x-2 text-gray-500">
-                    <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5 text-blue-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span className="text-xs">ISO 27001</span>
                   </div>
@@ -2787,43 +2373,183 @@ function Footer() {
               <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
                 {/* Services */}
                 <div>
-                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Services</h4>
+                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
+                    Services
+                  </h4>
                   <ul className="space-y-3">
-                    <li><a href="#services" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Security Assessments</a></li>
-                    <li><a href="#services" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>SOC 2 Compliance</a></li>
-                    <li><a href="#services" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>24/7 Monitoring</a></li>
-                    <li><a href="#services" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>vCISO Services</a></li>
+                    <li>
+                      <a
+                        href="#services"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Security Assessments
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#services"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        SOC 2 Compliance
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#services"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        24/7 Monitoring
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#services"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        vCISO Services
+                      </a>
+                    </li>
                   </ul>
                 </div>
 
                 {/* Resources */}
                 <div>
-                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Resources</h4>
+                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
+                    Resources
+                  </h4>
                   <ul className="space-y-3">
-                    <li><a href="#resources" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>SOC 2 Starter Kit</a></li>
-                    <li><a href="#resources" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Security Guides</a></li>
-                    <li><a href="/contact" className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Contact</a></li>
-                    <li><a href="/assets/privacy-notice.pdf" download className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Download Privacy Notice<svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg></a></li>
+                    <li>
+                      <a
+                        href="#resources"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        SOC 2 Starter Kit
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#resources"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Security Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/contact"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Contact
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/assets/privacy-notice.pdf"
+                        download
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Download Privacy Notice
+                        <svg
+                          className="w-3 h-3 ml-1 opacity-50"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </a>
+                    </li>
                   </ul>
                 </div>
 
                 {/* Legal & Privacy */}
                 <div>
-                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Legal & Privacy</h4>
+                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
+                    Legal & Privacy
+                  </h4>
                   <ul className="space-y-3">
-                    <li><a href="/assets/privacy_policy.pdf" download className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Download Privacy Policy<svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg></a></li>
-                    <li><a href="/assets/terms_of_service.pdf" download className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Download Terms of Service<svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg></a></li>
-                    <li><a href="/assets/cookie_policy.pdf" download className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"><span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Download Cookie Policy<svg className="w-3 h-3 ml-1 opacity-50" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" /></svg></a></li>
                     <li>
-                      <button 
+                      <a
+                        href="/assets/privacy_policy.pdf"
+                        download
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Download Privacy Policy
+                        <svg
+                          className="w-3 h-3 ml-1 opacity-50"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/assets/terms_of_service.pdf"
+                        download
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Download Terms of Service
+                        <svg
+                          className="w-3 h-3 ml-1 opacity-50"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/assets/cookie_policy.pdf"
+                        download
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Download Cookie Policy
+                        <svg
+                          className="w-3 h-3 ml-1 opacity-50"
+                          fill="currentColor"
+                          viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </a>
+                    </li>
+                    <li>
+                      <button
                         onClick={handleManageCookies}
-                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group"
-                      >
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
                         <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         Manage Cookie Preferences
-                        <svg className="w-3 h-3 ml-1 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <svg
+                          className="w-3 h-3 ml-1 opacity-50"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
                         </svg>
                       </button>
                     </li>
@@ -2837,20 +2563,27 @@ function Footer() {
               <div className="mb-8 p-3 bg-gray-800 rounded-lg border border-gray-700">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg
+                      className="w-5 h-5 text-green-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span className="text-sm text-gray-300">
-                      Cookie preferences saved: Essential ({cookieConsent.essential ? 'On' : 'Off'}), 
-                      Analytics ({cookieConsent.analytics ? 'On' : 'Off'}), 
-                      Marketing ({cookieConsent.marketing ? 'On' : 'Off'}), 
-                      Functional ({cookieConsent.functional ? 'On' : 'Off'})
+                      Cookie preferences saved: Essential (
+                      {cookieConsent.essential ? 'On' : 'Off'}), Analytics (
+                      {cookieConsent.analytics ? 'On' : 'Off'}), Marketing (
+                      {cookieConsent.marketing ? 'On' : 'Off'}), Functional (
+                      {cookieConsent.functional ? 'On' : 'Off'})
                     </span>
                   </div>
                   <button
                     onClick={handleManageCookies}
-                    className="text-xs text-blue-400 hover:text-blue-300 font-medium"
-                  >
+                    className="text-xs text-blue-400 hover:text-blue-300 font-medium">
                     Change Settings
                   </button>
                 </div>
@@ -2861,11 +2594,20 @@ function Footer() {
             <div className="border-t border-gray-800 pt-8">
               <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                 <div className="flex items-center space-x-6">
-                  <p className="text-gray-500 text-sm">© 2025 Cypentra. All rights reserved.</p>
+                  <p className="text-gray-500 text-sm">
+                    © 2025 Cypentra. All rights reserved.
+                  </p>
                   <div className="flex items-center space-x-1 text-gray-600">
                     <span className="text-xs">Built with</span>
-                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                    <svg
+                      className="w-4 h-4 text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <span className="text-xs">for security</span>
                   </div>
@@ -2898,8 +2640,6 @@ function Footer() {
   );
 }
 
-
-
 // Price Calculator Section Component
 function PriceCalculatorSection() {
   return (
@@ -2910,8 +2650,6 @@ function PriceCalculatorSection() {
     </section>
   );
 }
-
-
 
 // Main App Component - Optimized sequence for user journey and conversions
 export default function CompleteCypentraApp() {
