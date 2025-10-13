@@ -7,6 +7,7 @@ import {
   Award,
   CheckCircle,
   ArrowRight,
+  Sparkles,
 } from 'lucide-react';
 
 // Case Studies Section Component
@@ -57,26 +58,13 @@ function CaseStudiesSection() {
     <section
       id="case-studies"
       className="py-32 bg-gradient-to-br from-white via-blue-50 to-white relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e0f2fe_1px,transparent_1px),linear-gradient(to_bottom,#e0f2fe_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20" />
-      <div
-        className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-400/20 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '8s' }}
-      />
-      <div
-        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '10s' }}
-      />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,99,235,0.03),transparent_70%)]" />
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-28">
-          <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full text-sm font-bold mb-10 shadow-2xl hover:shadow-blue-500/40 hover:scale-105 transition-all duration-500 cursor-pointer backdrop-blur-sm">
-            <TrendingUp className="h-5 w-5" />
-            <span className="tracking-wide">Success Stories</span>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+            <TrendingUp className="h-4 w-4" />
+            <span>Success Stories</span>
+            <Sparkles className="h-3.5 w-3.5" />
           </div>
           <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-blue-900 mb-10 tracking-tight leading-none">
             Case Studies
