@@ -49,7 +49,7 @@ exports.getReviews = catchAsync(async (req, res, next) => {
       current_page: page,
       per_page: perPage,
       total_pages: totalPages,
-      total_reviews: totalFilteredReviews, // ← Now shows filtered count
+      total_reviews: data.total_reviews, // ← Now shows filtered count
       has_next_page: page < totalPages,
       has_prev_page: page > 1,
     },

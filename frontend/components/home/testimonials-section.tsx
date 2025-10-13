@@ -116,13 +116,14 @@ function TestimonialsSection() {
         
         // Fetch only 5-star verified reviews for testimonials
         const response = await fetch(
-          `${apiUrl}/api/trustpilot/reviews?stars=5&per_page=20`
+          `${apiUrl}/api/trustpilot/reviews`
         );
         
         if (!response.ok) throw new Error('Failed to fetch reviews');
         
         const data = await response.json();
         
+        console.log('Fetched reviews:', data);
         if (data.success && data.data.reviews) {
           // Transform API data to match your UI format
           const transformedReviews = data.data.reviews
@@ -141,7 +142,6 @@ function TestimonialsSection() {
               verified: review.review_is_verified,
               rating: review.review_rating,
             }));
-
           setTestimonials(transformedReviews);
           setTotalReviews(data.data.pagination.total_reviews);
           
@@ -178,7 +178,7 @@ function TestimonialsSection() {
   }, []);
 
   const itemsPerSlide = 3;
-  const totalSlides = Math.ceil(testimonials.length / itemsPerSlide);
+  const totalSlides = Math.floor(testimonials.length / itemsPerSlide);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -265,13 +265,13 @@ function TestimonialsSection() {
           {/* Navigation Buttons */}
           <button
             onClick={prevSlide}
-            className="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-10 w-12 h-12 items-center justify-center bg-white rounded-full shadow-xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 group">
+            className="hidden lg:flex absolute left-[-35px] top-[196px] -translate-y-1/2 -translate-x-6 z-10 w-12 h-12 items-center justify-center bg-white rounded-full shadow-xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 group">
             <ChevronLeft className="w-6 h-6 text-blue-600 group-hover:scale-110 transition-transform" />
           </button>
 
           <button
             onClick={nextSlide}
-            className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-10 w-12 h-12 items-center justify-center bg-white rounded-full shadow-xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 group">
+            className="hidden lg:flex absolute right-[-35px] top-[196px] -translate-y-1/2 translate-x-6 z-10 w-12 h-12 items-center justify-center bg-white rounded-full shadow-xl border-2 border-blue-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300 group">
             <ChevronRight className="w-6 h-6 text-blue-600 group-hover:scale-110 transition-transform" />
           </button>
 
