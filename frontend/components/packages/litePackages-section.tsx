@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import Link from 'next/link';
+import HeaderSection from '../header';
 
 const litePackages = [
   {
@@ -115,12 +116,10 @@ function LitePackagesSection({ seeAll = true }) {
             <span>Quick Start Solutions</span>
             <Sparkles className="h-3.5 w-3.5" />
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
-            Lite Packages
-          </h2>
-          <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Entry-level security solutions to get you started quickly
-          </p>
+          <HeaderSection
+            title="Lite Packages"
+            description="Entry-level security solutions to get you started quickly"
+          />
         </div>
 
         {/* Package Cards */}

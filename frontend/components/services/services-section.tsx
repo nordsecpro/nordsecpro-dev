@@ -9,6 +9,7 @@ import {
   BookOpen,
   Sparkles,
 } from 'lucide-react';
+import Header from '../header';
 
 // Data
 const services = [
@@ -72,18 +73,7 @@ const SectionHeader = ({ badge, title, description, isDark = false }: any) => (
       <span>{badge}</span>
       <Sparkles className="h-3.5 w-3.5" />
     </div>
-    <h2
-      className={`text-5xl md:text-6xl font-bold ${
-        isDark ? 'text-white' : 'text-slate-900'
-      } mb-6 tracking-tight`}>
-      {title}
-    </h2>
-    <p
-      className={`text-xl md:text-2xl ${
-        isDark ? 'text-blue-100' : 'text-slate-600'
-      } max-w-3xl mx-auto leading-relaxed`}>
-      {description}
-    </p>
+    <Header title={title} description={description} />
   </div>
 );
 

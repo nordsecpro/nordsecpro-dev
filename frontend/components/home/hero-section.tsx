@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Package, ArrowRight, Sparkles } from 'lucide-react';
+import { Calendar, Package, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

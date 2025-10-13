@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
+import HeaderSection from '../header';
 
 // Case Studies Section Component
 function CaseStudiesSection() {
@@ -60,19 +61,18 @@ function CaseStudiesSection() {
       className="py-32 bg-gradient-to-br from-white via-blue-50 to-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-28">
+        <div className="text-center">
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
             <TrendingUp className="h-4 w-4" />
             <span>Success Stories</span>
             <Sparkles className="h-3.5 w-3.5" />
           </div>
-          <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-blue-900 mb-10 tracking-tight leading-none">
-            Case Studies
-          </h2>
-          <p className="text-xl md:text-2xl text-blue-800/70 max-w-3xl mx-auto leading-relaxed font-medium">
-            Real results for real businesses — see how we've helped companies
-            secure their growth and achieve compliance excellence
-          </p>
+
+          <HeaderSection
+            title="Case Studies"
+            description="Real results for real businesses — see how we've helped companies
+            secure their growth and achieve compliance excellence"
+          />
         </div>
 
         {/* Case Studies Grid */}
@@ -80,14 +80,7 @@ function CaseStudiesSection() {
           {caseStudies.map((study, index) => {
             const Icon = study.icon;
             return (
-              <div
-                key={index}
-                className="relative group"
-                style={{
-                  animation: 'fadeInUp 0.8s ease-out forwards',
-                  animationDelay: `${index * 200}ms`,
-                  opacity: 0,
-                }}>
+              <div key={index} className="relative group">
                 {/* Glow effect */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700" />
 

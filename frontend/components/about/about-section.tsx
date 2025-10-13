@@ -9,6 +9,7 @@ import {
   Sparkles,
   Zap,
 } from 'lucide-react';
+import HeaderSection from '../header';
 
 // Team members data
 const teamMembers = [
@@ -150,18 +151,14 @@ function AboutSection() {
             <span>Our Story</span>
             <Sparkles className="h-3.5 w-3.5" />
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
-            About Us
-          </h2>
-          <div className="max-w-4xl mx-auto">
-            <p className="text-xl md:text-2xl text-slate-600 leading-relaxed">
-              We are a cybersecurity firm built for the speed, scale, and
+          <HeaderSection
+            title="About Us"
+            description="We are a cybersecurity firm built for the speed, scale, and
               sensitivity of modern SaaS businesses. Founded by Scandinavian
               engineers and operating on U.S. time zones, we deliver
               high-caliber, hands-on security services without the noise or
-              overhead.
-            </p>
-          </div>
+              overhead."
+          />
         </div>
 
         {/* Philosophy & Why We Exist */}
