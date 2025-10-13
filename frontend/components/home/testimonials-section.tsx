@@ -103,81 +103,79 @@ const TestimonialCard = ({ testimonial, index }: any) => {
 function TestimonialsSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [averageRating, setAverageRating] = useState(5.0);
 
-  const testimonials = [
-    {
-      name: 'Thomas Anderson',
-      title: 'vCISO',
-      company: 'Tech Solutions',
-      location: 'US',
-      review:
-        'vCISO support gave us real, actionable steps instead of endless reports. The practical advice has been invaluable for our security posture.',
-      reviewTitle: 'Practical advice that works',
-      date: 'Aug 2025',
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: 'Lily Prose',
-      title: 'Founder',
-      company: 'SaaS Austin',
-      location: 'US',
-      review:
-        "We're a SaaS in Austin and needed SOC 2. Thought it'd be a nightmare but they just handled it. Simple and efficient process.",
-      reviewTitle: 'SOC 2 without the headache',
-      date: 'Feb 2025',
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: 'Théodore Bodin',
-      title: 'CTO',
-      company: 'Small SaaS',
-      location: 'EU',
-      review:
-        "As a small SaaS, we don't have a big security team. Cypentra fills that gap perfectly with their comprehensive support.",
-      reviewTitle: 'Perfect for startups',
-      date: 'Aug 2025',
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: 'Andre Hobbs',
-      title: 'Compliance Manager',
-      company: 'EU Startup',
-      location: 'EU',
-      review:
-        'They understood EU compliance needs better than anyone we spoke with. Their expertise in international regulations is outstanding.',
-      reviewTitle: 'Excellent for EU compliance',
-      date: 'Aug 2025',
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: 'Owen Adams',
-      title: 'Security Lead',
-      company: 'TechCorp',
-      location: 'US',
-      review:
-        'Got our penetration test results within the week. Very professional team and thorough analysis.',
-      reviewTitle: 'Fast penetration test delivery',
-      date: 'Jun 2025',
-      verified: true,
-      rating: 5,
-    },
-    {
-      name: 'Lucas Poole',
-      title: 'DevOps Engineer',
-      company: 'CloudTech',
-      location: 'US',
-      review:
-        'Our AWS setup is much safer now. Professional service with clear communication throughout the process.',
-      reviewTitle: 'Strong on cloud security',
-      date: 'Aug 2025',
-      verified: true,
-      rating: 5,
-    },
-  ];
+  // 🆕 Fetch reviews from API
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        
+        // Fetch only 5-star verified reviews for testimonials
+        const response = await fetch(
+          `${apiUrl}/api/trustpilot/reviews?stars=5&per_page=20`
+        );
+        
+        if (!response.ok) throw new Error('Failed to fetch reviews');
+        
+        const data = await response.json();
+        
+        if (data.success && data.data.reviews) {
+          // Transform API data to match your UI format
+          const transformedReviews = data.data.reviews
+            .filter((review: any) => review.review_is_verified) // Only verified reviews
+            .map((review: any) => ({
+              name: review.consumer_name,
+              title: '', // Not available from API
+              company: '', // Not available from API
+              location: review.consumer_country || 'US',
+              review: review.review_text,
+              reviewTitle: review.review_title,
+              date: new Date(review.review_time).toLocaleDateString('en-US', {
+                month: 'short',
+                year: 'numeric',
+              }),
+              verified: review.review_is_verified,
+              rating: review.review_rating,
+            }));
+
+          setTestimonials(transformedReviews);
+          setTotalReviews(data.data.pagination.total_reviews);
+          
+          // Calculate average rating
+          const avgRating = transformedReviews.reduce(
+            (acc: number, t: any) => acc + t.rating, 
+            0
+          ) / transformedReviews.length;
+          setAverageRating(Math.round(avgRating * 10) / 10);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        // Fallback to original hardcoded reviews on error
+        setTestimonials([
+          {
+            name: 'Thomas Anderson',
+            title: 'vCISO',
+            company: 'Tech Solutions',
+            location: 'US',
+            review: 'vCISO support gave us real, actionable steps instead of endless reports.',
+            reviewTitle: 'Practical advice that works',
+            date: 'Aug 2025',
+            verified: true,
+            rating: 5,
+          },
+          // Add more fallback reviews if needed
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   const itemsPerSlide = 3;
   const totalSlides = Math.ceil(testimonials.length / itemsPerSlide);
@@ -192,15 +190,29 @@ function TestimonialsSection() {
 
   // Auto-play
   useEffect(() => {
-    if (!isAutoPlay) return;
+    if (!isAutoPlay || loading) return;
     const interval = setInterval(nextSlide, 6000);
     return () => clearInterval(interval);
-  }, [currentSlide, isAutoPlay]);
+  }, [currentSlide, isAutoPlay, loading]);
 
   const getCurrentTestimonials = () => {
     const startIndex = currentSlide * itemsPerSlide;
     return testimonials.slice(startIndex, startIndex + itemsPerSlide);
   };
+
+  // 🆕 Show loading state
+  if (loading) {
+    return (
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+            <p className="mt-4 text-slate-600">Loading reviews...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 relative overflow-hidden">
@@ -227,7 +239,7 @@ function TestimonialsSection() {
             ensure compliance
           </p>
 
-          {/* Rating Display */}
+          {/* Rating Display - 🆕 Now using dynamic data */}
           <div className="inline-flex items-center gap-3 px-6 py-3 bg-white rounded-2xl shadow-lg border-2 border-blue-100">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
@@ -239,8 +251,8 @@ function TestimonialsSection() {
             </div>
             <div className="h-6 w-px bg-slate-200" />
             <div className="text-left">
-              <p className="text-2xl font-bold text-slate-900">5.0</p>
-              <p className="text-xs text-slate-500">Based on 50+ reviews</p>
+              <p className="text-2xl font-bold text-slate-900">{averageRating.toFixed(1)}</p>
+              <p className="text-xs text-slate-500">Based on {totalReviews}+ reviews</p>
             </div>
           </div>
         </div>
@@ -333,7 +345,7 @@ function TestimonialsSection() {
           </div>
         </div>
 
-        {/* Bottom Info */}
+        {/* Bottom Info - 🆕 Now dynamic */}
         <div className="text-center mt-12">
           <p className="text-slate-500 text-sm">
             All reviews are from verified customers • Last updated{' '}
