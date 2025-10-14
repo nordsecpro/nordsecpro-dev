@@ -9,12 +9,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // ---- Fixed plan catalogs (only what you support now) ----
 const ONE_TIME_PLANS = new Set([
-    'Startup Security Launchpad',
-    'SOC 2 Pre-Audit Blueprint',
-    'Audit Check: Final Review',
+    'GDPR & Privacy Quick-Setup',
+    'Cloud Security Starter Pack',
 ]);
 
-const ONGOING_PLAN_TITLE = 'vCISO On-Demand';
+const ONGOING_PLAN_TITLE = 'vCISO Lite (On Demand)';
 
 // ---- Helpers ----
 function isValidCustomerData(cd) {
@@ -30,7 +29,7 @@ function classifyRequest(plans) {
     }
 
     // One-time: 1-3 items, all must be from ONE_TIME_PLANS
-    if (plans.length >= 1 && plans.length <= 3 && plans.every(p => ONE_TIME_PLANS.has(p.planTitle))) {
+    if (plans.length >= 1 && plans.length <= 2 && plans.every(p => ONE_TIME_PLANS.has(p.planTitle))) {
         return { kind: 'one-time', items: plans };
     }
 

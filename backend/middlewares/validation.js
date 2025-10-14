@@ -78,16 +78,15 @@ const validatePlanData = [
         .notEmpty()
         .withMessage('Plan title is required')
         .isIn([
-            'Startup Security Launchpad',
-            'SOC 2 Pre-Audit Blueprint', 
-            'Audit Check: Final Review',
-            'vCISO On-Demand'
+            'GDPR & Privacy Quick-Setup',
+            'Cloud Security Starter Pack',
+            'vCISO Lite (On Demand)'
         ])
         .withMessage('Invalid plan title'),
     
     body('plans.*.numberOfEmployees')
-        .isInt({ min: 5, max: 250 })
-        .withMessage('Number of employees must be between 5 and 250'),
+        .isInt({ min: 1, max: 250 })
+        .withMessage('Number of employees must be between 1 and 250'),
     
     body('plans.*.price')
         .isFloat({ min: 0 })
