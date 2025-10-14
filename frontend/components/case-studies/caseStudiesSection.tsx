@@ -63,11 +63,11 @@ function CaseStudiesSection() {
         <div
           className="text-center mb-32"
           style={{ animation: 'fadeInUp 1s ease forwards' }}>
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+          {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
             <TrendingUp className="h-4 w-4" />
             <span>Success Stories</span>
             <Sparkles className="h-3.5 w-3.5" />
-          </div>
+          </div> */}
 
           <Header
             title="Case Studies"

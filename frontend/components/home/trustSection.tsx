@@ -39,11 +39,11 @@ function TrustSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+          {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
             <Shield className="h-4 w-4" />
             <span>Trusted by Industry Leaders</span>
             <Star className="h-3.5 w-3.5" />
-          </div>
+          </div> */}
           <h2 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
             Trust & Certifications
           </h2>

@@ -130,10 +130,10 @@ const getColorClasses = (color: string): ColorClasses => {
 // Section Header Component
 const RoadmapHeader = () => (
   <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6">
+    {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium mb-6">
       <Clock className="h-4 w-4" />
       <span>From Start to Secure in 3 Weeks</span>
-    </div>
+    </div> */}
     <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
       Our Proven 5-Step Security Roadmap
     </h2>

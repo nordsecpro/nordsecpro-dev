@@ -71,11 +71,11 @@ const advancedPackages = [
 // Section Header Component
 const SectionHeader = ({ title, description, badge }: any) => (
   <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+    {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
       <Zap className="h-4 w-4" />
       <span>{badge}</span>
       <Sparkles className="h-3.5 w-3.5" />
-    </div>
+    </div> */}
 
     <Header title={title} description={description} />
   </div>

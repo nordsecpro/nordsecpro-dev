@@ -146,11 +146,11 @@ function AboutSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
+          {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
             <Shield className="h-4 w-4" />
             <span>Our Story</span>
             <Sparkles className="h-3.5 w-3.5" />
-          </div>
+          </div> */}
           <Header
             title="About Us"
             description="We are a cybersecurity firm built for the speed, scale, and
