@@ -415,7 +415,7 @@ function PaymentForm() {
   // Helper function to determine plan type
   const getPlanType = (planTitle: string) => {
     // Add your plan type logic here
-    return planTitle === 'vCISO On-Demand' ? 'ongoing' : 'one-time';
+    return planTitle === 'vCISO Lite (On Demand)' ? 'ongoing' : 'one-time';
   };
 
   // Separate plans by type
@@ -452,9 +452,12 @@ function PaymentForm() {
       }
 
       // helpers
-      const getPlanType = (t: string) => (t === 'vCISO On-Demand' ? 'ongoing' : 'one-time');
+      const getPlanType = (t: string) => (t === 'vCISO Lite (On Demand)' ? 'ongoing' : 'one-time');
       const oneTimePlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'one-time');
       const ongoingPlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'ongoing');
+
+
+
 
       const confirmPI = async (clientSecret: string, label: string) => {
         setPaymentProgress(`Confirming ${label}...`);
@@ -519,7 +522,7 @@ function PaymentForm() {
           console.error('One-time init response:', json);
           throw new Error(json?.message || 'Failed to create one-time payment intent');
         }
-
+        console.log('One-time init response:', json);
         const oneTimeClientSecret = extractClientSecret(json, 'one-time');
         if (!oneTimeClientSecret) {
           console.error('One-time init response missing clientSecret:', json);

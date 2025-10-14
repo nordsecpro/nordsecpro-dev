@@ -35,7 +35,7 @@ const litePackages = [
       'Security hardening checklist',
       'Cloud architecture review',
     ],
-    exclusiveWith: ['gdpr-quick', 'vciso-lite'], // Cannot be selected with GDPR package
+    exclusiveWith: ['vciso-lite'], // Cannot be selected with GDPR package
   },
   {
     id: 'gdpr-quick',
@@ -54,7 +54,7 @@ const litePackages = [
       'Data mapping documentation',
       'Compliance risk assessment',
     ],
-    exclusiveWith: ['cloud-starter'], // Cannot be selected with Cloud Starter
+    exclusiveWith: ['vciso-lite'], // Cannot be selected with Cloud Starter
   },
   {
     id: 'vciso-lite',
@@ -74,7 +74,7 @@ const litePackages = [
       'Policy templates & guidance',
       'Priority email support',
     ],
-    exclusiveWith: ['cloud-starter'], // Can be selected with any package
+    exclusiveWith: ['cloud-starter', 'gdpr-quick'], // Can be selected with any package
   },
 ];
 
