@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getProfile, getReviews } from '@/api/review';
-import CypentraReviewProfile from './profileOne';
+import CypentraReviewProfile from '@/components/profileOne';
 
 interface CardProps {
   className?: string;
@@ -14,6 +14,62 @@ const Card1: React.FC<CardProps> = ({ className = '', children }) => (
 
 const CardContent1: React.FC<CardProps> = ({ className = '', children }) => (
   <div className={className}>{children}</div>
+);
+
+// Skeleton Components
+const SkeletonBox: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`}></div>
+);
+
+const TestimonialCardSkeleton: React.FC = () => (
+  <div className="h-full">
+    <Card1 className="bg-white min-h-[280px] flex flex-col">
+      <CardContent1 className="p-4 sm:p-6 flex flex-col h-full">
+        {/* Stars and Badge Skeleton */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-1">
+            {[...Array(5)].map((_, i) => (
+              <SkeletonBox key={i} className="w-4 h-4" />
+            ))}
+          </div>
+          <SkeletonBox className="w-20 h-6" />
+        </div>
+
+        {/* Title Skeleton */}
+        <SkeletonBox className="h-5 w-3/4 mb-2" />
+
+        {/* Text Skeleton */}
+        <div className="flex-grow mb-4 space-y-2">
+          <SkeletonBox className="h-4 w-full" />
+          <SkeletonBox className="h-4 w-full" />
+          <SkeletonBox className="h-4 w-2/3" />
+        </div>
+
+        {/* Profile Skeleton */}
+        <div className="border-t pt-4 mt-auto">
+          <div className="flex items-center">
+            <SkeletonBox className="w-10 h-10 rounded-full mr-3" />
+            <div className="flex-1">
+              <SkeletonBox className="h-4 w-32 mb-2" />
+              <SkeletonBox className="h-3 w-24" />
+            </div>
+          </div>
+        </div>
+      </CardContent1>
+    </Card1>
+  </div>
+);
+
+const ProfileSkeleton: React.FC = () => (
+  <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+    <div className="flex items-center justify-between">
+      <div className="flex-1">
+        <SkeletonBox className="h-6 w-48 mb-3" />
+        <SkeletonBox className="h-4 w-32" />
+      </div>
+      <SkeletonBox className="w-24 h-24 rounded-lg" />
+    </div>
+  </div>
 );
 
 // Star rating component
@@ -67,10 +123,12 @@ interface ProfileData {
 // Trustpilot See More component
 interface TrustpilotSeeMoreProps {
   profileData: ProfileData | null;
+  loading?: boolean;
 }
 
 const TrustpilotSeeMore: React.FC<TrustpilotSeeMoreProps> = ({
   profileData,
+  loading = false,
 }) => {
   const handleClick = () => {
     window.open(
@@ -79,6 +137,20 @@ const TrustpilotSeeMore: React.FC<TrustpilotSeeMoreProps> = ({
       'noopener,noreferrer'
     );
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center mt-6 mb-4">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="lg:col-span-3">
+              <ProfileSkeleton />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center mt-6 mb-4">
@@ -218,6 +290,7 @@ function TestimonialsSection() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalReviews, setTotalReviews] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [profileLoading, setProfileLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
 
@@ -225,12 +298,15 @@ function TestimonialsSection() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        setProfileLoading(true);
         const profileResponse = await getProfile();
         if (profileResponse.success && profileResponse.data?.profile) {
           setProfileData(profileResponse.data.profile);
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
+      } finally {
+        setProfileLoading(false);
       }
     };
 
@@ -319,14 +395,14 @@ function TestimonialsSection() {
 
   // Auto-play functionality - change slide every 4 seconds
   useEffect(() => {
-    if (!isAutoPlay) return;
+    if (!isAutoPlay || loading) return;
 
     const interval = setInterval(() => {
       nextSlide();
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [currentSlide, isAutoPlay, allReviews, currentPage, totalPages]);
+  }, [currentSlide, isAutoPlay, allReviews, currentPage, totalPages, loading]);
 
   return (
     <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-20">
@@ -350,24 +426,29 @@ function TestimonialsSection() {
                 </svg>
               ))}
             </div>
-            <span className="ml-2 text-gray-600 font-medium">
-              {profileData
-                ? profileData.total_reviews > 0
-                  ? (
-                      Object.entries(profileData.rating_distribution).reduce(
-                        (acc, [stars, count]) => acc + parseInt(stars) * count,
-                        0
-                      ) / profileData.total_reviews
-                    ).toFixed(1)
-                  : '5.0'
-                : '5.0'}{' '}
-              out of 5 stars
-            </span>
+            {profileLoading ? (
+              <SkeletonBox className="ml-2 h-5 w-32" />
+            ) : (
+              <span className="ml-2 text-gray-600 font-medium">
+                {profileData
+                  ? profileData.total_reviews > 0
+                    ? (
+                        Object.entries(profileData.rating_distribution).reduce(
+                          (acc, [stars, count]) =>
+                            acc + parseInt(stars) * count,
+                          0
+                        ) / profileData.total_reviews
+                      ).toFixed(1)
+                    : '5.0'
+                  : '5.0'}{' '}
+                out of 5 stars
+              </span>
+            )}
           </div>
         </div>
 
         {/* Trustpilot See More Button */}
-        <TrustpilotSeeMore profileData={profileData} />
+        <TrustpilotSeeMore profileData={profileData} loading={profileLoading} />
 
         {/* Carousel Container */}
         <div
@@ -376,44 +457,65 @@ function TestimonialsSection() {
           onMouseLeave={() => setIsAutoPlay(true)}>
           {/* Testimonials Display */}
           <div className="overflow-hidden">
-            <div
-              className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-in-out"
-              style={{
-                minHeight: '300px',
-                opacity: 1,
-              }}>
-              {displayedReviews.map((review, index) => (
-                <div
-                  key={`${currentSlide}-${index}`}
-                  className="animate-fade-in">
-                  <TestimonialCard review={review} />
-                </div>
-              ))}
-            </div>
+            {loading && displayedReviews.length === 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                {[...Array(3)].map((_, index) => (
+                  <TestimonialCardSkeleton key={index} />
+                ))}
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-600 text-lg">{error}</p>
+                <button
+                  onClick={() => fetchReviewsForPage(1)}
+                  className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  Try Again
+                </button>
+              </div>
+            ) : (
+              <div
+                className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-in-out"
+                style={{
+                  minHeight: '300px',
+                  opacity: loading ? 0.5 : 1,
+                }}>
+                {displayedReviews.map((review, index) => (
+                  <div
+                    key={`${currentSlide}-${index}`}
+                    className="animate-fade-in">
+                    <TestimonialCard review={review} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Carousel Dots */}
-          <CarouselDots
-            total={totalSlides}
-            current={
-              currentSlide +
-              (currentPage - 1) * Math.ceil(allReviews.length / 3)
-            }
-            onDotClick={goToSlide}
-          />
+          {!loading && totalSlides > 0 && (
+            <CarouselDots
+              total={totalSlides}
+              current={
+                currentSlide +
+                (currentPage - 1) * Math.ceil(allReviews.length / 3)
+              }
+              onDotClick={goToSlide}
+            />
+          )}
         </div>
 
         {/* Progress indicator */}
-        <div className="text-center mt-8">
-          <p className="text-gray-500 text-sm">
-            Showing {currentSlide * 3 + 1}-
-            {Math.min((currentSlide + 1) * 3, allReviews.length)} of{' '}
-            {totalReviews} reviews
-          </p>
-          <p className="text-gray-400 text-xs mt-2">
-            All reviews are from verified customers • Last updated August 2025
-          </p>
-        </div>
+        {!loading && displayedReviews.length > 0 && (
+          <div className="text-center mt-8">
+            <p className="text-gray-500 text-sm">
+              Showing {currentSlide * 3 + 1}-
+              {Math.min((currentSlide + 1) * 3, allReviews.length)} of{' '}
+              {totalReviews} reviews
+            </p>
+            <p className="text-gray-400 text-xs mt-2">
+              All reviews are from verified customers • Last updated August 2025
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Custom CSS for animations */}
@@ -439,6 +541,20 @@ function TestimonialsSection() {
 
         .animate-fade-in:nth-child(3) {
           animation-delay: 0.2s;
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+
+        .animate-pulse {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
       `}</style>
     </section>
