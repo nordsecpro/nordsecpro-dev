@@ -1,21 +1,19 @@
 'use client';
 
-import { Award } from 'lucide-react';
-
 function TrustSection() {
   const credentials = [
     {
-      icon: Award,
+      logo: '/logos/cissp.png',
       title: 'CISSP',
       description: 'Certified Information Systems Security Professional',
     },
     {
-      icon: Award,
+      logo: '/logos/oscp.png',
       title: 'OSCP',
       description: 'Offensive Security Certified Professional',
     },
     {
-      icon: Award,
+      logo: '/logos/aws.jpg',
       title: 'AWS Security',
       description: 'AWS Certified Security Specialist',
     },
@@ -50,40 +48,35 @@ function TrustSection() {
 
         <div className="mb-16">
           {/* Credentials Section */}
-          <div>
-            <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border-2 border-blue-100 hover:border-blue-200 transition-all duration-500 hover:shadow-2xl h-full">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="bg-blue-100 p-3 rounded-2xl">
-                  <Award className="h-7 w-7 text-blue-600" />
+          <div className="bg-white rounded-3xl p-8 md:p-10 shadow-xl border-2 border-blue-100 hover:border-blue-200 transition-all duration-500 hover:shadow-2xl h-full">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl md:text-3xl font-bold text-slate-900">
+                Our Credentials
+              </h3>
+            </div>
+
+            <p className="text-slate-600 mb-8 text-lg text-center">
+              Our team holds industry-leading certifications:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {credentials.map((cred, index) => (
+                <div
+                  key={index}
+                  className="group flex flex-col items-center text-center p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 hover:border-blue-300 hover:shadow-lg transition-all duration-300">
+                  <div className="flex-shrink-0 w-20 h-20 mb-4">
+                    <img
+                      src={cred.logo}
+                      alt={cred.title}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-1">
+                    {cred.title}
+                  </h4>
+                  <p className="text-sm text-slate-600">{cred.description}</p>
                 </div>
-                <h3 className="text-2xl md:text-3xl font-bold text-slate-900">
-                  Our Credentials
-                </h3>
-              </div>
-
-              <p className="text-slate-600 mb-8 text-lg">
-                Our team holds industry-leading certifications:
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {credentials.map((cred, index) => {
-                  const Icon = cred.icon;
-                  return (
-                    <div
-                      key={index}
-                      className="group flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 hover:border-blue-300 hover:shadow-lg transition-all duration-300">
-                      <div>
-                        <h4 className="text-lg font-bold text-slate-900 mb-1">
-                          {cred.title}
-                        </h4>
-                        <p className="text-sm text-slate-600">
-                          {cred.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              ))}
             </div>
           </div>
         </div>

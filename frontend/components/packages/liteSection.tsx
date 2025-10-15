@@ -138,7 +138,7 @@ function LitePackagesSection({ seeAll = true }) {
   };
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-16 sm:py-20 bg-gray-50 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-grid-slate-200/40 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
@@ -296,10 +296,12 @@ function LitePackagesSection({ seeAll = true }) {
                 Check out our Pro & Advanced packages for comprehensive security
                 solutions
               </p>
-              <button className="group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 rounded-lg font-semibold text-base hover:scale-105 flex items-center gap-2 mx-auto">
-                See All Packages
-                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
-              </button>
+              <Link href="/packages">
+                <button className="group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 rounded-lg font-semibold text-base hover:scale-105 flex items-center gap-2 mx-auto">
+                  See All Packages
+                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
+                </button>
+              </Link>
             </div>
           </div>
         )}

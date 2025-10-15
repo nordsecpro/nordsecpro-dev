@@ -382,7 +382,51 @@ function Footer() {
               </div>
 
               {/* Links Section */}
-              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
+              <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-4 gap-2">
+                {/* Social Links */}
+                <div>
+                  <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
+                    Links
+                  </h4>
+                  <ul className="space-y-3">
+                    {/* Twitter */}
+                    <li>
+                      <a
+                        href="https://x.com/cypentra?s=21"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Twitter
+                      </a>
+                    </li>
+
+                    {/* LinkedIn */}
+                    <li>
+                      <a
+                        href="https://www.linkedin.com/in/sam-josefi-615b9537a?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        LinkedIn (X)
+                      </a>
+                    </li>
+
+                    {/* Book a Meeting (Calendly) */}
+                    <li>
+                      <a
+                        href="https://calendly.com/cypentra-consultation"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-white text-sm transition-colors duration-200 flex items-center group">
+                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        Book a Meeting
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+
                 {/* Services */}
                 <div>
                   <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">

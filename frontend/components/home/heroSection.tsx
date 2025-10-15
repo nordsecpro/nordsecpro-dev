@@ -106,23 +106,30 @@ function HeroSection() {
                       ? 'opacity-100 translate-y-0'
                       : 'opacity-0 translate-y-4'
                   }`}>
-                  <Button className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-lg font-semibold text-base shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all duration-300 hover:scale-105">
-                    <span className="flex items-center justify-center gap-2">
-                      <Calendar className="w-5 h-5" />
-                      Book Consultation
-                      <ChevronRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                    </span>
-                  </Button>
+                  <Link
+                    href="https://calendly.com/cypentra-consultation"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <Button className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-lg font-semibold text-base shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all duration-300 hover:scale-105">
+                      <span className="flex items-center justify-center gap-2">
+                        <Calendar className="w-5 h-5" />
+                        Book Consultation
+                        <ChevronRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                      </span>
+                    </Button>
+                  </Link>
 
-                  <Button
-                    variant="outline"
-                    className="group bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 hover:border-blue-600 px-8 py-6 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-105">
-                    <span className="flex items-center justify-center gap-2">
-                      <Package className="w-5 h-5" />
-                      View Packages
-                      <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                    </span>
-                  </Button>
+                  <Link href="/packages">
+                    <Button
+                      variant="outline"
+                      className="group bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 hover:border-blue-600 px-8 py-6 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-105">
+                      <span className="flex items-center justify-center gap-2">
+                        <Package className="w-5 h-5" />
+                        View Packages
+                        <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                      </span>
+                    </Button>
+                  </Link>
                 </div>
               </div>
 

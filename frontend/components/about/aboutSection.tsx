@@ -1,14 +1,7 @@
 'use client';
 
-import {
-  CheckCircle,
-  Target,
-  MessageSquare,
-  Shield,
-  Award,
-  ExternalLink,
-} from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { CheckCircle, Target, MessageSquare, ExternalLink } from 'lucide-react';
 
 // Team members data
 const teamMembers = [
@@ -26,13 +19,13 @@ const teamMembers = [
       {
         name: 'CompTIA Network Vulnerability Assessment Professional (CNVP)',
         shortName: 'CNVP',
-        logo: '/certifications/cnvp-logo.png',
+        logo: '/certifications/Konstantin_C.png',
         link: 'https://www.credly.com/badges/8c78128b-4653-4b75-a24b-e2b8c7325e6e',
       },
       {
         name: 'CompTIA Security+ ce Certification',
         shortName: 'Security+',
-        logo: '/certifications/security-plus-logo.png',
+        logo: '/certifications/Konstantin_S.png',
         link: 'https://www.credly.com/badges/b015d5bd-3f0d-4a25-9904-2b4bf650330b',
       },
     ],
@@ -45,13 +38,13 @@ const teamMembers = [
       {
         name: 'Certified Information Systems Security Professional',
         shortName: 'CISSP',
-        logo: '/certifications/cissp-logo.png',
+        logo: '/certifications/Ian_CI.png',
         link: 'https://www.credly.com/badges/aee79f8f-0ad7-4780-ba23-b777551f3588',
       },
       {
         name: 'Certified Cloud Security Professional',
         shortName: 'CCSP',
-        logo: '/certifications/ccsp-logo.png',
+        logo: '/certifications/Ian_CC.png',
         link: 'https://www.credly.com/badges/c0fd36b2-9388-4be1-9ecf-914029ea4510',
       },
     ],
@@ -128,11 +121,38 @@ function AboutHero() {
           </p>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes blob {
+          0%,
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+        }
+
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </section>
   );
 }
 
-// Certification Badge Component
+// Certification Logo Badge Component
 type Certification = {
   name: string;
   shortName: string;
@@ -148,12 +168,32 @@ function CertificationBadge({ cert }: { cert: Certification }) {
       rel="noopener noreferrer"
       className="group relative inline-block"
       title={cert.name}>
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:border-blue-400 hover:bg-blue-100 transition-all duration-300 hover:scale-105">
-        <Award className="h-3.5 w-3.5 text-blue-600" />
-        <span className="text-xs font-semibold text-blue-700">
-          {cert.shortName}
-        </span>
-        <ExternalLink className="h-3 w-3 text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+      <div className="bg-white border-2 border-blue-100 rounded-lg p-2 hover:border-blue-400 hover:shadow-lg transition-all duration-300 hover:scale-105 relative">
+        <img
+          src={cert.logo}
+          alt={cert.shortName}
+          className="h-16 w-16 object-contain"
+          onError={(e) => {
+            // Fallback to text badge if image fails
+            e.currentTarget.style.display = 'none';
+            if (e.currentTarget.parentElement) {
+              e.currentTarget.parentElement.innerHTML = `
+                <div class="h-16 w-16 flex items-center justify-center bg-blue-50 rounded">
+                  <span class="text-xs font-bold text-blue-700">${cert.shortName}</span>
+                </div>
+              `;
+            }
+          }}
+        />
+        {/* External link icon on hover */}
+        <div className="absolute top-1 right-1 bg-white rounded-full p-0.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <ExternalLink className="h-3 w-3 text-blue-600" />
+        </div>
+      </div>
+      {/* Tooltip */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none z-10">
+        {cert.shortName}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900" />
       </div>
     </a>
   );
@@ -222,7 +262,7 @@ function TeamMemberCard({
         </p>
 
         {member.certifications && (
-          <div className="flex flex-wrap gap-2 justify-center max-w-xs">
+          <div className="flex flex-wrap gap-3 justify-center max-w-xs">
             {member.certifications.map((cert, i) => (
               <CertificationBadge key={i} cert={cert} />
             ))}
@@ -243,7 +283,7 @@ function PhilosophySection() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const index = parseInt(
-              entry.target.getAttribute('data-index') ?? ''
+              entry.target.getAttribute('data-index') ?? '0'
             );
             setVisibleCards((prev) => [...prev, index]);
           }
@@ -378,8 +418,7 @@ function TeamSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
           <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
-            <Shield className="h-4 w-4 text-blue-600" />
-            Click on certification badges to verify credentials on Credly
+            Click on certification logos to verify credentials on Credly
           </p>
         </div>
       </div>
