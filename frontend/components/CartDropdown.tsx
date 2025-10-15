@@ -65,12 +65,12 @@ export default function CartDropdown() {
       {isOpen && (
         <>
           {/* Mobile overlay backdrop */}
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" />
+          <div className="fixed inset-0 bg-opacity-50 z-40 md:hidden" />
 
           {/* Dropdown/Modal */}
           <div
             className="
-            fixed inset-x-0 bottom-0 z-50 
+            fixed inset-x-0 z-50 
             md:absolute md:right-0 md:top-full md:inset-x-auto md:bottom-auto
             md:mt-2 md:w-96
             w-full max-h-[85vh] md:max-h-none

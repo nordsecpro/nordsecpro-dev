@@ -61,7 +61,7 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
     for (let i = 1; i <= 5; i++) {
       if (i <= fullStars) {
         stars.push(
-          <div key={i} className="bg-[#00b67a] p-1">
+          <div key={i} className="bg-blue-500 p-1">
             <svg
               width="16"
               height="16"
@@ -84,7 +84,7 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
             <div
-              className="absolute inset-0 bg-[#00b67a] p-1"
+              className="absolute inset-0 bg-blue-500 p-1"
               style={{ width: '60%' }}>
               <svg
                 width="16"
@@ -217,7 +217,7 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
                   </span>
                   <div className="flex-1 bg-gray-200 rounded-full h-2.5 sm:h-3 relative">
                     <div
-                      className="bg-[#00b67a] h-full rounded-full transition-all duration-300"
+                      className="bg-blue-500 h-full rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>

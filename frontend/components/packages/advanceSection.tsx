@@ -5,13 +5,19 @@ import {
   Calendar,
   Mail,
   Star,
-  Sparkles,
   ArrowRight,
   Zap,
   Award,
   Lock,
 } from 'lucide-react';
-import Header from '@/components/common/header';
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+  AwaitedReactNode,
+  Key,
+} from 'react';
 
 // Advanced Packages Data
 const advancedPackages = [
@@ -68,21 +74,30 @@ const advancedPackages = [
   },
 ];
 
-// Section Header Component
-const SectionHeader = ({ title, description, badge }: any) => (
-  <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
-      <Zap className="h-4 w-4" />
-      <span>{badge}</span>
-      <Sparkles className="h-3.5 w-3.5" />
-    </div> */}
-
-    <Header title={title} description={description} />
-  </div>
-);
-
 // Advanced Package Card
-const AdvancedPackageCard = ({ pkg, index }: any) => {
+type AdvancedPackage = {
+  id: string;
+  title: string;
+  icon: React.ElementType;
+  badge?: string;
+  scope: string;
+  format: string;
+  duration: string;
+  features: (
+    | string
+    | number
+    | bigint
+    | boolean
+    | ReactElement<any, string | JSXElementConstructor<any>>
+    | Iterable<ReactNode>
+    | ReactPortal
+    | Promise<AwaitedReactNode>
+    | null
+    | undefined
+  )[];
+};
+
+function AdvancedPackageCard({ pkg }: { pkg: AdvancedPackage }) {
   const Icon = pkg.icon;
 
   const handleCalendlyClick = (e: React.MouseEvent) => {
@@ -100,66 +115,85 @@ const AdvancedPackageCard = ({ pkg, index }: any) => {
   };
 
   return (
-    <div
-      className="animate-in fade-in slide-in-from-bottom-8 duration-700"
-      style={{ animationDelay: `${index * 100}ms` }}>
-      <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-300 rounded-3xl p-8 hover:border-blue-500 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 h-full flex flex-col relative overflow-hidden">
+    <div className="h-full">
+      <div className="bg-white border-2 border-blue-200 rounded-2xl p-8 hover:border-blue-600 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 h-full flex flex-col relative overflow-hidden group">
+        {/* Badge */}
         {pkg.badge && (
-          <div className="inline-flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-bold mb-4 w-fit shadow-lg">
+          <div className="inline-flex items-center gap-1 bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-semibold mb-4 w-fit shadow-md">
             <Star className="h-3 w-3" />
             {pkg.badge}
           </div>
         )}
 
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200/30 rounded-bl-full" />
+        {/* Decorative corner */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
 
         <div className="relative z-10 flex flex-col h-full">
-          <div className="bg-blue-600 rounded-2xl p-4 w-fit mb-6">
-            <Icon className="h-8 w-8 text-white" />
+          {/* Icon */}
+          <div className="bg-blue-600 rounded-xl p-3 w-fit mb-4 group-hover:scale-110 transition-transform duration-300">
+            <Icon className="h-7 w-7 text-white" />
           </div>
 
-          <h3 className="text-2xl font-bold text-slate-900 mb-3">
-            {pkg.title}
-          </h3>
+          {/* Title */}
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">{pkg.title}</h3>
 
-          <div className="mb-6">
-            <div className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
+          {/* Pricing */}
+          <div className="mb-4">
+            <div className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow-md">
               Custom Pricing
             </div>
-            <p className="text-sm text-slate-600 mt-3">
+            <p className="text-sm text-gray-600 mt-3">
               {pkg.format} • {pkg.duration}
             </p>
           </div>
 
-          <p className="text-sm text-slate-700 mb-6 leading-relaxed">
+          {/* Scope */}
+          <p className="text-sm text-gray-700 mb-6 leading-relaxed">
             {pkg.scope}
           </p>
 
-          <div className="space-y-3 mb-8 flex-1">
-            {pkg.features.map((feature: string, i: number) => (
-              <div key={i} className="flex items-start gap-3">
-                <div className="h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="h-3 w-3 text-white" />
+          {/* Features */}
+          <div className="space-y-3 mb-6 flex-1">
+            {pkg.features.map(
+              (
+                feature:
+                  | string
+                  | number
+                  | bigint
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | Promise<AwaitedReactNode>
+                  | null
+                  | undefined,
+                i: Key | null | undefined
+              ) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="h-5 w-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Check className="h-3 w-3 text-white" />
+                  </div>
+                  <span className="text-sm text-gray-700 font-medium">
+                    {feature}
+                  </span>
                 </div>
-                <span className="text-sm text-slate-700 font-medium">
-                  {feature}
-                </span>
-              </div>
-            ))}
+              )
+            )}
           </div>
 
+          {/* CTA Buttons */}
           <div className="space-y-3 mt-auto">
             <button
               onClick={handleCalendlyClick}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white h-14 rounded-2xl font-bold shadow-xl hover:shadow-2xl active:shadow-lg transition-all duration-300 group flex items-center justify-center gap-2">
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group/btn flex items-center justify-center gap-2">
               <Calendar className="h-5 w-5" />
               <span>Book a Zoom Meeting</span>
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
             </button>
 
             <button
               onClick={handleEmailClick}
-              className="w-full bg-white border-2 border-blue-300 hover:border-blue-500 hover:bg-blue-50 active:bg-blue-100 text-blue-600 h-12 rounded-2xl font-bold transition-all duration-300 flex items-center justify-center gap-2">
+              className="w-full bg-white border-2 border-blue-200 hover:border-blue-600 hover:bg-blue-50 text-blue-600 h-12 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2">
               <Mail className="h-5 w-5" />
               <span>Email Us</span>
             </button>
@@ -168,33 +202,56 @@ const AdvancedPackageCard = ({ pkg, index }: any) => {
       </div>
     </div>
   );
-};
+}
 
 // Main Component
-const AdvancedPackageSection = () => {
+function AdvancedPackageSection() {
   return (
-    <section className="py-12 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-grid-slate-200/40 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Advanced Packages Section */}
-        <SectionHeader
-          badge="Enterprise Solutions"
-          title="Advanced Packages"
-          description="Comprehensive security programs for growing and established businesses"
+    <section className="py-16 sm:py-20 bg-gray-50 relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 2px 2px, #2563eb 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
         />
+      </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Advanced Packages
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Comprehensive security programs for growing and established
+            businesses
+          </p>
+        </div>
+
+        {/* Package Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {advancedPackages.map((pkg, index) => (
-            <AdvancedPackageCard key={pkg.id} pkg={pkg} index={index} />
+            <AdvancedPackageCard key={pkg.id} pkg={pkg} />
           ))}
+        </div>
+
+        {/* Bottom Note */}
+        <div className="mt-12 text-center">
+          <p className="text-sm text-gray-600">
+            All advanced packages include dedicated support and custom
+            implementation
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            Contact us for a personalized quote based on your specific needs
+          </p>
         </div>
       </div>
     </section>
   );
-};
+}
 
 export default AdvancedPackageSection;

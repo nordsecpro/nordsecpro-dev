@@ -9,8 +9,6 @@ import {
   Shield,
   Users,
   ArrowRight,
-  Sparkles,
-  Zap,
   Star,
   Lock,
 } from 'lucide-react';
@@ -148,16 +146,13 @@ function LitePackagesSection({ seeAll = true }) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         {/* Section Header */}
-        <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
-            <Zap className="h-4 w-4" />
-            <span>Quick Start Solutions</span>
-            <Sparkles className="h-3.5 w-3.5" />
-          </div> */}
-          <HeaderSection
-            title="Lite Packages"
-            description="Entry-level security solutions to get you started quickly"
-          />
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Lite Packages
+          </h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Entry-level security solutions to get you started quickly
+          </p>
         </div>
 
         {/* Package Cards */}
@@ -175,15 +170,15 @@ function LitePackagesSection({ seeAll = true }) {
                 className="animate-in fade-in slide-in-from-bottom-8 duration-700"
                 style={{ animationDelay: `${index * 150}ms` }}>
                 <Card
-                  className={`${colors.bg} border-2 ${
-                    colors.border
-                  } rounded-3xl overflow-hidden transition-all duration-500 h-full flex flex-col group ${
+                  className={`bg-gradient-to-br from-blue-50 to-white border-2 rounded-2xl overflow-hidden transition-all duration-300 h-full flex flex-col ${
                     isDisabled
-                      ? 'opacity-60 cursor-not-allowed'
-                      : 'hover:shadow-2xl hover:-translate-y-2'
+                      ? 'opacity-60 cursor-not-allowed border-gray-200'
+                      : isSelected
+                      ? 'border-blue-600 shadow-xl'
+                      : 'border-blue-200 hover:border-blue-600 hover:shadow-xl hover:-translate-y-1'
                   }`}>
                   {/* Card Header */}
-                  <CardHeader className="pb-6 pt-8 px-8">
+                  <CardHeader className="p-6 pb-4">
                     {pkg.badge && (
                       <div
                         className={`flex mx-auto items-center justify-center gap-1 ${colors.badge} text-white px-3 py-1.5 rounded-full text-xs font-bold mb-4 shadow-lg w-1/2`}>
@@ -193,49 +188,47 @@ function LitePackagesSection({ seeAll = true }) {
                     )}
 
                     <div
-                      className={`${colors.icon} rounded-2xl p-4 w-fit mb-4 ${
-                        !isDisabled && 'group-hover:scale-110'
-                      } transition-transform duration-300`}>
-                      <Icon className="h-8 w-8" />
+                      className={`bg-blue-100 rounded-xl p-3 w-fit mb-4 transition-transform duration-300 ${
+                        !isDisabled && 'hover:scale-110'
+                      }`}>
+                      <Icon className="h-7 w-7 text-blue-600" />
                     </div>
 
-                    <CardTitle className="text-2xl font-bold text-slate-900 mb-3 min-h-[4rem] flex items-start">
+                    <CardTitle className="text-xl font-bold text-gray-900 mb-3 min-h-[3rem]">
                       {pkg.title}
                     </CardTitle>
 
                     {/* Price */}
-                    <div className="mb-4">
+                    <div className="mb-3">
                       <div className="flex items-baseline gap-1">
-                        <span className={`text-4xl font-bold ${colors.text}`}>
+                        <span className="text-3xl font-bold text-blue-600">
                           {pkg.currency}
                           {pkg.price.toLocaleString()}
                         </span>
                         {pkg.priceNote && (
-                          <span className="text-lg text-slate-600">
+                          <span className="text-base text-gray-600">
                             {pkg.priceNote}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm text-slate-600 mt-2">
+                      <p className="text-sm text-gray-600 mt-2">
                         {pkg.format} • {pkg.duration}
                       </p>
                     </div>
                   </CardHeader>
 
                   {/* Card Content */}
-                  <CardContent className="px-8 pb-8 flex-1 flex flex-col">
-                    <p className="text-sm text-slate-700 mb-6 leading-relaxed">
+                  <CardContent className="px-6 pb-6 flex-1 flex flex-col">
+                    <p className="text-sm text-gray-700 mb-5 leading-relaxed">
                       {pkg.scope}
                     </p>
 
                     {/* Features List */}
-                    <div className="space-y-3 mb-8 flex-1">
+                    <div className="space-y-2.5 mb-6 flex-1">
                       {pkg.features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-3">
-                          <Check
-                            className={`h-5 w-5 ${colors.text} flex-shrink-0 mt-0.5`}
-                          />
-                          <span className="text-sm text-slate-700">
+                        <div key={i} className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-gray-700">
                             {feature}
                           </span>
                         </div>
@@ -244,7 +237,7 @@ function LitePackagesSection({ seeAll = true }) {
 
                     {/* Disabled Message */}
                     {isDisabled && conflictingPackage && (
-                      <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                      <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                         <div className="flex items-start gap-2">
                           <Lock className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
                           <p className="text-xs text-amber-700 leading-relaxed">
@@ -258,28 +251,28 @@ function LitePackagesSection({ seeAll = true }) {
                     {/* CTA Button */}
                     {isSelected ? (
                       <Button
-                        className="w-full bg-green-600 hover:bg-green-700 text-white h-14 rounded-2xl font-bold shadow-lg"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white h-12 rounded-lg font-semibold shadow-lg cursor-default flex items-center justify-center gap-2"
                         disabled>
-                        <Check className="h-5 w-5 mr-2" />
+                        <Check className="h-5 w-5" />
                         Added to Cart
                       </Button>
                     ) : (
                       <Button
                         onClick={() => handleAddToCart(pkg)}
                         disabled={isDisabled}
-                        className={`w-full ${
+                        className={`w-full h-12 rounded-lg font-semibold shadow-md transition-all duration-300 flex items-center justify-center gap-2 ${
                           isDisabled
-                            ? 'bg-gray-400 cursor-not-allowed'
-                            : `${colors.button} hover:shadow-2xl`
-                        } text-white h-14 rounded-2xl font-bold shadow-xl transition-all duration-300 group/btn`}>
+                            ? 'bg-gray-400 cursor-not-allowed text-white'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg hover:scale-105'
+                        }`}>
                         {isDisabled ? (
                           <>
-                            <Lock className="h-5 w-5 mr-2" />
+                            <Lock className="h-5 w-5" />
                             Not Available
                           </>
                         ) : (
                           <>
-                            <ShoppingCart className="h-5 w-5 mr-2 transition-transform group-hover/btn:scale-110" />
+                            <ShoppingCart className="h-5 w-5" />
                             Add to Cart
                           </>
                         )}
@@ -294,44 +287,30 @@ function LitePackagesSection({ seeAll = true }) {
 
         {/* See All Packages CTA */}
         {seeAll && (
-          <div
-            className="text-center animate-in fade-in zoom-in-95 duration-700"
-            style={{ animationDelay: '600ms' }}>
-            <div className="inline-block bg-white rounded-3xl shadow-2xl p-10 border-2 border-slate-200 hover:border-blue-300 hover:shadow-blue-100/50 transition-all duration-500">
-              {/* <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full mb-6">
-                <Sparkles className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-700">
-                  Need More Power?
-                </span>
-              </div> */}
-
-              <h3 className="text-2xl font-bold text-slate-900 mb-4">
+          <div className="text-center">
+            <div className="inline-block bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-200 hover:border-blue-600 hover:shadow-xl transition-all duration-300">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
                 Explore Our Full Range
               </h3>
-              <p className="text-slate-600 mb-8 max-w-md mx-auto">
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 Check out our Pro & Advanced packages for comprehensive security
                 solutions
               </p>
-
-              <Link href="/packages" className="group inline-block">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 px-10 py-7 rounded-2xl font-bold text-base group-hover:scale-105">
-                  See All Packages
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
-                </Button>
-              </Link>
+              <button className="group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 rounded-lg font-semibold text-base hover:scale-105 flex items-center gap-2 mx-auto">
+                See All Packages
+                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
+              </button>
             </div>
           </div>
         )}
 
         {/* Disclaimer */}
-        <div className="mt-12 text-center">
-          <p className="text-sm text-slate-500">
+        <div className="mt-10 text-center">
+          <p className="text-sm text-gray-500">
             Prices shown are starting rates. Final pricing may vary based on
             specific requirements.
           </p>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className="text-xs text-gray-400 mt-2">
             Note: Some packages cannot be selected together due to service
             overlap
           </p>

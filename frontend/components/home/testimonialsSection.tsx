@@ -83,7 +83,7 @@ const StarRating: React.FC<StarRatingProps> = ({ rating = 5 }) => (
       <svg
         key={i}
         className={`w-4 h-4 ${
-          i < rating ? 'text-yellow-400' : 'text-gray-300'
+          i < rating ? 'text-blue-400' : 'text-gray-300'
         } fill-current`}
         viewBox="0 0 20 20">
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -94,7 +94,7 @@ const StarRating: React.FC<StarRatingProps> = ({ rating = 5 }) => (
 
 // Verified badge component
 const VerifiedBadge = () => (
-  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-2">
+  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
     <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
       <path
         fillRule="evenodd"
@@ -161,7 +161,7 @@ const TrustpilotSeeMore: React.FC<TrustpilotSeeMoreProps> = ({
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') handleClick();
         }}
-        className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-400/60 rounded-lg w-full max-w-7xl mx-auto">
+        className="cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400/60 rounded-lg w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-3">
             <CypentraReviewProfile profileData={profileData} />
@@ -405,7 +405,7 @@ function TestimonialsSection() {
   }, [currentSlide, isAutoPlay, allReviews, currentPage, totalPages, loading]);
 
   return (
-    <section className="bg-gradient-to-br from-gray-50 to-blue-50 py-20">
+    <section className="py-16 sm:py-20 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -420,7 +420,7 @@ function TestimonialsSection() {
               {[...Array(5)].map((_, i) => (
                 <svg
                   key={i}
-                  className="w-5 h-5 text-yellow-400 fill-current"
+                  className="w-5 h-5 text-blue-400 fill-current"
                   viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>

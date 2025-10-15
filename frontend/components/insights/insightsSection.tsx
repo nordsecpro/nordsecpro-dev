@@ -1,16 +1,134 @@
 'use client';
+
+import { useState, useEffect } from 'react';
 import {
   BookOpen,
   TrendingUp,
   Lightbulb,
   ArrowRight,
   FileText,
-  Sparkles,
+  Calendar,
 } from 'lucide-react';
-import Header from '@/components/common/header';
 
-// Insights Section Component
-function InsightsSection() {
+// Hero Section
+function InsightsHero() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  return (
+    <section className="bg-white py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob" />
+        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-20 left-1/2 w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000" />
+      </div>
+
+      {/* Subtle background elements */}
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 2px 2px, #2563eb 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-4xl mx-auto">
+          <h1
+            className={`text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 transition-all duration-700 delay-100 ${
+              isVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-10'
+            }`}>
+            Security
+            <span className="block text-blue-600 mt-2">Insights</span>
+          </h1>
+
+          <p
+            className={`text-lg sm:text-xl text-gray-600 leading-relaxed transition-all duration-700 delay-200 ${
+              isVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-10'
+            }`}>
+            Actionable ideas. No fluff. Expert guidance on compliance, security,
+            and growth strategies for modern SaaS businesses.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Insight Card Component
+type Insight = {
+  category: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+};
+
+function InsightCard({ insight, index }: { insight: Insight; index: number }) {
+  const Icon = insight.icon;
+  const [isHovered, setIsHovered] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 200);
+
+    return () => clearTimeout(timer);
+  }, [index]);
+
+  return (
+    <div
+      className={`transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}>
+      <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 hover:border-blue-600 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 h-full flex flex-col cursor-pointer group">
+        {/* Icon */}
+        <div
+          className={`bg-blue-50 w-14 h-14 rounded-xl flex items-center justify-center mb-4 transition-all duration-300 ${
+            isHovered ? 'scale-110 rotate-6' : 'scale-100 rotate-0'
+          }`}>
+          <Icon className="h-7 w-7 text-blue-600" />
+        </div>
+
+        {/* Category Badge */}
+        <div className="mb-4">
+          <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            {insight.category}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
+          {insight.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-gray-600 leading-relaxed flex-grow mb-6">
+          {insight.description}
+        </p>
+
+        {/* Bottom accent line */}
+        <div className="mt-6 h-1 w-0 bg-blue-600 rounded-full group-hover:w-full transition-all duration-500" />
+      </div>
+    </div>
+  );
+}
+
+// Insights Grid Section
+function InsightsGrid() {
   const insights = [
     {
       category: 'COMPLIANCE',
@@ -18,12 +136,6 @@ function InsightsSection() {
       title: 'SOC 2 vs ISO 27001: What Your SaaS Needs to Know',
       description:
         'Understanding the key differences and choosing the right framework for your business stage.',
-      gradient: 'from-blue-500 to-blue-600',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      categoryColor: 'text-blue-600',
-      bgPattern:
-        'bg-[radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.08),transparent_50%)]',
     },
     {
       category: 'FUNDING',
@@ -31,12 +143,6 @@ function InsightsSection() {
       title: 'Security Debt: The Silent Killer of Series A Deals',
       description:
         'How security gaps can derail fundraising and what VCs really look for in due diligence.',
-      gradient: 'from-blue-600 to-blue-700',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-700',
-      categoryColor: 'text-blue-700',
-      bgPattern:
-        'bg-[radial-gradient(circle_at_80%_20%,rgba(37,99,235,0.08),transparent_50%)]',
     },
     {
       category: 'STRATEGY',
@@ -44,133 +150,28 @@ function InsightsSection() {
       title: 'Prioritizing Security with a Team of Three',
       description:
         'Practical security wins for resource-constrained startups — maximum impact, minimal overhead.',
-      gradient: 'from-blue-500 to-blue-700',
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      categoryColor: 'text-blue-600',
-      bgPattern:
-        'bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.08),transparent_50%)]',
     },
   ];
 
   return (
-    <section
-      id="insights"
-      className="py-32 bg-gradient-to-br from-white via-blue-50 to-white relative overflow-hidden">
-      {/* Enhanced Background Elements */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e0f2fe_1px,transparent_1px),linear-gradient(to_bottom,#e0f2fe_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20" />
-      <div
-        className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-blue-400/20 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '6s' }}
-      />
-      <div
-        className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-3xl animate-pulse"
-        style={{ animationDuration: '8s' }}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section Header */}
-        <div
-          className="text-center mb-32"
-          style={{ animation: 'fadeInUp 1s ease forwards' }}>
-          {/* <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold mb-6 shadow-sm">
-            <BookOpen className="h-4 w-4" />
-            <span>Knowledge Base</span>
-            <Sparkles className="h-3.5 w-3.5" />
-          </div> */}
-
-          <Header title="Insights" description="Actionable ideas. No fluff." />
-        </div>
-
-        {/* Insights Grid */}
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
-          {insights.map((insight, index) => {
-            const Icon = insight.icon;
-            return (
-              <div
-                key={index}
-                className="relative group cursor-pointer animate-fadeInUp"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                  animationFillMode: 'both',
-                }}>
-                {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-blue-400 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700" />
-
-                {/* Card */}
-                <div
-                  className={`relative bg-white rounded-3xl p-8 lg:p-10 shadow-xl border-2 border-blue-300 hover:border-blue-500 transition-all duration-700 hover:shadow-2xl hover:shadow-blue-500/20 h-full flex flex-col ${insight.bgPattern} group-hover:-translate-y-2 overflow-hidden`}>
-                  {/* Decorative Corner */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-transparent rounded-bl-[100px] rounded-tr-3xl" />
-
-                  {/* Header */}
-                  <div className="relative mb-6">
-                    {/* Icon */}
-                    <div
-                      className={`${insight.iconBg} w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 shadow-lg`}>
-                      <Icon className={`h-8 w-8 ${insight.iconColor}`} />
-                    </div>
-
-                    {/* Category Badge */}
-                    <div className="mb-4">
-                      <span
-                        className={`text-xs font-bold ${insight.categoryColor} uppercase tracking-widest bg-blue-50 px-4 py-2 rounded-full border-2 border-blue-200 inline-block`}>
-                        {insight.category}
-                      </span>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-2xl lg:text-3xl font-black text-blue-900 leading-tight group-hover:text-blue-700 transition-colors duration-500">
-                      {insight.title}
-                    </h3>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-blue-900/75 text-base leading-relaxed font-medium flex-grow mb-6">
-                    {insight.description}
-                  </p>
-
-                  {/* Read More Link */}
-                  <div className="relative flex items-center gap-2 text-blue-600 font-bold group-hover:gap-4 transition-all duration-300">
-                    <span className="text-sm uppercase tracking-wide">
-                      Read More
-                    </span>
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  </div>
-
-                  {/* Bottom Accent Line - Fixed positioning */}
-                  <div
-                    className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${insight.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
-                    style={{
-                      borderBottomLeftRadius: '1.5rem',
-                      borderBottomRightRadius: '1.5rem',
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          })}
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {insights.map((insight, index) => (
+            <InsightCard key={index} insight={insight} index={index} />
+          ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeInUp {
-          animation: fadeInUp 0.5s ease-out;
-        }
-      `}</style>
     </section>
   );
 }
 
-export default InsightsSection;
+// Main Insights Page Component
+export default function InsightsPage() {
+  return (
+    <div className="bg-white min-h-screen">
+      <InsightsHero />
+      <InsightsGrid />
+    </div>
+  );
+}

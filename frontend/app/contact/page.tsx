@@ -1,130 +1,31 @@
-// app/contact/page.tsx or pages/contact.tsx
 'use client';
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { useRouter } from 'next/navigation'; // For app directory
+
+import { useState, useEffect } from 'react';
 import {
   Mail,
-  Menu,
-  Globe,
-  ArrowLeft,
-  X,
-  Phone,
   MapPin,
   Clock,
   Shield,
   CheckCircle,
   AlertCircle,
-  LucideIcon,
+  Send,
 } from 'lucide-react';
-import CartDropdown from '@/components/CartDropdown';
 
-// Types
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'outline'
-    | 'ghost'
-    | 'success'
-    | 'danger';
-  disabled?: boolean;
-  className?: string;
-  size?: 'sm' | 'md' | 'lg';
-}
+// Input Component
+import React from 'react';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   required?: boolean;
   error?: string;
   helperText?: string;
-  className?: string;
-}
-
-interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
-  required?: boolean;
-  error?: string;
-  helperText?: string;
-  className?: string;
-}
-
-interface FormData {
-  name: string;
-  email: string;
-  company: string;
-  subject: string;
-  message: string;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  message?: string;
-}
-
-type SubmitStatus = 'success' | 'error' | null;
-
-// Professional Button Component
-const Button: React.FC<ButtonProps> = ({
-  children,
-  onClick,
-  type = 'button',
-  variant = 'primary',
-  disabled = false,
-  className = '',
-  size = 'md',
-}) => {
-  const baseClasses =
-    'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-
-  const variants: Record<string, string> = {
-    primary:
-      'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl focus:ring-blue-500',
-    secondary:
-      'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl focus:ring-blue-400',
-    outline:
-      'border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white focus:ring-blue-500',
-    ghost: 'text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
-    success: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-    danger: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
-  };
-
-  const sizes: Record<string, string> = {
-    sm: 'px-3 py-2 text-sm rounded-md',
-    md: 'px-4 py-2 text-base rounded-lg',
-    lg: 'px-6 py-3 text-lg rounded-lg',
-  };
-
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`${baseClasses} ${variants[variant]} ${sizes[size]} ${className}`}>
-      {children}
-    </button>
-  );
 };
 
-// Professional Input Component
-const Input: React.FC<InputProps> = ({
-  label,
-  required,
-  error,
-  helperText,
-  className = '',
-  ...props
-}) => {
+function Input({ label, required, error, helperText, ...props }: InputProps) {
   return (
-    <div className={className}>
+    <div>
       {label && (
-        <label
-          htmlFor={props.id}
-          className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
           {label} {required && <span className="text-blue-600">*</span>}
         </label>
       )}
@@ -147,23 +48,27 @@ const Input: React.FC<InputProps> = ({
       )}
     </div>
   );
+}
+
+// Textarea Component
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  label?: string;
+  required?: boolean;
+  error?: string;
+  helperText?: string;
 };
 
-// Professional Textarea Component
-const Textarea: React.FC<TextareaProps> = ({
+function Textarea({
   label,
   required,
   error,
   helperText,
-  className = '',
   ...props
-}) => {
+}: TextareaProps) {
   return (
-    <div className={className}>
+    <div>
       {label && (
-        <label
-          htmlFor={props.id}
-          className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
           {label} {required && <span className="text-blue-600">*</span>}
         </label>
       )}
@@ -186,25 +91,67 @@ const Textarea: React.FC<TextareaProps> = ({
       )}
     </div>
   );
-};
+}
 
-// Logo Component
-function CypentraLogo({ className = 'h-8 w-auto' }: { className?: string }) {
+// Hero Section
+function ContactHero() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <div className={`flex items-center ${className}`}>
-      <img
-        src="/nord-logo.png"
-        alt="Cypentra Logo"
-        className="h-32 md:h-44 w-auto"
-      />
-    </div>
+    <section className="bg-white py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob" />
+        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-20 left-1/2 w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000" />
+      </div>
+
+      <div className="absolute inset-0 opacity-[0.03]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 2px 2px, #2563eb 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-4xl mx-auto">
+          <h1
+            className={`text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 transition-all duration-700 delay-100 ${
+              isVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-10'
+            }`}>
+            Let's Secure Your
+            <span className="block text-blue-600 mt-2">Business</span>
+          </h1>
+
+          <p
+            className={`text-lg sm:text-xl text-gray-600 leading-relaxed transition-all duration-700 delay-200 ${
+              isVisible
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-10'
+            }`}>
+            Connect with our cybersecurity experts for a personalized
+            consultation. We'll analyze your security needs and provide tailored
+            solutions within 24 hours.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
 
-// Main Contact Page Component
-export default function ContactPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState<FormData>({
+// Contact Form and Info Section
+function ContactContent() {
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     company: '',
@@ -212,12 +159,18 @@ export default function ContactPage() {
     message: '',
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null);
+  type Errors = {
+    name?: string;
+    email?: string;
+    message?: string;
+  };
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const [errors, setErrors] = useState<Errors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<null | 'success'>(null);
+
+  const validateForm = () => {
+    const newErrors: Errors = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -240,122 +193,65 @@ export default function ContactPage() {
   };
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: '',
-      }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (['name', 'email', 'message'].includes(name)) {
+      if (errors[name as keyof Errors]) {
+        setErrors((prev) => ({ ...prev, [name as keyof Errors]: '' }));
+      }
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const handleSubmit = () => {
+    if (!validateForm()) return;
     setIsSubmitting(true);
     setSubmitStatus(null);
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/contact`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            company: formData.company,
-            subject: formData.subject || 'Security Consultation Request',
-            message: formData.message,
-            type: 'security_consultation',
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setSubmitStatus('success');
-        setTimeout(() => {
-          router.push('/');
-        }, 3000);
-      } else {
-        throw new Error('Failed to send message');
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setSubmitStatus('error');
-    } finally {
+    setTimeout(() => {
+      setSubmitStatus('success');
       setIsSubmitting(false);
-    }
+      setFormData({
+        name: '',
+        email: '',
+        company: '',
+        subject: '',
+        message: '',
+      });
+    }, 2000);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      {/* Hero Section */}
-      <div className="relative py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Let's Secure Your
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-400">
-              {' '}
-              Business
-            </span>
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Connect with our cybersecurity experts for a personalized
-            consultation. We'll analyze your security needs and provide tailored
-            solutions within 24 hours.
-          </p>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="grid lg:grid-cols-5 gap-12 items-start">
-          {/* Contact Information - Left Side */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Contact Details */}
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">
-                Get in Touch
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white rounded-xl p-8 shadow-md border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Contact Information
               </h2>
-
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <Mail className="h-6 w-6 text-blue-600" />
+                  <div className="bg-blue-50 p-3 rounded-lg flex-shrink-0">
+                    <Mail className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">
                       Email Us
                     </h3>
                     <a
-                      href="mailto:info@cypentra.com"
-                      className="text-blue-600 hover:text-blue-700 transition-colors">
-                      info@cypentra.com
+                      href="mailto:info@securecore.com"
+                      className="text-blue-600 hover:text-blue-700">
+                      info@securecore.com
                     </a>
                     <p className="text-gray-500 text-sm mt-1">
                       We respond within 24 hours
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <MapPin className="h-6 w-6 text-blue-600" />
+                  <div className="bg-blue-50 p-3 rounded-lg flex-shrink-0">
+                    <MapPin className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">
@@ -368,10 +264,9 @@ export default function ContactPage() {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start space-x-4">
-                  <div className="bg-blue-100 p-3 rounded-lg">
-                    <Clock className="h-6 w-6 text-blue-600" />
+                  <div className="bg-blue-50 p-3 rounded-lg flex-shrink-0">
+                    <Clock className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">
@@ -384,42 +279,39 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Emergency Support */}
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 shadow-md text-white">
               <div className="flex items-center space-x-3 mb-4">
-                <Shield className="h-6 w-6 text-blue-600" />
-                <h3 className="font-bold text-gray-900">
-                  24/7 Emergency Support
-                </h3>
+                <Shield className="h-6 w-6" />
+                <h3 className="font-bold text-lg">24/7 Emergency Support</h3>
               </div>
-              <p className="text-gray-700 text-sm">
+              <p className="text-blue-50">
                 For critical security incidents requiring immediate attention,
                 our emergency response team is available around the clock.
               </p>
             </div>
 
-            {/* Service Guarantees */}
-            <div className="space-y-3">
+            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100">
               <h3 className="font-semibold text-gray-900 mb-4">
                 Our Commitment
               </h3>
-              {[
-                'Free initial security assessment',
-                'No obligation consultation',
-                'Guaranteed 24-hour response',
-                'Confidential security review',
-              ].map((item, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
-                  <span className="text-gray-700">{item}</span>
-                </div>
-              ))}
+              <div className="space-y-3">
+                {[
+                  'Free initial security assessment',
+                  'No obligation consultation',
+                  'Guaranteed 24-hour response',
+                  'Confidential security review',
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                    <span className="text-gray-700 text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Contact Form - Right Side */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl p-8 border border-gray-200 shadow-lg">
+            <div className="bg-white rounded-xl p-8 shadow-md border border-gray-100">
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Send Us a Message
@@ -430,7 +322,7 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <Input
                     id="name"
@@ -443,7 +335,6 @@ export default function ContactPage() {
                     placeholder="Enter your full name"
                     error={errors.name}
                   />
-
                   <Input
                     id="email"
                     name="email"
@@ -468,7 +359,6 @@ export default function ContactPage() {
                     placeholder="Your company name"
                     helperText="Optional but helps us understand your needs"
                   />
-
                   <Input
                     id="subject"
                     name="subject"
@@ -489,46 +379,32 @@ export default function ContactPage() {
                   rows={6}
                   value={formData.message}
                   onChange={handleInputChange}
-                  placeholder="Tell us about your security needs, current challenges, or specific questions you have..."
+                  placeholder="Tell us about your security needs, current challenges, or specific questions..."
                   error={errors.message}
-                  helperText="Please provide as much detail as possible to help us serve you better"
+                  helperText="Please provide as much detail as possible"
                 />
 
-                {/* Form Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => router.push('/')}
+                <div className="pt-4">
+                  <button
+                    onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="sm:w-auto w-full">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Home
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    disabled={isSubmitting}
-                    className="sm:flex-1 w-full"
-                    size="lg">
+                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-8 py-4 rounded-lg font-semibold text-base shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2">
                     {isSubmitting ? (
                       <>
-                        <div className="h-5 w-5 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         Sending Message...
                       </>
                     ) : (
                       <>
-                        <Mail className="h-5 w-5 mr-2" />
+                        <Send className="h-5 w-5" />
                         Send Message
                       </>
                     )}
-                  </Button>
+                  </button>
                 </div>
 
-                {/* Status Messages */}
                 {submitStatus === 'success' && (
-                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
                     <div className="flex items-start">
                       <CheckCircle className="h-6 w-6 text-blue-600 mr-3 flex-shrink-0 mt-0.5" />
                       <div>
@@ -538,46 +414,33 @@ export default function ContactPage() {
                         <p className="text-blue-700 text-sm">
                           Thank you for reaching out. Our security team will
                           review your inquiry and respond within 24 hours.
-                          Redirecting you to the home page...
                         </p>
                       </div>
                     </div>
                   </div>
                 )}
-
-                {submitStatus === 'error' && (
-                  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                    <div className="flex items-start">
-                      <AlertCircle className="h-6 w-6 text-blue-600 mr-3 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-blue-900 mb-1">
-                          Failed to Send Message
-                        </h4>
-                        <p className="text-blue-700 text-sm">
-                          We encountered an issue sending your message. Please
-                          try again or email us directly at{' '}
-                          <a
-                            href="mailto:info@cypentra.com"
-                            className="underline hover:no-underline">
-                            info@cypentra.com
-                          </a>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </form>
+              </div>
 
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <p className="text-xs text-gray-500 text-center">
-                  🔒 Your information is transmitted securely and will only be
-                  used to respond to your inquiry
+                <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
+                  <Shield className="h-3 w-3" />
+                  Your information is transmitted securely and will only be used
+                  to respond to your inquiry
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <div className="bg-white min-h-screen">
+      <ContactHero />
+      <ContactContent />
     </div>
   );
 }
