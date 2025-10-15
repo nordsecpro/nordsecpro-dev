@@ -95,10 +95,15 @@ function ResourceCard({ resource, index }: ResourceCardProps) {
     return () => clearTimeout(timer);
   }, [index]);
 
-  const handleDownload = () => {
-    // Simulate download
-    console.log(`Downloading: ${resource.displayName}`);
-    alert(`Downloading: ${resource.title}`);
+  const handleDownload = (fileName: string, displayName: string) => {
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = `/assets/${fileName}`;
+    link.download = displayName;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -129,7 +134,9 @@ function ResourceCard({ resource, index }: ResourceCardProps) {
 
         {/* Download Button */}
         <button
-          onClick={handleDownload}
+          onClick={() =>
+            handleDownload(resource.fileName, resource.displayName)
+          }
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-3 hover:shadow-lg transition-all duration-300 group">
           <Download className="h-5 w-5 group-hover:animate-bounce" />
           <span>Download Free</span>
@@ -313,7 +320,10 @@ function CTASection() {
           className={`transition-all duration-700 delay-400 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-          <Link href="/contact">
+          <Link
+            href="https://calendly.com/cypentra-consultation"
+            target="_blank"
+            rel="noopener noreferrer">
             <button className="bg-white hover:bg-gray-50 text-blue-600 px-8 py-4 rounded-lg font-semibold text-base shadow-lg transition-all duration-300 hover:scale-105">
               Schedule a Consultation
             </button>

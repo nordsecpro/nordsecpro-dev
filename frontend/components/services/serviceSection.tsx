@@ -115,7 +115,7 @@ function ServicesHero() {
                 ? 'opacity-100 translate-y-0'
                 : 'opacity-0 translate-y-10'
             }`}>
-            <Link href="/contact">
+            <Link href="https://calendly.com/cypentra-consultation">
               <Button className="group bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-lg font-semibold text-base shadow-lg shadow-blue-600/20 hover:shadow-xl hover:shadow-blue-600/30 transition-all duration-300 hover:scale-105">
                 <span className="flex items-center justify-center gap-2">
                   <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform" />
@@ -364,7 +364,7 @@ function CTASection() {
           className={`flex flex-col sm:flex-row gap-4 justify-center transition-all duration-700 delay-400 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-          <Link href="https://calendly.com/yourcalendly">
+          <Link href="https://calendly.com/cypentra-consultation">
             <Button className="group bg-white hover:bg-gray-50 text-blue-600 px-8 py-6 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <span className="flex items-center justify-center gap-2">
                 <Calendar className="w-5 h-5 group-hover:rotate-12 transition-transform" />
@@ -373,11 +373,11 @@ function CTASection() {
               </span>
             </Button>
           </Link>
-          <Link href="/pricing">
+          <Link href="/packages">
             <Button
               variant="outline"
               className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-6 rounded-lg font-semibold text-base transition-all duration-300 hover:scale-105">
-              View Pricing
+              View Packages
             </Button>
           </Link>
         </div>

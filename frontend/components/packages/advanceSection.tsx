@@ -103,7 +103,7 @@ function AdvancedPackageCard({ pkg }: { pkg: AdvancedPackage }) {
   const handleCalendlyClick = (e: React.MouseEvent) => {
     e.preventDefault();
     window.open(
-      'https://calendly.com/cypentra',
+      'https://calendly.com/cypentra-consultation',
       '_blank',
       'noopener,noreferrer'
     );
