@@ -9,7 +9,7 @@ import Footer from '@/components/common/footer';
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.cypentra.com'),
   title: {
-    default: 'Cypentra - Your Digital Commerce Solution',
+    default: 'Cypentra - Secure the Center',
     template: '%s | Cypentra',
   },
   description:
@@ -49,9 +49,9 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: 'Cypentra – Straightforward Cybersecurity',
+    title: 'Cypentra - Secure the Center',
     description:
-      'Secure the center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.',
+      'Cypentra - Secure the Center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.',
     images: ['/og.png'],
     url: 'https://cypentra.com',
     siteName: 'Cypentra',
@@ -61,9 +61,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@cypentra',
     creator: '@cypentra',
-    title: 'Cypentra – Straightforward Cybersecurity',
+    title: 'Cypentra - Secure the Center',
     description:
-      'Secure the center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.',
+      'Cypentra - Secure the Center. Your SOC 2, vCISO & Cloud Security Partner. Secure. Comply. Grow.',
     images: ['/og.png'],
   },
 
