@@ -7,7 +7,7 @@ import {
   Elements,
   CardElement,
   useStripe,
-  useElements
+  useElements,
 } from '@stripe/react-stripe-js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,23 +15,50 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, ShoppingCart, Lock, CreditCard, User, Building2, Mail, Phone, FileText, Shield, Check, AlertCircle } from 'lucide-react';
+import {
+  Loader2,
+  ShoppingCart,
+  Lock,
+  CreditCard,
+  User,
+  Building2,
+  Mail,
+  Phone,
+  FileText,
+  Shield,
+  AlertCircle,
+} from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useRouter } from 'next/navigation';
 
 // Initialize Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 // Terms and Conditions Component
-function TermsModal({ isOpen, onClose, type }: {
+function TermsModal({
+  isOpen,
+  onClose,
+  type,
+}: {
   isOpen: boolean;
   onClose: () => void;
   type: 'terms' | 'privacy';
 }) {
-  const content = type === 'terms' ? {
-    title: 'Terms and Conditions',
-    content: `
+  const content =
+    type === 'terms'
+      ? {
+          title: 'Terms and Conditions',
+          content: `
       1. Service Agreement
       By purchasing our security plans, you agree to our terms of service. These plans provide comprehensive security solutions tailored to your business needs.
 
@@ -55,10 +82,11 @@ function TermsModal({ isOpen, onClose, type }: {
 
       8. Updates to Terms
       These terms may be updated periodically. Users will be notified of significant changes via email.
-    `
-  } : {
-    title: 'Privacy Policy',
-    content: `
+    `,
+        }
+      : {
+          title: 'Privacy Policy',
+          content: `
       1. Information We Collect
       We collect personal information including name, email, phone number, and company details to provide our security services effectively.
 
@@ -82,8 +110,8 @@ function TermsModal({ isOpen, onClose, type }: {
 
       8. Contact Information
       For privacy-related inquiries, contact us at privacy@company.com or through our support channels.
-    `
-  };
+    `,
+        };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -110,7 +138,12 @@ function TermsModal({ isOpen, onClose, type }: {
 }
 
 // Enhanced Customer Form Component
-function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
+function CustomerForm({
+  onSubmit,
+  isLoading,
+  onShowTerms,
+  onShowPrivacy,
+}: {
   onSubmit: (data: any) => void;
   isLoading: boolean;
   onShowTerms: () => void;
@@ -121,7 +154,7 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
     lastName: '',
     email: '',
     phone: '',
-    company: ''
+    company: '',
   });
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptPrivacy, setAcceptPrivacy] = useState(false);
@@ -135,8 +168,13 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
     onSubmit(formData);
   };
 
-  const isFormValid = acceptTerms && acceptPrivacy && cardReady &&
-    formData.firstName && formData.lastName && formData.email;
+  const isFormValid =
+    acceptTerms &&
+    acceptPrivacy &&
+    cardReady &&
+    formData.firstName &&
+    formData.lastName &&
+    formData.email;
 
   return (
     <div className="space-y-8">
@@ -147,22 +185,30 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
             <User className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Customer Information</h3>
-            <p className="text-sm text-gray-500">Please provide your contact details</p>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Customer Information
+            </h3>
+            <p className="text-sm text-gray-500">
+              Please provide your contact details
+            </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="firstName"
+                className="text-sm font-medium text-gray-700">
                 First Name *
               </Label>
               <div className="relative">
                 <Input
                   id="firstName"
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
                   className="pl-4 pr-4 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
                   placeholder="Enter your first name"
                   required
@@ -170,14 +216,18 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="lastName"
+                className="text-sm font-medium text-gray-700">
                 Last Name *
               </Label>
               <div className="relative">
                 <Input
                   id="lastName"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   className="pl-4 pr-4 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
                   placeholder="Enter your last name"
                   required
@@ -187,7 +237,9 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-700">
               Email Address *
             </Label>
             <div className="relative">
@@ -196,7 +248,9 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className="pl-11 pr-4 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
                 placeholder="Enter your email address"
                 required
@@ -206,7 +260,9 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="phone"
+                className="text-sm font-medium text-gray-700">
                 Phone Number
               </Label>
               <div className="relative">
@@ -215,14 +271,18 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   className="pl-11 pr-4 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
                   placeholder="Enter your phone number"
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="company" className="text-sm font-medium text-gray-700">
+              <Label
+                htmlFor="company"
+                className="text-sm font-medium text-gray-700">
                 Company Name
               </Label>
               <div className="relative">
@@ -230,7 +290,9 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                 <Input
                   id="company"
                   value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, company: e.target.value })
+                  }
                   className="pl-11 pr-4 py-3 border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
                   placeholder="Enter your company name"
                 />
@@ -247,8 +309,12 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                 <CreditCard className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Payment Information</h3>
-                <p className="text-sm text-gray-500">Your payment details are secure and encrypted</p>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Payment Information
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Your payment details are secure and encrypted
+                </p>
               </div>
               <div className="ml-auto">
                 <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -296,8 +362,12 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                 <Shield className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Terms & Agreements</h3>
-                <p className="text-sm text-gray-500">Please review and accept our terms</p>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Terms & Agreements
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Please review and accept our terms
+                </p>
               </div>
             </div>
 
@@ -306,14 +376,15 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                 <Checkbox
                   id="terms"
                   checked={acceptTerms}
-                  onCheckedChange={(checked) => setAcceptTerms(checked === true)}
+                  onCheckedChange={(checked) =>
+                    setAcceptTerms(checked === true)
+                  }
                   className="mt-1"
                 />
                 <div className="space-y-1">
                   <Label
                     htmlFor="terms"
-                    className="text-sm font-medium text-gray-700 cursor-pointer"
-                  >
+                    className="text-sm font-medium text-gray-700 cursor-pointer">
                     I agree to the Terms and Conditions *
                   </Label>
                   <p className="text-xs text-gray-500">
@@ -321,8 +392,7 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                     <button
                       type="button"
                       onClick={onShowTerms}
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                    >
+                      className="text-blue-600 hover:text-blue-800 underline font-medium">
                       Read Terms & Conditions
                     </button>
                   </p>
@@ -333,14 +403,15 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                 <Checkbox
                   id="privacy"
                   checked={acceptPrivacy}
-                  onCheckedChange={(checked) => setAcceptPrivacy(checked === true)}
+                  onCheckedChange={(checked) =>
+                    setAcceptPrivacy(checked === true)
+                  }
                   className="mt-1"
                 />
                 <div className="space-y-1">
                   <Label
                     htmlFor="privacy"
-                    className="text-sm font-medium text-gray-700 cursor-pointer"
-                  >
+                    className="text-sm font-medium text-gray-700 cursor-pointer">
                     I agree to the Privacy Policy *
                   </Label>
                   <p className="text-xs text-gray-500">
@@ -348,8 +419,7 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
                     <button
                       type="button"
                       onClick={onShowPrivacy}
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                    >
+                      className="text-blue-600 hover:text-blue-800 underline font-medium">
                       Read Privacy Policy
                     </button>
                   </p>
@@ -364,7 +434,8 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
               <Alert className="mb-4 border-amber-200 bg-amber-50">
                 <AlertCircle className="h-4 w-4 text-amber-600" />
                 <AlertDescription className="text-amber-800">
-                  Please fill in all required fields and accept the terms to proceed with payment.
+                  Please fill in all required fields and accept the terms to
+                  proceed with payment.
                 </AlertDescription>
               </Alert>
             )}
@@ -373,8 +444,7 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
               disabled={isLoading || !isFormValid}
-              size="lg"
-            >
+              size="lg">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-3 h-5 w-5 animate-spin" />
@@ -401,12 +471,17 @@ function CustomerForm({ onSubmit, isLoading, onShowTerms, onShowPrivacy }: {
 }
 
 // Enhanced Payment Form Component with SEPARATED PAYMENTS
+// Updated PaymentForm component - replace the existing PaymentForm in your CheckoutForm.tsx
+// Updated PaymentForm component - replace the existing PaymentForm in your CheckoutForm.tsx
+
 function PaymentForm() {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter(); // Add this hook
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  // Remove the success state since we're redirecting
+  // const [success, setSuccess] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [paymentProgress, setPaymentProgress] = useState<string>('');
@@ -414,16 +489,17 @@ function PaymentForm() {
 
   // Helper function to determine plan type
   const getPlanType = (planTitle: string) => {
-    // Add your plan type logic here
     return planTitle === 'vCISO Lite (On Demand)' ? 'ongoing' : 'one-time';
   };
 
   // Separate plans by type
-  const oneTimePlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'one-time');
-  const ongoingPlans = selectedPlans.filter(plan => getPlanType(plan.planTitle) === 'ongoing');
+  const oneTimePlans = selectedPlans.filter(
+    (plan) => getPlanType(plan.planTitle) === 'one-time'
+  );
+  const ongoingPlans = selectedPlans.filter(
+    (plan) => getPlanType(plan.planTitle) === 'ongoing'
+  );
 
-
-  // --- replace handlePayment in PaymentForm with this version ---
   const handlePayment = async (customerData: any) => {
     if (!stripe || !elements) {
       setError('Stripe has not loaded yet.');
@@ -433,7 +509,11 @@ function PaymentForm() {
       setError('No plans selected for checkout.');
       return;
     }
-    if (!customerData.firstName || !customerData.lastName || !customerData.email) {
+    if (
+      !customerData.firstName ||
+      !customerData.lastName ||
+      !customerData.email
+    ) {
       setError('First name, last name, and email are required.');
       return;
     }
@@ -452,12 +532,14 @@ function PaymentForm() {
       }
 
       // helpers
-      const getPlanType = (t: string) => (t === 'vCISO Lite (On Demand)' ? 'ongoing' : 'one-time');
-      const oneTimePlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'one-time');
-      const ongoingPlans = selectedPlans.filter(p => getPlanType(p.planTitle) === 'ongoing');
-
-
-
+      const getPlanType = (t: string) =>
+        t === 'vCISO Lite (On Demand)' ? 'ongoing' : 'one-time';
+      const oneTimePlans = selectedPlans.filter(
+        (p) => getPlanType(p.planTitle) === 'one-time'
+      );
+      const ongoingPlans = selectedPlans.filter(
+        (p) => getPlanType(p.planTitle) === 'ongoing'
+      );
 
       const confirmPI = async (clientSecret: string, label: string) => {
         setPaymentProgress(`Confirming ${label}...`);
@@ -483,15 +565,24 @@ function PaymentForm() {
         if (!paymentIntent) {
           throw new Error(`${label} payment could not be confirmed.`);
         }
-        console.log(`${label} PI status:`, paymentIntent.status, paymentIntent.id);
+        console.log(
+          `${label} PI status:`,
+          paymentIntent.status,
+          paymentIntent.id
+        );
         if (paymentIntent.status !== 'succeeded') {
-          throw new Error(`${label} not completed (status: ${paymentIntent.status}).`);
+          throw new Error(
+            `${label} not completed (status: ${paymentIntent.status}).`
+          );
         }
         return paymentIntent.id;
       };
 
       // extract clientSecret from either legacy (nested) or lean (flat) shapes
-      const extractClientSecret = (json: any, expectedType: 'one-time' | 'ongoing') => {
+      const extractClientSecret = (
+        json: any,
+        expectedType: 'one-time' | 'ongoing'
+      ) => {
         // lean shape
         if (json?.data?.type === expectedType && json?.data?.clientSecret) {
           return json.data.clientSecret;
@@ -506,21 +597,32 @@ function PaymentForm() {
         return null;
       };
 
+      let paymentId = '';
+
       // 1) One-time flow
       if (oneTimePlans.length > 0) {
         setPaymentProgress('Processing one-time plans...');
         const oneTimeTotal = oneTimePlans.reduce((s, p) => s + p.price, 0);
 
-        const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plans: oneTimePlans, totalPrice: oneTimeTotal, customerData }),
-        });
+        const resp = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              plans: oneTimePlans,
+              totalPrice: oneTimeTotal,
+              customerData,
+            }),
+          }
+        );
         const json = await resp.json();
 
         if (!resp.ok) {
           console.error('One-time init response:', json);
-          throw new Error(json?.message || 'Failed to create one-time payment intent');
+          throw new Error(
+            json?.message || 'Failed to create one-time payment intent'
+          );
         }
         console.log('One-time init response:', json);
         const oneTimeClientSecret = extractClientSecret(json, 'one-time');
@@ -529,7 +631,7 @@ function PaymentForm() {
           throw new Error('One-time client secret missing.');
         }
 
-        await confirmPI(oneTimeClientSecret, 'one-time');
+        paymentId = await confirmPI(oneTimeClientSecret, 'one-time');
       }
 
       // 2) Ongoing flow (subscription – confirm invoice PI)
@@ -537,29 +639,62 @@ function PaymentForm() {
         setPaymentProgress('Processing ongoing subscription...');
         const ongoingTotal = ongoingPlans.reduce((s, p) => s + p.price, 0);
 
-        const resp = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plans: ongoingPlans, totalPrice: ongoingTotal, customerData }),
-        });
+        const resp = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/subscription/create-payment-intent`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              plans: ongoingPlans,
+              totalPrice: ongoingTotal,
+              customerData,
+            }),
+          }
+        );
         const json = await resp.json();
 
         // graceful "already subscribed"
         if (!resp.ok) {
-          if (resp.status === 400 && json?.message?.includes('already have an active ongoing subscription')) {
+          if (
+            resp.status === 400 &&
+            json?.message?.includes(
+              'already have an active ongoing subscription'
+            )
+          ) {
             setError(
-              `You already have an active ongoing subscription.${oneTimePlans.length > 0 ? ' Your one-time plans were processed successfully.' : ''
+              `You already have an active ongoing subscription.${
+                oneTimePlans.length > 0
+                  ? ' Your one-time plans were processed successfully.'
+                  : ''
               }`
             );
             if (oneTimePlans.length > 0) {
-              setSuccess(true);
+              // Still redirect to success page even with partial success
+              const purchaseDetails = {
+                oneTimePlans,
+                ongoingPlans: [],
+                totalAmount: oneTimePlans.reduce((s, p) => s + p.price, 0),
+                customerEmail: customerData.email,
+                paymentId,
+              };
+
+              // Store in sessionStorage for the success page
+              sessionStorage.setItem(
+                'purchaseDetails',
+                JSON.stringify(purchaseDetails)
+              );
+
+              // Clear cart and redirect
               clearCart();
+              router.push('/checkout/success');
             }
             setIsLoading(false);
             return;
           }
           console.error('Ongoing init response:', json);
-          throw new Error(json?.message || 'Failed to create ongoing payment intent');
+          throw new Error(
+            json?.message || 'Failed to create ongoing payment intent'
+          );
         }
 
         const ongoingClientSecret = extractClientSecret(json, 'ongoing');
@@ -568,12 +703,43 @@ function PaymentForm() {
           throw new Error('Subscription client secret missing.');
         }
 
-        await confirmPI(ongoingClientSecret, 'subscription');
+        const subPaymentId = await confirmPI(
+          ongoingClientSecret,
+          'subscription'
+        );
+        paymentId = paymentId || subPaymentId;
       }
 
       setPaymentProgress('Payment completed successfully!');
-      setSuccess(true);
+
+      // Prepare purchase details for success page
+      const purchaseDetails = {
+        oneTimePlans,
+        ongoingPlans,
+        totalAmount: totalPrice,
+        customerEmail: customerData.email,
+        paymentId,
+      };
+
+      // Create a valid session with timestamp
+      const paymentSession = {
+        valid: true,
+        timestamp: new Date().toISOString(),
+        paymentId,
+      };
+
+      // Store both session and details in sessionStorage
+      sessionStorage.setItem('paymentSession', JSON.stringify(paymentSession));
+      sessionStorage.setItem(
+        'purchaseDetails',
+        JSON.stringify(purchaseDetails)
+      );
+
+      // Clear cart and redirect to success page with payment intent ID
       clearCart();
+
+      // Redirect with payment_intent parameter for additional verification
+      router.push(`/checkout/success?payment_intent=${paymentId}`);
     } catch (err: any) {
       console.error('Payment error:', err);
       setError(err.message || 'Something went wrong');
@@ -582,40 +748,6 @@ function PaymentForm() {
       setPaymentProgress('');
     }
   };
-
-
-
-  if (success) {
-    return (
-      <div className="max-w-md mx-auto">
-        <Card className="border-0 shadow-2xl">
-          <CardContent className="pt-8 pb-6 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Check className="w-10 h-10 text-green-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h3>
-            <p className="text-gray-600 mb-6">
-              Thank you for your purchase. You will receive confirmation emails shortly with your receipt and next steps.
-            </p>
-            {oneTimePlans.length > 0 && ongoingPlans.length > 0 && (
-              <div className="bg-blue-50 p-4 rounded-lg mb-6 text-sm">
-                <p className="text-blue-800">
-                  ✅ One-time plans: Processed immediately<br />
-                  ✅ Ongoing subscription: Activated with monthly billing
-                </p>
-              </div>
-            )}
-            <Button
-              onClick={() => window.location.href = '/'}
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              Return to Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -629,7 +761,8 @@ function PaymentForm() {
             <div>
               <h2 className="text-gray-900">Order Summary</h2>
               <p className="text-sm font-normal text-gray-600 mt-1">
-                {selectedPlans.length} {selectedPlans.length === 1 ? 'Plan' : 'Plans'} Selected
+                {selectedPlans.length}{' '}
+                {selectedPlans.length === 1 ? 'Plan' : 'Plans'} Selected
               </p>
             </div>
           </CardTitle>
@@ -644,10 +777,14 @@ function PaymentForm() {
                   One-Time Plans ({oneTimePlans.length})
                 </h4>
                 {oneTimePlans.map((plan, index) => (
-                  <div key={`onetime-${index}`} className="bg-green-50 p-4 rounded-lg mb-3">
+                  <div
+                    key={`onetime-${index}`}
+                    className="bg-green-50 p-4 rounded-lg mb-3">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <div className="font-semibold text-lg text-gray-900">{plan.planTitle}</div>
+                        <div className="font-semibold text-lg text-gray-900">
+                          {plan.planTitle}
+                        </div>
                         <div className="text-sm text-gray-600 mt-1">
                           Coverage for {plan.numberOfEmployees} employees
                         </div>
@@ -656,7 +793,9 @@ function PaymentForm() {
                         </div>
                       </div>
                       <div className="text-right ml-4">
-                        <div className="text-xl font-bold text-gray-900">${plan.price.toLocaleString()}</div>
+                        <div className="text-xl font-bold text-gray-900">
+                          ${plan.price.toLocaleString()}
+                        </div>
                         <div className="text-sm text-green-600">one-time</div>
                       </div>
                     </div>
@@ -673,10 +812,14 @@ function PaymentForm() {
                   Ongoing Subscription ({ongoingPlans.length})
                 </h4>
                 {ongoingPlans.map((plan, index) => (
-                  <div key={`ongoing-${index}`} className="bg-blue-50 p-4 rounded-lg mb-3">
+                  <div
+                    key={`ongoing-${index}`}
+                    className="bg-blue-50 p-4 rounded-lg mb-3">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <div className="font-semibold text-lg text-gray-900">{plan.planTitle}</div>
+                        <div className="font-semibold text-lg text-gray-900">
+                          {plan.planTitle}
+                        </div>
                         <div className="text-sm text-gray-600 mt-1">
                           Coverage for {plan.numberOfEmployees} employees
                         </div>
@@ -686,7 +829,9 @@ function PaymentForm() {
                         </div>
                       </div>
                       <div className="text-right ml-4">
-                        <div className="text-xl font-bold text-gray-900">${plan.price.toLocaleString()}</div>
+                        <div className="text-xl font-bold text-gray-900">
+                          ${plan.price.toLocaleString()}
+                        </div>
                         <div className="text-sm text-blue-600">monthly</div>
                       </div>
                     </div>
@@ -699,14 +844,19 @@ function PaymentForm() {
 
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold text-gray-900">Total Amount:</span>
-                <span className="text-2xl font-bold text-blue-600">${totalPrice.toLocaleString()}</span>
+                <span className="text-lg font-semibold text-gray-900">
+                  Total Amount:
+                </span>
+                <span className="text-2xl font-bold text-blue-600">
+                  ${totalPrice.toLocaleString()}
+                </span>
               </div>
 
               {oneTimePlans.length > 0 && ongoingPlans.length > 0 && (
                 <div className="text-sm text-blue-600 mt-2 flex items-center gap-1">
                   <Shield className="w-4 h-4" />
-                  Secure payment will process both one-time and subscription charges
+                  Secure payment will process both one-time and subscription
+                  charges
                 </div>
               )}
             </div>
@@ -717,7 +867,9 @@ function PaymentForm() {
       {/* Enhanced Payment Form */}
       <Card className="border-0 shadow-lg">
         <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-t-lg">
-          <CardTitle className="text-xl text-gray-900">Complete Your Purchase</CardTitle>
+          <CardTitle className="text-xl text-gray-900">
+            Complete Your Purchase
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           {error && (
@@ -747,6 +899,7 @@ function PaymentForm() {
           />
         </CardContent>
       </Card>
+
       {/* Terms and Privacy Modals */}
       <TermsModal
         isOpen={showTermsModal}
@@ -764,7 +917,6 @@ function PaymentForm() {
 
 // Enhanced Main Checkout Component
 export default function CheckoutForm() {
-
   return (
     <Elements stripe={stripePromise}>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
@@ -779,7 +931,9 @@ export default function CheckoutForm() {
             </p>
             <div className="flex items-center justify-center gap-2 mt-4">
               <Lock className="w-4 h-4 text-green-600" />
-              <span className="text-sm text-green-600 font-medium">Secured by Stripe</span>
+              <span className="text-sm text-green-600 font-medium">
+                Secured by Stripe
+              </span>
             </div>
           </div>
 
