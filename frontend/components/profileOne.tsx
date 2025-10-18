@@ -57,16 +57,46 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
     return (count / total_reviews) * 100;
   };
 
-  // Render Trustpilot stars for the rating box
-  const renderTrustpilotStars = (rating: number = 5) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
+// Render Trustpilot stars for the rating box
+const renderTrustpilotStars = (rating: number = 5) => {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const decimalPart = rating % 1;
+  const partialWidth = Math.round(decimalPart * 100); // 0–99%
 
-    for (let i = 1; i <= 5; i++) {
-      if (i <= fullStars) {
-        stars.push(
-          <div key={i} className="bg-blue-500 p-1">
+  for (let i = 1; i <= 5; i++) {
+    if (i <= fullStars) {
+      // Full star
+      stars.push(
+        <div key={i} className="bg-blue-500 p-1">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="white"
+            className="md:w-5 md:h-5">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+      );
+    } else if (i === fullStars + 1 && decimalPart > 0) {
+      // Partial star
+      stars.push(
+        <div key={i} className="bg-gray-200 p-1 relative overflow-hidden">
+          {/* Empty star */}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="gray"
+            className="md:w-5 md:h-5">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+
+          {/* Filled portion */}
+          <div
+            className="absolute inset-0 bg-blue-500 p-1"
+            style={{ width: `${partialWidth}%` }}>
             <svg
               width="16"
               height="16"
@@ -76,49 +106,27 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
               <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
             </svg>
           </div>
-        );
-      } else if (i === fullStars + 1 && hasHalfStar) {
-        stars.push(
-          <div key={i} className="bg-gray-200 p-1 relative overflow-hidden">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="gray"
-              className="md:w-5 md:h-5">
-              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-            <div
-              className="absolute inset-0 bg-blue-500 p-1"
-              style={{ width: '60%' }}>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="white"
-                className="md:w-5 md:h-5">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-              </svg>
-            </div>
-          </div>
-        );
-      } else {
-        stars.push(
-          <div key={i} className="bg-gray-200 p-1">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="gray"
-              className="md:w-5 md:h-5">
-              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-          </div>
-        );
-      }
+        </div>
+      );
+    } else {
+      // Empty star
+      stars.push(
+        <div key={i} className="bg-gray-200 p-1">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="gray"
+            className="md:w-5 md:h-5">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+          </svg>
+        </div>
+      );
     }
-    return stars;
-  };
+  }
+  return stars;
+};
+
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 bg-white w-full rounded-lg">
