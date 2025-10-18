@@ -9,6 +9,7 @@ const trustpilotCacheSchema = new mongoose.Schema({
     default: 'trustpilot_metadata'
   },
   total_reviews: Number,
+  trust_score: Number,  // ADD THIS FIELD
   rating_distribution: {
     '1': Number,
     '2': Number,

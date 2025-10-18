@@ -114,6 +114,7 @@ interface RatingDistribution {
 interface ProfileData {
   domain: string;
   total_reviews: number;
+  trust_score: number;
   rating_distribution: RatingDistribution;
   language_distribution: {
     [key: string]: number;
@@ -430,17 +431,7 @@ function TestimonialsSection() {
               <SkeletonBox className="ml-2 h-5 w-32" />
             ) : (
               <span className="ml-2 text-gray-600 font-medium">
-                {profileData
-                  ? profileData.total_reviews > 0
-                    ? (
-                        Object.entries(profileData.rating_distribution).reduce(
-                          (acc, [stars, count]) =>
-                            acc + parseInt(stars) * count,
-                          0
-                        ) / profileData.total_reviews
-                      ).toFixed(1)
-                    : '5.0'
-                  : '5.0'}{' '}
+                {profileData?.trust_score}{' '}
                 out of 5 stars
               </span>
             )}

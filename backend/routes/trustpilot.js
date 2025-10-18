@@ -5,6 +5,6 @@ const trustpilotController = require('../controllers/trustpilot.controller');
 
 router.get('/reviews', trustpilotController.getReviews);
 router.get('/profile', trustpilotController.getBusinessProfile);
-router.post('/refresh', trustpilotController.forceRefresh);
+router.get('/refresh', trustpilotController.forceRefresh);
 
 module.exports = router;

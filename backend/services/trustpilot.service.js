@@ -53,11 +53,11 @@ class TrustpilotService {
     return cache.api_calls_this_month < this.MAX_MONTHLY_CALLS;
   }
 
-  async incrementApiCallCounter() {
+  async incrementApiCallCounter(callCount = 1) {
     await TrustpilotCache.findOneAndUpdate(
       { cache_key: 'trustpilot_metadata' },
       {
-        $inc: { api_calls_this_month: 1 },
+        $inc: { api_calls_this_month: callCount },
         $set: { 
           current_month: this.getCurrentMonth(),
           last_fetched: new Date()
@@ -67,12 +67,30 @@ class TrustpilotService {
     );
   }
 
-  async fetchFromAPI() {
-    const canCall = await this.canMakeApiCall();
-    if (!canCall) {
-      throw new Error('Monthly API limit reached');
+  // NEW METHOD: Fetch company details including trust score
+  async fetchCompanyDetails() {
+    const response = await axios({
+      method: 'GET',
+      url: `${this.baseUrl}/company-details`,
+      params: {
+        company_domain: this.domain,
+        locale: 'en-US'
+      },
+      headers: {
+        'x-rapidapi-key': this.apiKey,
+        'x-rapidapi-host': this.apiHost
+      },
+      timeout: 10000
+    });
+
+    if (response.data.status !== 'OK') {
+      throw new Error(response.data.error?.message || 'API error fetching company details');
     }
 
+    return response.data.data;
+  }
+
+  async fetchReviewsFromAPI() {
     const response = await axios({
       method: 'GET',
       url: `${this.baseUrl}/company-reviews`,
@@ -90,10 +108,38 @@ class TrustpilotService {
     });
 
     if (response.data.status !== 'OK') {
-      throw new Error(response.data.error?.message || 'API error');
+      throw new Error(response.data.error?.message || 'API error fetching reviews');
     }
 
     return response.data.data;
+  }
+
+  // UPDATED METHOD: Now fetches both reviews and company details
+  async fetchFromAPI() {
+    const canCall = await this.canMakeApiCall();
+    if (!canCall) {
+      throw new Error('Monthly API limit reached');
+    }
+
+    // Check if we have enough API calls remaining for both requests
+    const cache = await this.getCache();
+    const remainingCalls = this.MAX_MONTHLY_CALLS - (cache?.api_calls_this_month || 0);
+    if (remainingCalls < 2) {
+      throw new Error('Not enough API calls remaining for full update');
+    }
+
+    // Fetch both reviews and company details in parallel
+    const [reviewsData, companyData] = await Promise.all([
+      this.fetchReviewsFromAPI(),
+      this.fetchCompanyDetails()
+    ]);
+
+    // Merge the data
+    return {
+      ...reviewsData,
+      trust_score: companyData.company.trust_score,
+      company_rating: companyData.company.rating
+    };
   }
 
   async storeReviews(reviews) {
@@ -112,11 +158,13 @@ class TrustpilotService {
     await TrustpilotReview.bulkWrite(operations);
   }
 
+  // UPDATED METHOD: Now includes trust_score
   async updateCache(data) {
     await TrustpilotCache.findOneAndUpdate(
       { cache_key: 'trustpilot_metadata' },
       {
         total_reviews: data.total_reviews,
+        trust_score: data.trust_score, // ADD THIS
         rating_distribution: data.rating_distribution,
         review_language_distribution: data.review_language_distribution,
         last_fetched: new Date()
@@ -125,15 +173,17 @@ class TrustpilotService {
     );
   }
 
+  // UPDATED METHOD: Now handles trust_score
   async fetchAndStoreReviews() {
     const data = await this.fetchFromAPI();
     await this.storeReviews(data.reviews);
     await this.updateCache(data);
-    await this.incrementApiCallCounter();
+    await this.incrementApiCallCounter(2); // Increment by 2 since we make 2 API calls
 
     return {
       reviews: data.reviews,
       total_reviews: data.total_reviews,
+      trust_score: data.trust_score, // ADD THIS
       rating_distribution: data.rating_distribution,
       language_distribution: data.review_language_distribution,
       source: 'api'
@@ -154,6 +204,7 @@ class TrustpilotService {
     return query;
   }
 
+  // UPDATED METHOD: Now includes trust_score in response
   async getReviewsFromDB(options = {}) {
     const { page = 1, perPage = 20, stars, language } = options;
     
@@ -174,6 +225,7 @@ class TrustpilotService {
     return {
       reviews,
       total_reviews: totalReviews,
+      trust_score: cache?.trust_score || null, // ADD THIS
       rating_distribution: cache?.rating_distribution || {},
       language_distribution: cache?.review_language_distribution || {},
       source: 'database',
@@ -197,18 +249,53 @@ class TrustpilotService {
     return await this.getReviewsFromDB(options);
   }
 
+  // UPDATED METHOD: Now includes trust_score
   async getCompanyInfo() {
     const cache = await this.getCache();
 
     return {
       domain: this.domain,
       total_reviews: cache?.total_reviews || 0,
+      trust_score: cache?.trust_score || null, // ADD THIS
       rating_distribution: cache?.rating_distribution || {},
       language_distribution: cache?.review_language_distribution || {},
       last_updated: cache?.last_fetched || null,
       api_calls_used_this_month: cache?.api_calls_this_month || 0,
       api_calls_remaining: this.MAX_MONTHLY_CALLS - (cache?.api_calls_this_month || 0)
     };
+  }
+
+  // NEW METHOD: Force refresh trust score only (uses 1 API call)
+  async refreshTrustScoreOnly() {
+    const canCall = await this.canMakeApiCall();
+    if (!canCall) {
+      throw new Error('Monthly API limit reached');
+    }
+
+    try {
+      const companyData = await this.fetchCompanyDetails();
+      
+      // Update only the trust score in cache
+      await TrustpilotCache.findOneAndUpdate(
+        { cache_key: 'trustpilot_metadata' },
+        {
+          $set: { 
+            trust_score: companyData.company.trust_score,
+            last_fetched: new Date()
+          }
+        }
+      );
+
+      await this.incrementApiCallCounter(1);
+
+      return {
+        trust_score: companyData.company.trust_score,
+        source: 'api'
+      };
+    } catch (error) {
+      console.error('Failed to refresh trust score:', error.message);
+      throw error;
+    }
   }
 
   async forceRefresh() {

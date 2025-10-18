@@ -5,6 +5,7 @@ interface RatingDistribution {
 interface ProfileData {
   domain: string;
   total_reviews: number;
+  trust_score: number;
   rating_distribution: RatingDistribution;
   language_distribution: {
     [key: string]: number;
@@ -20,9 +21,9 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
 }) => {
   if (!profileData) return null;
 
-  const { total_reviews, rating_distribution } = profileData;
+  const { total_reviews, rating_distribution, trust_score } = profileData;
 
-  // Calculate average rating
+  // Calculate average rating (fallback if trust_score is not provided)
   const calculateAverageRating = () => {
     let totalStars = 0;
     let totalCount = 0;
@@ -35,7 +36,11 @@ const CypentraReviewProfile: React.FC<CypentraReviewProfileProps> = ({
     return totalCount > 0 ? totalStars / totalCount : 5.0;
   };
 
-  const averageRating = calculateAverageRating();
+  // Use trust_score as the authoritative rating; fallback to calculated average if missing
+  const averageRating =
+    typeof trust_score === 'number' && !Number.isNaN(trust_score)
+      ? trust_score
+      : calculateAverageRating();
 
   // Get rating label
   const getRatingLabel = (rating: number) => {
